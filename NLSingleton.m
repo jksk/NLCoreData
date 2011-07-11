@@ -20,33 +20,37 @@ static NSMutableDictionary* Shared_ = nil;
 
 + (id)shared
 {
-	[self initializeShared];
-	id instance = [Shared_ objectForKey:[self class]];
-	
 	@synchronized(self) {
+        
+        [self initializeShared];
+        id instance = [Shared_ objectForKey:NSStringFromClass([self class])];
+        
 		if (!instance) {
-			
 			instance = [[[self class] alloc] init];
 			[Shared_ setObject:instance forKey:NSStringFromClass([self class])];
 		}
+        
+        return instance;
 	}
-	return instance;
+    
+    return nil;
 }
 
 + (id)allocWithZone:(NSZone *)zone
 {
-	[self initializeShared];
-	id instance = [Shared_ objectForKey:[self class]];
-	
 	@synchronized(self) {
+        
+        [self initializeShared];
+        id instance = [Shared_ objectForKey:NSStringFromClass([self class])];
+        
 		if (!instance) {
-			
 			instance = [super allocWithZone:zone];
 			[Shared_ setObject:instance forKey:NSStringFromClass([self class])];
-			
-			return instance;
 		}
+        
+        return instance;
 	}
+    
 	return nil;
 }
 
