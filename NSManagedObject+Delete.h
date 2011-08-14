@@ -27,18 +27,18 @@
 @interface NSManagedObject (Delete)
 
 // any context
-+ (void)deleteInContext:(NSManagedObjectContext *)context;
++ (void)deleteFromContext:(NSManagedObjectContext *)context;
 
-+ (void)deleteInContext:(NSManagedObjectContext *)context
++ (void)deleteFromContext:(NSManagedObjectContext *)context
 		  withPredicate:(NSPredicate *)predicate;
 
-- (void)deleteInContext:(NSManagedObjectContext *)context;
+- (void)deleteFromContext:(NSManagedObjectContext *)context;
 
 // shared context
-+ (void)deleteInSharedContext;
++ (void)deleteFromSharedContext;
 
-+ (void)deleteInSharedContextWithPredicate:(NSPredicate *)predicate;
++ (void)deleteFromSharedContextWithPredicate:(NSPredicate *)predicate;
 
-- (void)deleteInSharedContext;
+- (void)deleteFromSharedContext;
 
 @end

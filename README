@@ -106,6 +106,4 @@ Installation
 ------------
 1. Add all the files (except README) to your project.
 2. #import NLCoreData.h where you need it (in prefix.pch for easy access).
-3. Edit NLCoreData.m: change the line
-		static NSString* kStoreName	= @"CoreData";
-	to match whatever your store is named.
+3. If you don't want to name your data model "CoreData", #define COREDATA_STORENAME to whatever your model is named.

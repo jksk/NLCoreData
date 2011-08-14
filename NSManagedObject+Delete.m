@@ -27,14 +27,14 @@
 
 @implementation NSManagedObject (Delete)
 
-+ (void)deleteInContext:(NSManagedObjectContext *)context
++ (void)deleteFromContext:(NSManagedObjectContext *)context
 {
 	[NLCoreData delete:[self class]
 		   fromContext:context
 		 withPredicate:nil];
 }
 
-+ (void)deleteInContext:(NSManagedObjectContext *)context
++ (void)deleteFromContext:(NSManagedObjectContext *)context
 		  withPredicate:(NSPredicate *)predicate
 {
 	[NLCoreData delete:[self class]
@@ -42,24 +42,24 @@
 		 withPredicate:predicate];
 }
 
-- (void)deleteInContext:(NSManagedObjectContext *)context
+- (void)deleteFromContext:(NSManagedObjectContext *)context
 {
 	[context deleteObject:self];
 }
 
-+ (void)deleteInSharedContext
++ (void)deleteFromSharedContext
 {
 	[[NLCoreData shared] delete:[self class]
 				  withPredicate:nil];
 }
 
-+ (void)deleteInSharedContextWithPredicate:(NSPredicate *)predicate
++ (void)deleteFromSharedContextWithPredicate:(NSPredicate *)predicate
 {
 	[[NLCoreData shared] delete:[self class]
 				  withPredicate:predicate];
 }
 
-- (void)deleteInSharedContext
+- (void)deleteFromSharedContext
 {
 	[[[NLCoreData shared] context] deleteObject:self];
 }

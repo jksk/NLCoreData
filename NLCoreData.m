@@ -37,7 +37,9 @@
 #pragma mark -
 @implementation NLCoreData
 
-static NSString*	kStoreName	= @"CoreData";
+#ifndef COREDATA_STORENAME
+#define COREDATA_STORENAME	@"CoreData"
+#endif
 
 @synthesize storeCoordinator	= storeCoordinator_;
 @synthesize managedObjectModel	= managedObjectModel_;
@@ -83,7 +85,7 @@ static NSString*	kStoreName	= @"CoreData";
 	return [[self class] saveContext:[self context]];
 }
 
-#pragma mark - New objects
+#pragma mark - Heavy lifting
 
 // ---- Creates a new entity
 + (id)insert:(Class)entity inContext:(NSManagedObjectContext *)context
@@ -93,25 +95,10 @@ static NSString*	kStoreName	= @"CoreData";
 			inManagedObjectContext:context];
 }
 
-// ---- Creates a new entity in shared context
-- (id)insert:(Class)entity
-{
-	return [[self class] insert:entity inContext:[self context]];
-}
-
-#pragma mark - Count
-
-// ---- Counts all objects of entity in context
-+ (NSUInteger)count:(Class)entity
-				inContext:(NSManagedObjectContext *)context
-{
-	return [self count:entity inContext:context withPredicate:nil];
-}
-
 // ---- Counts all objects of entity that matches predicate in context
 + (NSUInteger)count:(Class)entity
-				inContext:(NSManagedObjectContext *)context
-			withPredicate:(NSPredicate *)predicate
+		  inContext:(NSManagedObjectContext *)context
+	  withPredicate:(NSPredicate *)predicate
 {
 	NSFetchRequest* request = [[[NSFetchRequest alloc] init] autorelease];
 	[request setEntity:[NSEntityDescription
@@ -132,99 +119,20 @@ static NSString*	kStoreName	= @"CoreData";
 	return count;
 }
 
-// ---- Counts all objects of entity in shared context
-- (NSUInteger)count:(Class)entity
-{
-	return [[self class] count:entity
-						   inContext:[self context]
-					   withPredicate:nil];
-}
-
-// ---- Counts all objects of entity that matches predicate in shared context
-- (NSUInteger)count:(Class)entity
-			withPredicate:(NSPredicate *)predicate
-{
-	return [[self class] count:entity
-						   inContext:[self context]
-					   withPredicate:predicate];
-}
-
-#pragma mark - Delete
-
-// ---- Deletes all objects of entity from context
-+ (void)delete:(Class)entity
-   fromContext:(NSManagedObjectContext *)context
-{
-	[self delete:entity fromContext:context withPredicate:nil];
-}
-
 // ---- Deletes all objects of entity that matches predicate from context
 + (void)delete:(Class)entity
-		   fromContext:(NSManagedObjectContext *)context
-		 withPredicate:(NSPredicate *)predicate
+   fromContext:(NSManagedObjectContext *)context
+ withPredicate:(NSPredicate *)predicate
 {
 	NSArray* objects = [self fetch:entity
-							   fromContext:context
-							 withPredicate:predicate
-						andSortDescriptors:nil
-							  limitResults:0];
+					   fromContext:context
+					 withPredicate:predicate
+				andSortDescriptors:nil
+					  limitResults:0];
 	
 	for (NSManagedObject* object in objects) {
 		[context deleteObject:object];
 	}
-}
-
-// ---- Deletes all objects of entity from shared context
-- (void)delete:(Class)entity
-{
-	[[self class] delete:entity
-					 fromContext:[self context]
-				   withPredicate:nil];
-}
-
-// ---- Deletes all objects of entity that matches predicate from shared context
-- (void)delete:(Class)entity
-		 withPredicate:(NSPredicate *)predicate
-{
-	[[self class] delete:entity
-					 fromContext:[self context]
-				   withPredicate:predicate];
-}
-
-#pragma mark - Fetch
-
-// ---- Fetches an object of entity from context
-// usage: if you have only one object of entity
-+ (id)singleFetch:(Class)entity
-	  fromContext:(NSManagedObjectContext *)context
-{
-	return [[self fetch:entity
-					fromContext:context
-				  withPredicate:nil
-			 andSortDescriptors:nil
-				   limitResults:1] lastObject];
-}
-
-// ---- Fetches an object of entity that matches predicate from context
-// usage: make sure predicate only matches one object
-+ (id)singleFetch:(Class)entity
-	  fromContext:(NSManagedObjectContext *)context
-	withPredicate:(NSPredicate *)predicate
-{
-	return [[self fetch:entity
-					fromContext:context
-				  withPredicate:predicate
-			 andSortDescriptors:nil
-				   limitResults:1] lastObject];
-}
-
-// ---- Fetches an object of entity, creates if it doesn't exist
-+ (id)singleFetchOrInsert:(Class)entity
-		fromContext:(NSManagedObjectContext *)context
-{
-	return [self singleFetchOrInsert:entity
-						 fromContext:context
-					   withPredicate:nil];
 }
 
 // ---- Fetches an object of entity, creates if it doesn't exist
@@ -232,9 +140,7 @@ static NSString*	kStoreName	= @"CoreData";
 			  fromContext:(NSManagedObjectContext *)context
 			withPredicate:(NSPredicate *)predicate
 {
-	id obj = [[self class] fetch:entity
-						   fromContext:context
-						 withPredicate:predicate];
+	id obj = [self singleFetch:entity fromContext:context withPredicate:predicate];
 	
 	if (!obj) {
 		obj = [[self class] insert:entity inContext:context];
@@ -243,68 +149,16 @@ static NSString*	kStoreName	= @"CoreData";
 	return obj;
 }
 
-// ---- Fetches all objects of entity from context
-+ (NSArray *)fetch:(Class)entity
-			   fromContext:(NSManagedObjectContext *)context
-{
-	return [self fetch:entity
-				   fromContext:context
-				 withPredicate:nil
-			andSortDescriptors:nil
-				  limitResults:0];
-}
-
-// ---- Fetches all objects of entity that matches predicate from context
-+ (NSArray *)fetch:(Class)entity
-			   fromContext:(NSManagedObjectContext *)context
-			 withPredicate:(NSPredicate *)predicate
-{
-	return [self fetch:entity
-				   fromContext:context
-				 withPredicate:predicate
-			andSortDescriptors:nil
-				  limitResults:0];
-}
-
-// ---- Fetches all objects of entity from context sorted by descriptors
-+ (NSArray *)fetch:(Class)entity
-			   fromContext:(NSManagedObjectContext *)context
-	   withSortDescriptors:(NSArray *)sortDescriptors
-{
-	return [self fetch:entity
-				   fromContext:context
-				 withPredicate:nil
-			andSortDescriptors:sortDescriptors
-				  limitResults:0];
-}
-
-// ---- Fetches all objects of entity that matches predicate from context
-//		sorted by descriptors
-+ (NSArray *)fetch:(Class)entity
-			   fromContext:(NSManagedObjectContext *)context
-			 withPredicate:(NSPredicate *)predicate
-		andSortDescriptors:(NSArray *)sortDescriptors
-{
-	return [self fetch:entity
-				   fromContext:context
-				 withPredicate:predicate
-			andSortDescriptors:sortDescriptors
-				  limitResults:0];
-}
-
 // ---- Fetches n objects of entity that matches predicate from context
 //		sorted by descriptors
 + (NSArray *)fetch:(Class)entity
-			   fromContext:(NSManagedObjectContext *)context
-			 withPredicate:(NSPredicate *)predicate
-		andSortDescriptors:(NSArray *)sortDescriptors
-			  limitResults:(NSUInteger)limit
+	   fromContext:(NSManagedObjectContext *)context
+	 withPredicate:(NSPredicate *)predicate
+andSortDescriptors:(NSArray *)sortDescriptors
+	  limitResults:(NSUInteger)limit
 {
-	NSFetchRequest* request = [[[NSFetchRequest alloc] init] autorelease];
+	NSFetchRequest* request = [NSFetchRequest fetchRequestWithEntity:entity inContext:context];
 	[request setReturnsObjectsAsFaults:NO];
-	[request setEntity:[NSEntityDescription
-						entityForName:NSStringFromClass(entity)
-						inManagedObjectContext:context]];
 	
 	if (predicate) {
 		[request setPredicate:predicate];
@@ -327,6 +181,151 @@ static NSString*	kStoreName	= @"CoreData";
 	}
 	
 	return results;
+}
+
+#pragma mark - Insert
+
+// ---- Creates a new entity in shared context
+- (id)insert:(Class)entity
+{
+	return [[self class] insert:entity inContext:[self context]];
+}
+
+#pragma mark - Count
+
+// ---- Counts all objects of entity in context
++ (NSUInteger)count:(Class)entity
+		  inContext:(NSManagedObjectContext *)context
+{
+	return [self count:entity inContext:context withPredicate:nil];
+}
+
+// ---- Counts all objects of entity in shared context
+- (NSUInteger)count:(Class)entity
+{
+	return [[self class] count:entity
+					 inContext:[self context]
+				 withPredicate:nil];
+}
+
+// ---- Counts all objects of entity that matches predicate in shared context
+- (NSUInteger)count:(Class)entity
+	  withPredicate:(NSPredicate *)predicate
+{
+	return [[self class] count:entity
+					 inContext:[self context]
+				 withPredicate:predicate];
+}
+
+#pragma mark - Delete
+
+// ---- Deletes all objects of entity from context
++ (void)delete:(Class)entity
+   fromContext:(NSManagedObjectContext *)context
+{
+	[self delete:entity fromContext:context withPredicate:nil];
+}
+
+// ---- Deletes all objects of entity from shared context
+- (void)delete:(Class)entity
+{
+	[[self class] delete:entity
+			 fromContext:[self context]
+		   withPredicate:nil];
+}
+
+// ---- Deletes all objects of entity that matches predicate from shared context
+- (void)delete:(Class)entity
+ withPredicate:(NSPredicate *)predicate
+{
+	[[self class] delete:entity
+			 fromContext:[self context]
+		   withPredicate:predicate];
+}
+
+#pragma mark - Fetch
+
+// ---- Fetches an object of entity from context
+// usage: if you have only one object of entity
++ (id)singleFetch:(Class)entity
+	  fromContext:(NSManagedObjectContext *)context
+{
+	return [[self fetch:entity
+			fromContext:context
+		  withPredicate:nil
+	 andSortDescriptors:nil
+		   limitResults:1] lastObject];
+}
+
+// ---- Fetches an object of entity that matches predicate from context
+// usage: make sure predicate only matches one object
++ (id)singleFetch:(Class)entity
+	  fromContext:(NSManagedObjectContext *)context
+	withPredicate:(NSPredicate *)predicate
+{
+	return [[self fetch:entity
+			fromContext:context
+		  withPredicate:predicate
+	 andSortDescriptors:nil
+		   limitResults:1] lastObject];
+}
+
+// ---- Fetches an object of entity, creates if it doesn't exist
++ (id)singleFetchOrInsert:(Class)entity
+			  fromContext:(NSManagedObjectContext *)context
+{
+	return [self singleFetchOrInsert:entity
+						 fromContext:context
+					   withPredicate:nil];
+}
+
+// ---- Fetches all objects of entity from context
++ (NSArray *)fetch:(Class)entity
+	   fromContext:(NSManagedObjectContext *)context
+{
+	return [self fetch:entity
+		   fromContext:context
+		 withPredicate:nil
+	andSortDescriptors:nil
+		  limitResults:0];
+}
+
+// ---- Fetches all objects of entity that matches predicate from context
++ (NSArray *)fetch:(Class)entity
+	   fromContext:(NSManagedObjectContext *)context
+	 withPredicate:(NSPredicate *)predicate
+{
+	return [self fetch:entity
+		   fromContext:context
+		 withPredicate:predicate
+	andSortDescriptors:nil
+		  limitResults:0];
+}
+
+// ---- Fetches all objects of entity from context sorted by descriptors
++ (NSArray *)fetch:(Class)entity
+	   fromContext:(NSManagedObjectContext *)context
+withSortDescriptors:(NSArray *)sortDescriptors
+{
+	return [self fetch:entity
+		   fromContext:context
+		 withPredicate:nil
+	andSortDescriptors:sortDescriptors
+		  limitResults:0];
+}
+
+// ---- Fetches all objects of entity that matches predicate from context
+//		sorted by descriptors
++ (NSArray *)fetch:(Class)entity
+	   fromContext:(NSManagedObjectContext *)context
+	 withPredicate:(NSPredicate *)predicate
+andSortDescriptors:(NSArray *)sortDescriptors
+{
+	return [self fetch:entity
+		   fromContext:context
+		 withPredicate:predicate
+	andSortDescriptors:sortDescriptors
+		  limitResults:0];
 }
 
 // ---- Fetches an object of entity from shared context
@@ -366,59 +365,59 @@ static NSString*	kStoreName	= @"CoreData";
 - (NSArray *)fetch:(Class)entity
 {
 	return [[self class] fetch:entity
-						   fromContext:[self context]
-						 withPredicate:nil
-					andSortDescriptors:nil
-						  limitResults:0];
+				   fromContext:[self context]
+				 withPredicate:nil
+			andSortDescriptors:nil
+				  limitResults:0];
 }
 
 // ---- Fetches all objects of entity that matches predicate from shared context
 - (NSArray *)fetch:(Class)entity
-			 withPredicate:(NSPredicate *)predicate
+	 withPredicate:(NSPredicate *)predicate
 {
 	return [[self class] fetch:entity
-						   fromContext:[self context]
-						 withPredicate:predicate
-					andSortDescriptors:nil
-						  limitResults:0];
+				   fromContext:[self context]
+				 withPredicate:predicate
+			andSortDescriptors:nil
+				  limitResults:0];
 }
 
 // ---- Fetches all objects of entity from shared context sorted by descriptors
 - (NSArray *)fetch:(Class)entity
-	   withSortDescriptors:(NSArray *)sortDescriptors
+withSortDescriptors:(NSArray *)sortDescriptors
 {
 	return [[self class] fetch:entity
-						   fromContext:[self context]
-						 withPredicate:nil
-					andSortDescriptors:sortDescriptors
-						  limitResults:0];
+				   fromContext:[self context]
+				 withPredicate:nil
+			andSortDescriptors:sortDescriptors
+				  limitResults:0];
 }
 
 // ---- Fetches all objects of entity that matches predicate from context
 //		sorted by descriptors
 - (NSArray *)fetch:(Class)entity
-			 withPredicate:(NSPredicate *)predicate
-		andSortDescriptors:(NSArray *)sortDescriptors
+	 withPredicate:(NSPredicate *)predicate
+andSortDescriptors:(NSArray *)sortDescriptors
 {
 	return [[self class] fetch:entity
-						   fromContext:[self context]
-						 withPredicate:predicate
-					andSortDescriptors:sortDescriptors
-						  limitResults:0];
+				   fromContext:[self context]
+				 withPredicate:predicate
+			andSortDescriptors:sortDescriptors
+				  limitResults:0];
 }
 
 // ---- Fetches n objects of entity that matches predicate from shared context
 //		sorted by descriptors
 - (NSArray *)fetch:(Class)entity
-			 withPredicate:(NSPredicate *)predicate
-		andSortDescriptors:(NSArray *)sortDescriptors
-			  limitResults:(NSUInteger)limit
+	 withPredicate:(NSPredicate *)predicate
+andSortDescriptors:(NSArray *)sortDescriptors
+	  limitResults:(NSUInteger)limit
 {
 	return [[self class] fetch:entity
-						   fromContext:[self context]
-						 withPredicate:predicate
-					andSortDescriptors:sortDescriptors
-						  limitResults:limit];
+				   fromContext:[self context]
+				 withPredicate:predicate
+			andSortDescriptors:sortDescriptors
+				  limitResults:limit];
 }
 
 #pragma mark - Properties
@@ -428,17 +427,17 @@ static NSString*	kStoreName	= @"CoreData";
 	return [[NSSearchPathForDirectoriesInDomains
 			 (NSDocumentDirectory, NSUserDomainMask, YES)
 			 lastObject] stringByAppendingPathComponent:
-			[kStoreName stringByAppendingString:@".sqlite"]];
+			[COREDATA_STORENAME stringByAppendingString:@".sqlite"]];
 }
 
 - (void)setEncryptedStore:(BOOL)encryptedStore
 {
 	NSString* encryption = encryptedStore ?
-		NSFileProtectionComplete : NSFileProtectionNone;
+	NSFileProtectionComplete : NSFileProtectionNone;
 	
 	NSDictionary* attributes =
-		[NSDictionary dictionaryWithObject:encryption
-									forKey:NSFileProtectionKey];
+	[NSDictionary dictionaryWithObject:encryption
+								forKey:NSFileProtectionKey];
 	
 	NSError* error = nil;
 	NSFileManager* fileManager = [[[NSFileManager alloc] init] autorelease];
@@ -497,7 +496,7 @@ static NSString*	kStoreName	= @"CoreData";
 {
 	if (!managedObjectModel_) {
 		
-		NSString* path = [[NSBundle mainBundle] pathForResource:kStoreName
+		NSString* path = [[NSBundle mainBundle] pathForResource:COREDATA_STORENAME
 														 ofType:@"momd"];
 		
 		managedObjectModel_ = [[NSManagedObjectModel alloc]
