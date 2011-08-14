@@ -35,16 +35,16 @@
 }
 
 + (void)deleteFromContext:(NSManagedObjectContext *)context
-		  withPredicate:(NSPredicate *)predicate
+			withPredicate:(NSPredicate *)predicate
 {
 	[NLCoreData delete:[self class]
 		   fromContext:context
 		 withPredicate:predicate];
 }
 
-- (void)deleteFromContext:(NSManagedObjectContext *)context
+- (void)deleteFromContext
 {
-	[context deleteObject:self];
+	[[self managedObjectContext] deleteObject:self];
 }
 
 + (void)deleteFromSharedContext
@@ -57,11 +57,6 @@
 {
 	[[NLCoreData shared] delete:[self class]
 				  withPredicate:predicate];
-}
-
-- (void)deleteFromSharedContext
-{
-	[[[NLCoreData shared] context] deleteObject:self];
 }
 
 @end

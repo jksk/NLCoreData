@@ -32,13 +32,11 @@
 + (void)deleteFromContext:(NSManagedObjectContext *)context
 		  withPredicate:(NSPredicate *)predicate;
 
-- (void)deleteFromContext:(NSManagedObjectContext *)context;
+- (void)deleteFromContext;
 
 // shared context
 + (void)deleteFromSharedContext;
 
 + (void)deleteFromSharedContextWithPredicate:(NSPredicate *)predicate;
-
-- (void)deleteFromSharedContext;
 
 @end
