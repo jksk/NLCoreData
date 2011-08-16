@@ -47,13 +47,11 @@
 
 #pragma mark - Context
 
-// ---- Creates a new context
-// is retained (you own it)
-+ (NSManagedObjectContext *)newContext
+// ---- Creates a new context with a permanent store
++ (NSManagedObjectContext *)persistentContext
 {
-	NSManagedObjectContext* context = [[NSManagedObjectContext alloc] init];
-	[context setPersistentStoreCoordinator:
-	 [[self shared] storeCoordinator]];
+	NSManagedObjectContext* context = [[[NSManagedObjectContext alloc] init] autorelease];
+	[context setPersistentStoreCoordinator:[[self shared] storeCoordinator]];
 	
 	return context;
 }
@@ -61,6 +59,15 @@
 // ---- Saves context to store
 + (BOOL)saveContext:(NSManagedObjectContext *)context
 {
+	// don't allow saving of scratchpad contexts
+	if ([context persistentStoreCoordinator] != [[self shared] storeCoordinator]) {
+#ifdef DEBUG
+		[NSException raise:@"NSManagedObjectContext Save Error"
+					format:@"Erronous persistent store"];
+#endif
+		return NO;
+	}
+	
 	NSError* error = nil;
 	
 	if (![context save:&error]) {
@@ -111,10 +118,12 @@
 	NSError* error = nil;
 	NSUInteger count = [context countForFetchRequest:request error:&error];
 	
+#ifdef DEBUG
 	if (error) {
 		[NSException raise:@"Count Exception"
 					format:@"Count Error: %@", [error localizedDescription]];
 	}
+#endif
 	
 	return count;
 }
@@ -176,8 +185,10 @@ andSortDescriptors:(NSArray *)sortDescriptors
 	NSArray* results = [context executeFetchRequest:request error:&error];
 	
 	if (!results) {
+#ifdef DEBUG
 		[NSException raise:@"Fetch Exception"
 					format:@"Error fetching: %@", [error localizedDescription]];
+#endif
 	}
 	
 	return results;
@@ -444,10 +455,11 @@ andSortDescriptors:(NSArray *)sortDescriptors
 	if (![fileManager setAttributes:attributes
 					   ofItemAtPath:[self storePath]
 							  error:&error]) {
-		
+#ifdef DEBUG		
 		[NSException
 		 raise:@"Persistent Store Exception"
 		 format:@"Error Encryping Store: %@", [error localizedDescription]];
+#endif
 	}
 }
 
@@ -459,10 +471,13 @@ andSortDescriptors:(NSArray *)sortDescriptors
 								attributesOfItemAtPath:[self storePath]
 								error:&error];
 	if (!attributes) {
+#ifdef DEBUG
 		[NSException
 		 raise:@"Persistent Store Exception"
 		 format:@"Error Retrieving Store Attributes: %@",
 		 [error localizedDescription]];
+#endif
+		return NO;
 	}
 	
 	return [[attributes objectForKey:NSFileProtectionKey]
@@ -483,10 +498,11 @@ andSortDescriptors:(NSArray *)sortDescriptors
 			  URL:[NSURL fileURLWithPath:[self storePath]]
 			  options:nil
 			  error:&error]) {
-			
+#ifdef DEBUG
 			[NSException
 			 raise:@"Persistent Store Exception"
 			 format:@"Error Creating Store: %@", [error localizedDescription]];
+#endif
 		}
 	}
 	return storeCoordinator_;

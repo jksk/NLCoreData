@@ -52,7 +52,7 @@
 
 #pragma mark - Context
 
-+ (NSManagedObjectContext *)newContext;
++ (NSManagedObjectContext *)persistentContext;
 
 + (BOOL)saveContext:(NSManagedObjectContext *)context;
 - (BOOL)saveContext;
