@@ -27,7 +27,6 @@
 // Instance methods use shared context (preferably used for main/ui thread)
 // 
 
-#import <Foundation/Foundation.h>
 #import "NLSingleton.h"
 
 #import "NSManagedObject+Init.h"

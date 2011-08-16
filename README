@@ -89,10 +89,10 @@ you can do that with a provided convenience method:
 	NSFetchRequest* request = [NSFetchRequest fetchRequestWithEntityInSharedContext:[Person class]];
 
 
-NLCoreData is not for you if
-----------------------------
-* you need more than one persistent store.
-* you don't want to subclass NSManagedObject
+NLCoreData is not for you if you
+--------------------------------
+* need more than one persistent store.
+* don't want to subclass NSManagedObject
 
 
 Notes

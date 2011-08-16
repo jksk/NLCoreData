@@ -28,9 +28,4 @@
 
 - (BOOL)isNew;
 
-+ (NSNumber *)aggregateOperation:(NSString *)function
-					 onAttribute:(NSString *)attributeName
-				   withPredicate:(NSPredicate *)predicate
-		  inManagedObjectContext:(NSManagedObjectContext *)context;
-
 @end

@@ -22,11 +22,6 @@
 //  IN THE SOFTWARE.
 //  
 
-// 
-// aggregateOperation by Jeff Lamarche:
-// http://iphonedevelopment.blogspot.com/2010/11/nsexpression.html
-// 
-
 #import "NSManagedObject+Misc.h"
 
 @implementation NSManagedObject (Misc)
@@ -34,43 +29,6 @@
 - (BOOL)isNew
 {
 	return [[self committedValuesForKeys:nil] count] == 0;
-}
-
-+ (NSNumber *)aggregateOperation:(NSString *)function
-					 onAttribute:(NSString *)attributeName
-				   withPredicate:(NSPredicate *)predicate
-		  inManagedObjectContext:(NSManagedObjectContext *)context
-{
-	NSArray* attr = [NSArray
-					 arrayWithObject:[NSExpression
-									  expressionForKeyPath:attributeName]];
-	NSExpression* expr = [NSExpression
-						  expressionForFunction:function
-						  arguments:attr];
-	NSExpressionDescription* description = [[[NSExpressionDescription alloc]
-											 init] autorelease];
-	[description setName:@"result"];
-	[description setExpression:expr];
-	[description setExpressionResultType:NSInteger64AttributeType];
-	
-	NSArray* properties = [NSArray arrayWithObject:description];
-	NSFetchRequest* request = [[[NSFetchRequest alloc] init] autorelease];
-	[request setPropertiesToFetch:properties];
-	[request setResultType:NSDictionaryResultType];
-	
-	if (predicate) {
-		[request setPredicate:predicate];
-	}
-	
-	NSEntityDescription* entity = [NSEntityDescription
-								   entityForName:NSStringFromClass([self class])
-								   inManagedObjectContext:context];
-	[request setEntity:entity];
-	
-	NSDictionary* results = [[context executeFetchRequest:request error:nil]
-							 objectAtIndex:0];
-	NSNumber* value = [results objectForKey:@"result"];
-	return value;
 }
 
 @end
