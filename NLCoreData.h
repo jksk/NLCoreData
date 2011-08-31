@@ -48,6 +48,7 @@
 }
 
 @property (nonatomic, readonly)	NSManagedObjectContext*	context;
+@property (nonatomic, readonly) BOOL					storeExists;
 @property (nonatomic, assign)	BOOL					encryptedStore;
 
 #pragma mark - Context

@@ -31,14 +31,17 @@
 @property (nonatomic, retain) NSManagedObjectModel*			managedObjectModel;
 
 - (NSString *)storePath;
+- (NSURL *)storeURL;
 
 @end
 
 #pragma mark -
 @implementation NLCoreData
 
-#ifndef COREDATA_STORENAME
-#define COREDATA_STORENAME	@"CoreData"
+//#define NLCOREDATA_STORENAME @"CoreData"
+
+#ifndef NLCOREDATA_STORENAME
+#error define NLCOREDATA_STORENAME as an NSString with the name of your model
 #endif
 
 @synthesize storeCoordinator	= storeCoordinator_;
@@ -59,7 +62,7 @@
 // ---- Saves context to store
 + (BOOL)saveContext:(NSManagedObjectContext *)context
 {
-	// don't allow saving of scratchpad contexts
+	// disallow saving of scratchpad contexts
 	if ([context persistentStoreCoordinator] != [[self shared] storeCoordinator]) {
 #ifdef DEBUG
 		[NSException raise:@"NSManagedObjectContext Save Error"
@@ -438,7 +441,15 @@ andSortDescriptors:(NSArray *)sortDescriptors
 	return [[NSSearchPathForDirectoriesInDomains
 			 (NSDocumentDirectory, NSUserDomainMask, YES)
 			 lastObject] stringByAppendingPathComponent:
-			[COREDATA_STORENAME stringByAppendingString:@".sqlite"]];
+			[NLCOREDATA_STORENAME stringByAppendingString:@".sqlite"]];
+}
+
+- (NSURL *)storeURL
+{
+	NSURL* path = [[[NSFileManager defaultManager]
+					URLsForDirectory:NSLibraryDirectory
+					inDomains:NSUserDomainMask] lastObject];
+	return [path URLByAppendingPathComponent:[NLCOREDATA_STORENAME stringByAppendingString:@".sqlite"]];
 }
 
 - (void)setEncryptedStore:(BOOL)encryptedStore
@@ -451,10 +462,9 @@ andSortDescriptors:(NSArray *)sortDescriptors
 								forKey:NSFileProtectionKey];
 	
 	NSError* error = nil;
-	NSFileManager* fileManager = [[[NSFileManager alloc] init] autorelease];
-	if (![fileManager setAttributes:attributes
-					   ofItemAtPath:[self storePath]
-							  error:&error]) {
+	if (![[NSFileManager defaultManager] setAttributes:attributes
+										  ofItemAtPath:[self storePath]
+												 error:&error]) {
 #ifdef DEBUG		
 		[NSException
 		 raise:@"Persistent Store Exception"
@@ -463,11 +473,15 @@ andSortDescriptors:(NSArray *)sortDescriptors
 	}
 }
 
+- (BOOL)storeExists
+{
+	return [[NSFileManager defaultManager] fileExistsAtPath:[self storePath]];
+}
+
 - (BOOL)encryptedStore
 {
 	NSError* error = nil;
-	NSFileManager* fileManager = [[[NSFileManager alloc] init] autorelease];
-	NSDictionary* attributes = [fileManager
+	NSDictionary* attributes = [[NSFileManager defaultManager]
 								attributesOfItemAtPath:[self storePath]
 								error:&error];
 	if (!attributes) {
@@ -486,49 +500,52 @@ andSortDescriptors:(NSArray *)sortDescriptors
 
 - (NSPersistentStoreCoordinator *)storeCoordinator
 {
-	if (!storeCoordinator_) {
-		storeCoordinator_ = [[NSPersistentStoreCoordinator alloc]
-							 initWithManagedObjectModel:
-							 [self managedObjectModel]];
-		
-		NSError* error = nil;
-		if (![storeCoordinator_
-			  addPersistentStoreWithType:NSSQLiteStoreType
-			  configuration:nil
-			  URL:[NSURL fileURLWithPath:[self storePath]]
-			  options:nil
-			  error:&error]) {
-#ifdef DEBUG
-			[NSException
-			 raise:@"Persistent Store Exception"
-			 format:@"Error Creating Store: %@", [error localizedDescription]];
-#endif
-		}
+	if (storeCoordinator_) {
+		return storeCoordinator_;
 	}
+	
+	storeCoordinator_ = [[NSPersistentStoreCoordinator alloc]
+						 initWithManagedObjectModel:[self managedObjectModel]];
+	
+	NSError* error = nil;
+	if (![storeCoordinator_
+		  addPersistentStoreWithType:NSSQLiteStoreType
+		  configuration:nil
+		  URL:[self storeURL]
+		  options:nil
+		  error:&error]) {
+		
+#ifdef DEBUG
+		[NSException
+		 raise:@"Persistent Store Exception"
+		 format:@"Error Creating Store: %@", [error localizedDescription]];
+#endif
+	}
+	
 	return storeCoordinator_;
 }
 
 - (NSManagedObjectModel *)managedObjectModel
 {
-	if (!managedObjectModel_) {
-		
-		NSString* path = [[NSBundle mainBundle] pathForResource:COREDATA_STORENAME
-														 ofType:@"momd"];
-		
-		managedObjectModel_ = [[NSManagedObjectModel alloc]
-							   initWithContentsOfURL:
-							   [NSURL fileURLWithPath:path]];
+	if (managedObjectModel_) {
+		return managedObjectModel_;
 	}
+	
+	NSURL* url = [[NSBundle mainBundle] URLForResource:NLCOREDATA_STORENAME
+										 withExtension:@"momd"];
+	
+	managedObjectModel_ = [[NSManagedObjectModel alloc] initWithContentsOfURL:url];
 	return managedObjectModel_;
 }
 
 - (NSManagedObjectContext *)context
 {
-	if (!managedObjectContext_) {
-		managedObjectContext_ = [[NSManagedObjectContext alloc] init];
-		[managedObjectContext_
-		 setPersistentStoreCoordinator:[self storeCoordinator]];
+	if (managedObjectContext_) {
+		return managedObjectContext_;
 	}
+	
+	managedObjectContext_ = [[NSManagedObjectContext alloc] init];
+	[managedObjectContext_ setPersistentStoreCoordinator:[self storeCoordinator]];
 	return managedObjectContext_;
 }
 
