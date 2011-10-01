@@ -28,7 +28,7 @@ If you want to access another context through the singleton, use the class metho
 REMEMBER: on the singleton, instance methods are for your shared context, class methods for other contexts.
 
 If you want to create a new context:
-	NSManagedObjectContext* context = [NLCoreData newContext];
+	NSManagedObjectContext* context = [NLCoreData createContext];
 
 And to save it:
 	BOOL success = [NLCoreData saveContext:context];
