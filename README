@@ -98,13 +98,12 @@ NLCoreData is not for you if you
 
 Notes
 -----
-* Make sure you subclass all your Core Data entities, and that the subclasses are named fortheir entity
+* Make sure you subclass all your Core Data entities, and that the subclasses are named for their entity
 	(i.e., if you have an entity named Person, you need a subclass named Person).
-* Default name for the data store is "CoreData"; name your data store CoreData if you don't want to edit the NLCoreData.m.
 
 
 Installation
 ------------
-1. Add all the files (except README) to your project.
+1. Add the NLCoreData folder to your project.
 2. #import NLCoreData.h where you need it (in prefix.pch for easy access).
-3. If you don't want to name your data model "CoreData", #define COREDATA_STORENAME to whatever your model is named.
+3. #define NLCOREDATA_STORENAME to whatever your model is named.
