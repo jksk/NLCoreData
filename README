@@ -1,5 +1,6 @@
 NLCoreData is meant as a drop-in wrapper for most of your Core Data needs on iOS (untested on OS X).
 
+Now supports ARC.
 
 Goals
 -----
