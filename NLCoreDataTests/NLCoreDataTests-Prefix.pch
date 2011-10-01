@@ -1,0 +1,14 @@
+//
+// Prefix header for all source files of the 'NLCoreDataTests' target in the 'NLCoreDataTests' project
+//
+
+
+#ifdef __OBJC__
+
+	#define NLCOREDATA_STORENAME @"CoreDataStore"
+
+	#import <UIKit/UIKit.h>
+	#import <Foundation/Foundation.h>
+	#import "NLCoreData.h"
+
+#endif

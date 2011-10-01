@@ -1,0 +1,109 @@
+NLCoreData is meant as a drop-in wrapper for most of your Core Data needs on iOS (untested on OS X).
+
+
+Goals
+-----
+* Write less code.
+* Make code more readable.
+* More compile-time checks.
+
+There are two ways to access the convenience methods for insertion, deletion, counting and fetching.
+Either through the singleton that wraps the core data store and model (NLCoreData) or through class
+and instance methods on your NSManagedObject subclasses.
+
+You no longer access objects by typing an NSString with an entity name, instead you use the entity class.
+Instead of @"Person", use [Person class]. This provides a compile-time typo check.
+
+
+Contexts
+--------
+NLCoreData provides a shared NSManagedObjectContext, which you presumable want to use as your main/ui context.
+If you want to access the shared context through the singleton, simply use the instance methods:
+	[[NLCoreData shared] doSomething];
+
+If you want to access another context through the singleton, use the class methods:
+	[NLCoreData doSomethingWithContext:context];
+	
+REMEMBER: on the singleton, instance methods are for your shared context, class methods for other contexts.
+
+If you want to create a new context:
+	NSManagedObjectContext* context = [NLCoreData newContext];
+
+And to save it:
+	BOOL success = [NLCoreData saveContext:context];
+	
+If you want to save the shared context:
+	BOOL success = [[NLCoreData shared] saveContext];
+
+
+Methods
+-------
+If you want to fetch all Person objects in your shared context, you can do it in two ways.
+Either:
+	NSArray* results = [[NLCoreData shared] fetch:[Person class]];
+or:
+	NSArray* results = [Person fetchFromSharedContext];
+
+If you want to delete all Person objects in the context myContext, you can do it in two ways:
+Either:
+	[NLCoreData delete:[Person class] fromContext:myContext];
+or:
+	[Person deleteInContext:myContext];
+	
+If you want to count all Person objects that match the predicate myPredicate in your shared context,
+you can do it in two ways. Either:
+	NSUInteger count = [[NLCoreData shared] count:[Person class] withPredicate:myPredicate];
+or:
+	NSUInteger count = [Person countInSharedContextWithPredicate:myPredicate];
+
+	
+Fetching
+--------
+You can either a collection of objects or a single objects. If you want all Person objects in the shared context.
+Either:
+	NSArray* results = [[NLCoreData shared] fetch:[Person class]];
+or:
+	NSArray* results = [Person fetchFromSharedContext];
+	
+If you want a single object in the shared context:
+Either:
+	Person* person = [[NLCoreData shared] singleFetch:[Person class]];
+or:
+	Person* person = [Person singleFetchFromSharedContext];
+
+The single fetch can be useful if there is only one object of that type, or if you provide a predicate
+that you're certain only matches one object. The fetch returns the first object found in case of single fetch.
+It's your responsibility to make sure that object is the correct one.
+
+In some cases, you want to return a single object, or create one if it doesn't exist. You can do that in two ways.
+Either:
+	Person* person = [[NLCoreData shared] singleFetchOrInsert:[Person class]];
+or:
+	Person* person = [Person singleFetchOrInsertInSharedContext];
+
+
+Fetch Requests
+--------------
+If you need to create an NSFetchRequest (e.g., for use in an NSFetchedResultsController),
+you can do that with a provided convenience method:
+	NSFetchRequest* request = [NSFetchRequest fetchRequestWithEntityInSharedContext:[Person class]];
+
+
+NLCoreData is not for you if you
+--------------------------------
+* need more than one persistent store.
+* don't want to subclass NSManagedObject
+
+
+Notes
+-----
+* Make sure you subclass all your Core Data entities, and that the subclasses are named fortheir entity
+	(i.e., if you have an entity named Person, you need a subclass named Person).
+* Default name for the data store is "CoreData"; name your data store CoreData if you don't want to edit the NLCoreData.m.
+
+
+Installation
+------------
+1. Add all the files (except README) to your project.
+2. #import NLCoreData.h where you need it (in prefix.pch for easy access).
+3. If you don't want to name your data model "CoreData", #define COREDATA_STORENAME to whatever your model is named.
