@@ -36,6 +36,7 @@
 #import "NLSingleton.h"
 
 #import "NSManagedObject+NLCoreData.h"
+#import "NSManagedObjectContext+NLCoreData.h"
 #import "NSFetchRequest+NLCoreData.h"
 #import "NSFetchedResultsController+NLCoreData.h"
 
@@ -61,6 +62,17 @@
  Whether or not the store is encrypted.
  */
 @property (assign, nonatomic, getter=storeIsEncrypted) BOOL storeEncrypted;
+
+#pragma mark - Initialization
+
+/**
+ @name Initialization
+ Copies a preseeded database file to be used as your Core Data store.
+ The filetype should be sqlite and it should conform to your model.
+ @param filePath Path to the preseeded file.
+ @warning This should be called before using Core Data on first run.
+ */
+- (void)usePreSeededFile:(NSString *)filePath;
 
 #pragma mark - Context
 

@@ -47,6 +47,25 @@ storeCoordinator	= storeCoordinator_,
 managedObjectModel	= managedObjectModel_,
 context				= managedObjectContext_;
 
+#pragma mark - Initialization
+
+- (void)usePreSeededFile:(NSString *)filePath
+{
+	if (![[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
+#ifdef DEBUG
+		[NSException raise:@"Preseed-file does not exist at path" format:@"%@", filePath];
+#endif
+		return;
+	}
+	
+	NSError* error = nil;
+	if (![[NSFileManager defaultManager] copyItemAtPath:filePath toPath:[self storePath] error:&error]) {
+#ifdef DEBUG
+		[NSException raise:@"Copy preseed-file failed" format:@"%@", [error localizedDescription]];
+#endif
+	}
+}
+
 #pragma mark - Context
 
 + (NSManagedObjectContext *)createContext
@@ -387,10 +406,8 @@ andSortDescriptors:(NSArray *)sortDescriptors
 	NSDictionary* attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[self storePath] error:&error];
 	if (!attributes) {
 #ifdef DEBUG
-		[NSException
-		 raise:@"Persistent Store Exception"
-		 format:@"Error Retrieving Store Attributes: %@",
-		 [error localizedDescription]];
+		[NSException raise:@"Persistent Store Exception"
+					format:@"Error Retrieving Store Attributes: %@", [error localizedDescription]];
 #endif
 		return NO;
 	}

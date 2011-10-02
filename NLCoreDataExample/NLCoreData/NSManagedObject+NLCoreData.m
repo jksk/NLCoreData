@@ -92,12 +92,12 @@
 
 + (id)singleFetchFromContext:(NSManagedObjectContext *)context
 {
-	return [NLCoreData fetch:[self class] fromContext:context withPredicate:nil];
+	return [[NLCoreData fetch:[self class] fromContext:context withPredicate:nil] lastObject];
 }
 
 + (id)singleFetchFromContext:(NSManagedObjectContext *)context withPredicate:(NSPredicate *)predicate
 {
-	return [NLCoreData fetch:[self class] fromContext:context withPredicate:predicate];
+	return [[NLCoreData fetch:[self class] fromContext:context withPredicate:predicate] lastObject];
 }
 
 + (id)singleFetchOrInsertInContext:(NSManagedObjectContext *)context
