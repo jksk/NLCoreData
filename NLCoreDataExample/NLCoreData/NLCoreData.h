@@ -55,12 +55,12 @@
  Whether or not the store exists. This is likely NO before it's used the first time only.
  Use it to check if the store needs to be seeded.
  */
-@property (nonatomic, readonly) BOOL storeExists;
+@property (assign, nonatomic, readonly) BOOL storeExists;
 
 /**
  Whether or not the store is encrypted.
  */
-@property (nonatomic, getter=storeIsEncrypted) BOOL storeEncrypted;
+@property (assign, nonatomic, getter=storeIsEncrypted) BOOL storeEncrypted;
 
 #pragma mark - Context
 
