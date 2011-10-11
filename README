@@ -32,6 +32,8 @@ If you want to create a new context:
 
 And to save it:
 	BOOL success = [NLCoreData saveContext:context];
+or:
+	BOOL success = [context save];
 	
 If you want to save the shared context:
 	BOOL success = [[NLCoreData shared] saveContext];
@@ -81,6 +83,21 @@ Either:
 	Person* person = [[NLCoreData shared] singleFetchOrInsert:[Person class]];
 or:
 	Person* person = [Person singleFetchOrInsertInSharedContext];
+
+
+Context interactivity
+---------------------
+To have a context be notified on changes in another context.
+Either:
+	[dataDownloadContext notifyContextOnSave:someOtherContext];
+or:
+	[dataDownloadContext notifySharedContextOnSave];
+
+When you're done, decouple the contexts.
+Either:
+	[dataDownloadContext stopNotifyingContextOnSave:someOtherContext];
+or:
+	[dataDownloadContext stopNotifyingSharedContextOnSave];
 
 
 Fetch Requests

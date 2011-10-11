@@ -28,6 +28,7 @@
 		09DC266C143265AF004E1280 /* NLCoreData.m in Sources */ = {isa = PBXBuildFile; fileRef = 0919D532143248EC0087B006 /* NLCoreData.m */; };
 		09DC266D143265AF004E1280 /* NSFetchedResultsController+NLCoreData.m in Sources */ = {isa = PBXBuildFile; fileRef = 0919D534143248EC0087B006 /* NSFetchedResultsController+NLCoreData.m */; };
 		09DC266E143265AF004E1280 /* NSFetchRequest+NLCoreData.m in Sources */ = {isa = PBXBuildFile; fileRef = 0919D536143248EC0087B006 /* NSFetchRequest+NLCoreData.m */; };
+		09F384A01444D673003B1B5F /* NSManagedObjectContext+NLCoreData.m in Sources */ = {isa = PBXBuildFile; fileRef = 09F3849F1444D673003B1B5F /* NSManagedObjectContext+NLCoreData.m */; };
 		09FAE02114370E0E006CEF72 /* CoreDataStore.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 09FAE01F14370E0E006CEF72 /* CoreDataStore.xcdatamodeld */; };
 		09FAE02314370E15006CEF72 /* CoreDataStore.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 09FAE01F14370E0E006CEF72 /* CoreDataStore.xcdatamodeld */; };
 		09FAE02714370EDE006CEF72 /* User.m in Sources */ = {isa = PBXBuildFile; fileRef = 09FAE02614370EDE006CEF72 /* User.m */; };
@@ -77,6 +78,8 @@
 		09DC26641432629F004E1280 /* NLCoreDataTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NLCoreDataTests.h; sourceTree = "<group>"; };
 		09DC26651432629F004E1280 /* NLCoreDataTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NLCoreDataTests.m; sourceTree = "<group>"; };
 		09DC26671432629F004E1280 /* NLCoreDataTests-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NLCoreDataTests-Prefix.pch"; sourceTree = "<group>"; };
+		09F3849E1444D673003B1B5F /* NSManagedObjectContext+NLCoreData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSManagedObjectContext+NLCoreData.h"; sourceTree = "<group>"; };
+		09F3849F1444D673003B1B5F /* NSManagedObjectContext+NLCoreData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSManagedObjectContext+NLCoreData.m"; sourceTree = "<group>"; };
 		09FAE02014370E0E006CEF72 /* CoreDataStore.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = CoreDataStore.xcdatamodel; sourceTree = "<group>"; };
 		09FAE02514370EDE006CEF72 /* User.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = User.h; sourceTree = "<group>"; };
 		09FAE02614370EDE006CEF72 /* User.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = User.m; sourceTree = "<group>"; };
@@ -178,6 +181,8 @@
 				0919D534143248EC0087B006 /* NSFetchedResultsController+NLCoreData.m */,
 				0919D535143248EC0087B006 /* NSFetchRequest+NLCoreData.h */,
 				0919D536143248EC0087B006 /* NSFetchRequest+NLCoreData.m */,
+				09F3849E1444D673003B1B5F /* NSManagedObjectContext+NLCoreData.h */,
+				09F3849F1444D673003B1B5F /* NSManagedObjectContext+NLCoreData.m */,
 				09FAE0311437307C006CEF72 /* NSManagedObject+NLCoreData.h */,
 				09FAE0321437307D006CEF72 /* NSManagedObject+NLCoreData.m */,
 			);
@@ -332,6 +337,7 @@
 				09FAE02714370EDE006CEF72 /* User.m in Sources */,
 				09FAE02B14370EDE006CEF72 /* Group.m in Sources */,
 				09FAE0331437307E006CEF72 /* NSManagedObject+NLCoreData.m in Sources */,
+				09F384A01444D673003B1B5F /* NSManagedObjectContext+NLCoreData.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
