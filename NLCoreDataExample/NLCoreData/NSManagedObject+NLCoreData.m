@@ -166,7 +166,7 @@
 	return [NLCoreData fetch:[self class]
 				 fromContext:context
 			   withPredicate:predicate
-		  andSortDescriptors:nil
+		  andSortDescriptors:sortDescriptors
 				limitResults:0];
 }
 
