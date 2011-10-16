@@ -61,7 +61,7 @@
 /**
  Whether or not the store is encrypted.
  */
-@property (assign, nonatomic, getter=storeIsEncrypted) BOOL storeEncrypted;
+@property (assign, nonatomic, getter=isStoreEncrypted) BOOL storeEncrypted;
 
 /**
  @name Undo

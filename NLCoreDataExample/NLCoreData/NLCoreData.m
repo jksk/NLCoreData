@@ -403,7 +403,7 @@ andSortDescriptors:(NSArray *)sortDescriptors
 	return [[NSFileManager defaultManager] fileExistsAtPath:[self storePath]];
 }
 
-- (BOOL)storeIsEncrypted
+- (BOOL)isStoreEncrypted
 {
 	NSError* error = nil;
 	NSDictionary* attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[self storePath] error:&error];
