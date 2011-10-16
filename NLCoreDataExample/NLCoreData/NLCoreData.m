@@ -47,6 +47,9 @@ storeCoordinator	= storeCoordinator_,
 managedObjectModel	= managedObjectModel_,
 context				= managedObjectContext_;
 
+@dynamic
+undoEnabled;
+
 #pragma mark - Initialization
 
 - (void)usePreSeededFile:(NSString *)filePath
@@ -455,6 +458,16 @@ andSortDescriptors:(NSArray *)sortDescriptors
 	managedObjectContext_ = [[NSManagedObjectContext alloc] init];
 	[managedObjectContext_ setPersistentStoreCoordinator:[self storeCoordinator]];
 	return managedObjectContext_;
+}
+
+- (void)setUndoEnabled:(BOOL)undoEnabled
+{
+	[[self context] setUndoEnabled:undoEnabled];
+}
+
+- (BOOL)isUndoEnabled
+{
+	return [[self context] isUndoEnabled];
 }
 
 @end

@@ -63,6 +63,12 @@
  */
 @property (assign, nonatomic, getter=storeIsEncrypted) BOOL storeEncrypted;
 
+/**
+ @name Undo
+ Enables/disables or checks if an NSUndoManager is present for the shared context.
+ */
+@property (assign, nonatomic, getter=isUndoEnabled) BOOL	undoEnabled;
+
 #pragma mark - Initialization
 
 /**

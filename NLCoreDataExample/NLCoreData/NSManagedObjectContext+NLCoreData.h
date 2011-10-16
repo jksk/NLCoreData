@@ -58,4 +58,10 @@
  */
 - (void)stopNotifyingSharedContextOnSave;
 
+/**
+ @name Undo
+ Enables/disables or checks if an NSUndoManager is present for the context.
+ */
+@property (assign, nonatomic, getter=isUndoEnabled) BOOL	undoEnabled;
+
 @end

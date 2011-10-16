@@ -26,6 +26,9 @@
 
 @implementation NSManagedObjectContext (NLCoreData)
 
+@dynamic
+undoEnabled;
+
 - (BOOL)save
 {
 	return [NLCoreData saveContext:self];
@@ -62,6 +65,23 @@
 {
 	dlog();
 	[self mergeChangesFromContextDidSaveNotification:note];
+}
+
+- (void)setUndoEnabled:(BOOL)undoEnabled
+{
+	if (undoEnabled && ![self isUndoEnabled]) {
+		
+		[self setUndoManager:[[NSUndoManager alloc] init]];
+	}
+	else if (!undoEnabled) {
+		
+		[self setUndoManager:nil];
+	}
+}
+
+- (BOOL)isUndoEnabled
+{
+	return !![self undoManager];
 }
 
 @end
