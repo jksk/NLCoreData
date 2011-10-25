@@ -24,6 +24,8 @@
 
 #import <CoreData/CoreData.h>
 
+typedef void (^NLSaveCompletionBlock) (NSNotification* note);
+
 @interface NSManagedObjectContext (NLCoreData)
 
 /**
@@ -38,6 +40,14 @@
  @param context The context to notify.
  */
 - (void)notifyContextOnSave:(NSManagedObjectContext *)context;
+
+/**
+ @name Notifications
+ Notifies context with changes when a save is performed.
+ @param context The context to notify.
+ @param Block to perform on completion
+ */
+- (void)notifyContextOnSave:(NSManagedObjectContext *)context completion:(NLSaveCompletionBlock)completion;
 
 /**
  @name Notifications

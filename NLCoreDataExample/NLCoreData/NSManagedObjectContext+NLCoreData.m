@@ -23,8 +23,11 @@
 //  
 
 #import "NSManagedObjectContext+NLCoreData.h"
+#import "NSObject+AssociatedObjects.h"
 
 @implementation NSManagedObjectContext (NLCoreData)
+
+//static char* kSaveCompletionKey	= "saveCompletionBlock";
 
 @dynamic
 undoEnabled;
@@ -46,9 +49,16 @@ undoEnabled;
 
 - (void)notifyContextOnSave:(NSManagedObjectContext *)context
 {
+	[self notifyContextOnSave:context completion:NULL];
+}
+
+- (void)notifyContextOnSave:(NSManagedObjectContext *)context completion:(NLSaveCompletionBlock)completion
+{
+	dlog();
 	if (!context || context == self) return;
 	
-	dlog();
+//	[self associateValue:completion withKey:kSaveCompletionKey];
+	
 	[[NSNotificationCenter defaultCenter]
 	 addObserver:self selector:@selector(contextDidSave:)
 	 name:NSManagedObjectContextDidSaveNotification object:context];
@@ -59,24 +69,23 @@ undoEnabled;
 	dlog();
 	[[NSNotificationCenter defaultCenter]
 	 removeObserver:self name:NSManagedObjectContextDidSaveNotification object:context];
+	
+//	[self associateValue:nil withKey:kSaveCompletionKey];
 }
 
 - (void)contextDidSave:(NSNotification *)note
 {
 	dlog();
 	[self mergeChangesFromContextDidSaveNotification:note];
+	
+//	NLSaveCompletionBlock completion = [self associatedValueForKey:kSaveCompletionKey];
+//	if (completion) completion(note);
 }
 
 - (void)setUndoEnabled:(BOOL)undoEnabled
 {
-	if (undoEnabled && ![self isUndoEnabled]) {
-		
-		[self setUndoManager:[[NSUndoManager alloc] init]];
-	}
-	else if (!undoEnabled) {
-		
-		[self setUndoManager:nil];
-	}
+	if (undoEnabled && ![self isUndoEnabled]) [self setUndoManager:[[NSUndoManager alloc] init]];
+	else if (!undoEnabled) [self setUndoManager:nil];
 }
 
 - (BOOL)isUndoEnabled
