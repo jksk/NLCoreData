@@ -27,208 +27,280 @@
 
 @implementation NSManagedObject (NLCoreData)
 
-#pragma mark - New
-
-+ (id)insertInContext:(NSManagedObjectContext *)context
-{
-	return [NLCoreData insert:[self class] inContext:context];
-}
-
-+ (id)insertInSharedContext
-{
-	return [[NLCoreData shared] insert:[self class]];
-}
-
-#pragma mark - Count
-
-+ (NSUInteger)countInContext:(NSManagedObjectContext *)context
-{
-	return [NLCoreData count:[self class] inContext:context withPredicate:nil];
-}
-
-+ (NSUInteger)countInContext:(NSManagedObjectContext *)context withPredicate:(NSPredicate *)predicate
-{
-	return [NLCoreData count:[self class] inContext:context withPredicate:predicate];
-}
-
-+ (NSUInteger)countInSharedContext
-{
-	return [[NLCoreData shared] count:[self class] withPredicate:nil];
-}
-
-+ (NSUInteger)countInSharedContextWithPredicate:(NSPredicate *)predicate
-{
-	return [[NLCoreData shared] count:[self class] withPredicate:predicate];
-}
-
-#pragma mark - Delete
-
-- (void)deleteFromContext
-{
-	[[self managedObjectContext] deleteObject:self];
-}
-
-+ (void)deleteFromContext:(NSManagedObjectContext *)context
-{
-	[NLCoreData delete:[self class] fromContext:context withPredicate:nil];
-}
-
-+ (void)deleteFromContext:(NSManagedObjectContext *)context withPredicate:(NSPredicate *)predicate
-{
-	[NLCoreData delete:[self class] fromContext:context withPredicate:predicate];
-}
-
-+ (void)deleteFromSharedContext
-{
-	[[NLCoreData shared] delete:[self class] withPredicate:nil];
-}
-
-+ (void)deleteFromSharedContextWithPredicate:(NSPredicate *)predicate
-{
-	[[NLCoreData shared] delete:[self class] withPredicate:predicate];
-}
-
-#pragma mark - Fetch single objects
-
-+ (id)singleFetchFromContext:(NSManagedObjectContext *)context
-{
-	return [[NLCoreData fetch:[self class] fromContext:context withPredicate:nil] lastObject];
-}
-
-+ (id)singleFetchFromContext:(NSManagedObjectContext *)context withPredicate:(NSPredicate *)predicate
-{
-	return [[NLCoreData fetch:[self class] fromContext:context withPredicate:predicate] lastObject];
-}
-
-+ (id)singleFetchOrInsertInContext:(NSManagedObjectContext *)context
-{
-	return [NLCoreData singleFetchOrInsert:[self class] fromContext:context];
-}
-
-+ (id)singleFetchOrInsertInContext:(NSManagedObjectContext *)context withPredicate:(NSPredicate *)predicate
-{
-	return [NLCoreData singleFetchOrInsert:[self class] fromContext:context withPredicate:predicate];
-}
-
-+ (id)singleFetchFromSharedContext
-{
-	return [[NLCoreData shared] singleFetch:[self class] withPredicate:nil];
-}
-
-+ (id)singleFetchFromSharedContextWithPredicate:(NSPredicate *)predicate
-{
-	return [[NLCoreData shared] singleFetch:[self class] withPredicate:predicate];
-}
-
-+ (id)singleFetchOrInsertInSharedContext
-{
-	return [[NLCoreData shared] singleFetchOrInsert:[self class]];
-}
-
-+ (id)singleFetchOrInsertInSharedContextWithPredicate:(NSPredicate *)predicate
-{
-	return [[NLCoreData shared] singleFetchOrInsert:[self class] withPredicate:predicate];
-}
-
-#pragma mark - Fetch multiple objects
-
-+ (NSArray *)fetchFromContext:(NSManagedObjectContext *)context
-{
-	return [NLCoreData fetch:[self class]
-				 fromContext:context
-			   withPredicate:nil
-		  andSortDescriptors:nil
-				limitResults:0];
-}
-
-+ (NSArray *)fetchFromContext:(NSManagedObjectContext *)context withPredicate:(NSPredicate *)predicate
-{
-	return [NLCoreData fetch:[self class]
-				 fromContext:context
-			   withPredicate:predicate
-		  andSortDescriptors:nil
-				limitResults:0];
-}
-
-+ (NSArray *)fetchFromContext:(NSManagedObjectContext *)context withSortDescriptors:(NSArray *)sortDescriptors
-{
-	return [NLCoreData fetch:[self class]
-				 fromContext:context
-			   withPredicate:nil
-		  andSortDescriptors:sortDescriptors
-				limitResults:0];
-}
-
-+ (NSArray *)fetchFromContext:(NSManagedObjectContext *)context
-				withPredicate:(NSPredicate *)predicate
-		   andSortDescriptors:(NSArray *)sortDescriptors
-{
-	return [NLCoreData fetch:[self class]
-				 fromContext:context
-			   withPredicate:predicate
-		  andSortDescriptors:sortDescriptors
-				limitResults:0];
-}
+#pragma mark - Heavy lifting
 
 + (NSArray *)fetchFromContext:(NSManagedObjectContext *)context
 				withPredicate:(NSPredicate *)predicate
 		   andSortDescriptors:(NSArray *)sortDescriptors
 				 limitResults:(NSUInteger)limit
 {
-	return [NLCoreData fetch:[self class]
-				 fromContext:context
-			   withPredicate:predicate
-		  andSortDescriptors:sortDescriptors
-				limitResults:limit];
+	NSFetchRequest* request = [NSFetchRequest fetchRequestWithEntity:[self class] inContext:context];
+	[request setReturnsObjectsAsFaults:NO];
+	
+	if (predicate) [request setPredicate:predicate];
+	if (sortDescriptors) [request setSortDescriptors:sortDescriptors];
+	if (limit > 0) [request setFetchLimit:limit];
+	
+	NSError* error = nil;
+	NSArray* results = [context executeFetchRequest:request error:&error];
+	
+#ifdef DEBUG
+	if (!results) [NSException raise:@"Fetch Exception" format:@"Error fetching: %@", [error localizedDescription]];
+#endif
+	return results;
 }
 
-+ (NSArray *)fetchFromSharedContext
++ (id)singleFetchFromContext:(NSManagedObjectContext *)context withPredicate:(NSPredicate *)predicate
 {
-	return [[NLCoreData shared] fetch:[self class]
-						withPredicate:nil
-				   andSortDescriptors:nil
-						 limitResults:0];
+	NSArray* objects = [self fetchFromContext:context
+								withPredicate:predicate
+						   andSortDescriptors:nil
+								 limitResults:0];
+#ifdef DEBUG
+	if ([objects count] > 1)
+		[NSException raise:@"Multiple objects fetched in single fetch" format:@"objects: %i", [objects count]];
+#endif
+	return [objects count] ? [objects objectAtIndex:0] : nil;
 }
 
-+ (NSArray *)fetchFromSharedContextWithPredicate:(NSPredicate *)predicate
++ (id)singleFetchOrInsertInContext:(NSManagedObjectContext *)context withPredicate:(NSPredicate *)predicate
 {
-	return [[NLCoreData shared] fetch:[self class]
-						withPredicate:predicate
-				   andSortDescriptors:nil
-						 limitResults:0];
+	id object = [self singleFetchFromContext:context withPredicate:predicate];
+	if (!object) object = [[self class] insertInContext:context];
+	return object;
 }
 
-+ (NSArray *)fetchFromSharedContextWithSortDescriptors:(NSArray *)sortDescriptors
++ (id)insertInContext:(NSManagedObjectContext *)context
 {
-	return [[NLCoreData shared] fetch:[self class]
-						withPredicate:nil
-				   andSortDescriptors:sortDescriptors
-						 limitResults:0];
+	return [NSEntityDescription insertNewObjectForEntityForName:NSStringFromClass([self class])
+										   inManagedObjectContext:context];
 }
 
-+ (NSArray *)fetchFromSharedContextWithPredicate:(NSPredicate *)predicate andSortDescriptors:(NSArray *)sortDescriptors
++ (NSUInteger)countInContext:(NSManagedObjectContext *)context withPredicate:(NSPredicate *)predicate
 {
-	return [[NLCoreData shared] fetch:[self class]
-						withPredicate:predicate
-				   andSortDescriptors:sortDescriptors
-						 limitResults:0];
+	NSFetchRequest* request = [[NSFetchRequest alloc] init];
+	[request setEntity:[NSEntityDescription
+						entityForName:NSStringFromClass([self class])
+						inManagedObjectContext:context]];
+	
+	if (predicate) [request setPredicate:predicate];
+	
+	NSError* error = nil;
+	NSUInteger count = [context countForFetchRequest:request error:&error];
+	
+#ifdef DEBUG
+	if (error) [NSException raise:@"Count Exception" format:@"Count Error: %@", [error localizedDescription]];
+#endif
+	return count;
 }
 
-+ (NSArray *)fetchFromSharedContextWithPredicate:(NSPredicate *)predicate
-							  andSortDescriptors:(NSArray *)sortDescriptors
-									limitResults:(NSUInteger)limit
++ (void)deleteFromContext:(NSManagedObjectContext *)context withPredicate:(NSPredicate *)predicate
 {
-	return [[NLCoreData shared] fetch:[self class]
-						withPredicate:predicate
-				   andSortDescriptors:sortDescriptors
-						 limitResults:limit];
+	NSArray* objects = [self fetchFromContext:context
+								withPredicate:predicate
+						   andSortDescriptors:nil
+								 limitResults:0];
+	
+	for (NSManagedObject* object in objects) [context deleteObject:object];
+}
+
+#pragma mark - Insert convenience methods
+
++ (id)insert
+{
+	return [self insertInContext:[NSManagedObjectContext contextForThread]];
+}
+
+#pragma mark - Count convenience methods
+
++ (NSUInteger)countInContext:(NSManagedObjectContext *)context
+{
+	return [self countInContext:context withPredicate:nil];
+}
+
++ (NSUInteger)count
+{
+	return [self countInContext:[NSManagedObjectContext contextForThread] withPredicate:nil];
+}
+
++ (NSUInteger)countWithPredicate:(NSPredicate *)predicate
+{
+	return [self countInContext:[NSManagedObjectContext contextForThread] withPredicate:predicate];
+}
+
+#pragma mark - Delete convenience methods
+
+- (void)delete
+{
+	[[self managedObjectContext] deleteObject:self];
+}
+
++ (void)deleteFromContext:(NSManagedObjectContext *)context
+{
+	[self deleteFromContext:context withPredicate:nil];
+}
+
++ (void)delete
+{
+	[self deleteFromContext:[NSManagedObjectContext contextForThread] withPredicate:nil];
+}
+
++ (void)deleteWithPredicate:(NSPredicate *)predicate
+{
+	[self deleteFromContext:[NSManagedObjectContext contextForThread] withPredicate:predicate];
+}
+
+#pragma mark - Fetch single objects convenience methods
+
++ (id)singleFetchFromContext:(NSManagedObjectContext *)context
+{
+	return [self singleFetchFromContext:context withPredicate:nil];
+}
+
++ (id)singleFetchOrInsertInContext:(NSManagedObjectContext *)context
+{
+	return [self singleFetchOrInsertInContext:context withPredicate:nil];
+}
+
++ (id)singleFetch
+{
+	return [self singleFetchFromContext:[NSManagedObjectContext contextForThread] withPredicate:nil];
+}
+
++ (id)singleFetchWithPredicate:(NSPredicate *)predicate
+{
+	return [self singleFetchFromContext:[NSManagedObjectContext contextForThread] withPredicate:predicate];
+}
+
++ (id)singleFetchOrInsert
+{
+	return [self singleFetchOrInsertInContext:[NSManagedObjectContext contextForThread] withPredicate:nil];
+}
+
++ (id)singleFetchOrInsertWithPredicate:(NSPredicate *)predicate
+{
+	return [self singleFetchOrInsertInContext:[NSManagedObjectContext contextForThread] withPredicate:predicate];
+}
+
+#pragma mark - Fetch multiple objects convenience methods
+
++ (NSArray *)fetchFromContext:(NSManagedObjectContext *)context
+{
+	return [self fetchFromContext:context
+					withPredicate:nil
+			   andSortDescriptors:nil
+					 limitResults:0];
+}
+
++ (NSArray *)fetchFromContext:(NSManagedObjectContext *)context withPredicate:(NSPredicate *)predicate
+{
+	return [self fetchFromContext:context
+					withPredicate:predicate
+			   andSortDescriptors:nil
+					 limitResults:0];
+}
+
++ (NSArray *)fetchFromContext:(NSManagedObjectContext *)context sortByKey:(NSString *)key ascending:(BOOL)ascending
+{
+	NSSortDescriptor* sort = [NSSortDescriptor sortDescriptorWithKey:key ascending:ascending];
+	return [self fetchFromContext:context
+					withPredicate:nil
+			   andSortDescriptors:[NSArray arrayWithObject:sort]
+					 limitResults:0];
+}
+
++ (NSArray *)fetchFromContext:(NSManagedObjectContext *)context withSortDescriptors:(NSArray *)sortDescriptors
+{
+	return [self fetchFromContext:context
+					withPredicate:nil
+			   andSortDescriptors:sortDescriptors
+					 limitResults:0];
+}
+
++ (NSArray *)fetchFromContext:(NSManagedObjectContext *)context
+				withPredicate:(NSPredicate *)predicate
+		   andSortDescriptors:(NSArray *)sortDescriptors
+{
+	return [self fetchFromContext:context
+					withPredicate:predicate
+			   andSortDescriptors:sortDescriptors
+					 limitResults:0];
+}
+
++ (NSArray *)fetch
+{
+	return [self fetchFromContext:[NSManagedObjectContext contextForThread]
+					withPredicate:nil
+			   andSortDescriptors:nil
+					 limitResults:0];
+}
+
++ (NSArray *)fetchWithPredicate:(NSPredicate *)predicate
+{
+	return [self fetchFromContext:[NSManagedObjectContext contextForThread]
+					withPredicate:predicate
+			   andSortDescriptors:nil
+					 limitResults:0];
+}
+
++ (NSArray *)fetchAndSortByKey:(NSString *)key ascending:(BOOL)ascending
+{
+	NSSortDescriptor* sort = [NSSortDescriptor sortDescriptorWithKey:key ascending:ascending];
+	return [self fetchFromContext:[NSManagedObjectContext contextForThread]
+					withPredicate:nil
+			   andSortDescriptors:[NSArray arrayWithObject:sort]
+					 limitResults:0];
+}
+
++ (NSArray *)fetchWithSortDescriptors:(NSArray *)sortDescriptors
+{
+	return [self fetchFromContext:[NSManagedObjectContext contextForThread]
+					withPredicate:nil
+			   andSortDescriptors:sortDescriptors
+					 limitResults:0];
+}
+
++ (NSArray *)fetchWithPredicate:(NSPredicate *)predicate andSortDescriptors:(NSArray *)sortDescriptors
+{
+	return [self fetchFromContext:[NSManagedObjectContext contextForThread]
+					withPredicate:predicate
+			   andSortDescriptors:sortDescriptors
+					 limitResults:0];
+}
+
++ (NSArray *)fetchWithPredicate:(NSPredicate *)predicate
+			 andSortDescriptors:(NSArray *)sortDescriptors
+				   limitResults:(NSUInteger)limit
+{
+	return [self fetchFromContext:[NSManagedObjectContext contextForThread]
+					withPredicate:predicate
+			   andSortDescriptors:sortDescriptors
+					 limitResults:limit];
 }
 
 #pragma mark - Miscellaneous
 
+- (NSArray *)managedAttributeNames
+{
+	NSEntityDescription* description = [NSEntityDescription entityForName:NSStringFromClass([self class])
+												   inManagedObjectContext:[self managedObjectContext]];
+	return [[description attributesByName] allKeys];
+}
+
 - (BOOL)isNew
 {
 	return [[self committedValuesForKeys:nil] count] == 0;
+}
+
+- (void)touch
+{
+	NSArray* attributes = [self managedAttributeNames];
+	
+	if ([attributes count]) {
+		
+		NSString* key = [attributes objectAtIndex:0];
+		[self setValue:[self valueForKey:key] forKey:key];
+	}
 }
 
 @end

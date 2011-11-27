@@ -23,41 +23,64 @@
 //  
 
 #import "NSManagedObjectContext+NLCoreData.h"
-#import "NSObject+AssociatedObjects.h"
 
 @implementation NSManagedObjectContext (NLCoreData)
-
-//static char* kSaveCompletionKey	= "saveCompletionBlock";
 
 @dynamic
 undoEnabled;
 
+#pragma mark - Lifecycle
+
 - (BOOL)save
 {
-	return [NLCoreData saveContext:self];
+	if (![self hasChanges]) return YES;
+	
+	NSError* error = nil;
+	
+	if (![self save:&error]) {
+#ifdef DEBUG
+		NSLog(@"NSManagedObjectContext Error: %@", [error userInfo]);
+		
+		NSArray* details = [[error userInfo] objectForKey:@"NSDetailedErrors"];
+		for (NSError* err in details) NSLog(@"Error %i: %@", [err code], [err userInfo]);
+#endif
+		return NO;
+	}
+	
+	return YES;
 }
 
-- (void)notifySharedContextOnSave
++ (NSManagedObjectContext *)context
 {
-	[self notifyContextOnSave:[[NLCoreData shared] context]];
+	NSManagedObjectContext* context = [[NSManagedObjectContext alloc] init];
+	[context setPersistentStoreCoordinator:[[NLCoreData shared] storeCoordinator]];
+	
+	return context;
 }
 
-- (void)stopNotifyingSharedContextOnSave
++ (NSManagedObjectContext *)contextForThread
 {
-	[self stopNotifyingContextOnSave:[[NLCoreData shared] context]];
+	return [self contextForThread:[NSThread currentThread]];
 }
+
++ (NSManagedObjectContext *)contextForThread:(NSThread *)thread
+{
+	static NSString* key = @"NLCoreDataContext";
+	NSManagedObjectContext* context = [[thread threadDictionary] objectForKey:key];
+	
+	if (!context) {
+		context = [self context];
+		[[thread threadDictionary] setObject:context forKey:key];
+	}
+	
+	return context;
+}
+
+#pragma mark - Notifications
 
 - (void)notifyContextOnSave:(NSManagedObjectContext *)context
 {
-	[self notifyContextOnSave:context completion:NULL];
-}
-
-- (void)notifyContextOnSave:(NSManagedObjectContext *)context completion:(NLSaveCompletionBlock)completion
-{
-	dlog();
 	if (!context || context == self) return;
-	
-//	[self associateValue:completion withKey:kSaveCompletionKey];
 	
 	[[NSNotificationCenter defaultCenter]
 	 addObserver:self selector:@selector(contextDidSave:)
@@ -66,21 +89,18 @@ undoEnabled;
 
 - (void)stopNotifyingContextOnSave:(NSManagedObjectContext *)context
 {
-	dlog();
 	[[NSNotificationCenter defaultCenter]
 	 removeObserver:self name:NSManagedObjectContextDidSaveNotification object:context];
-	
-//	[self associateValue:nil withKey:kSaveCompletionKey];
 }
+
+#pragma mark - Events
 
 - (void)contextDidSave:(NSNotification *)note
 {
-	dlog();
 	[self mergeChangesFromContextDidSaveNotification:note];
-	
-//	NLSaveCompletionBlock completion = [self associatedValueForKey:kSaveCompletionKey];
-//	if (completion) completion(note);
 }
+
+#pragma mark - Property Accessors
 
 - (void)setUndoEnabled:(BOOL)undoEnabled
 {

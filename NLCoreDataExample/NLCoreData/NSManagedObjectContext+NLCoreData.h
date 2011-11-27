@@ -24,15 +24,37 @@
 
 #import <CoreData/CoreData.h>
 
-typedef void (^NLSaveCompletionBlock) (NSNotification* note);
-
 @interface NSManagedObjectContext (NLCoreData)
 
+#pragma mark - Lifecycle
+
 /**
- @name Save
+ @name Lifecycle
  Saves the context.
  */
 - (BOOL)save;
+
+/**
+ @name Lifecycle
+ Creates a new context. Use this is you need a secondary context for the same thread.
+ */
++ (NSManagedObjectContext *)context;
+
+/**
+ @name Lifecycle
+ Typically use this instead of +context above.
+ @return The shared context for current thread. Lazily loaded if non-existant.
+ */
++ (NSManagedObjectContext *)contextForThread;
+
+/**
+ @name Lifecycle
+ Use if you want the shared context for another thread.
+ @return The shared context for specified thread. Lazily loaded if non-existant.
+ */
++ (NSManagedObjectContext *)contextForThread:(NSThread *)thread;
+
+#pragma mark - Notifications
 
 /**
  @name Notifications
@@ -43,30 +65,12 @@ typedef void (^NLSaveCompletionBlock) (NSNotification* note);
 
 /**
  @name Notifications
- Notifies context with changes when a save is performed.
- @param context The context to notify.
- @param Block to perform on completion
- */
-- (void)notifyContextOnSave:(NSManagedObjectContext *)context completion:(NLSaveCompletionBlock)completion;
-
-/**
- @name Notifications
  Stops notifying context with changes when a save is performed.
  @param context The context to stop notifying.
  */
 - (void)stopNotifyingContextOnSave:(NSManagedObjectContext *)context;
 
-/**
- @name Notifications
- Notifies the shared context with changes when a save is performed.
- */
-- (void)notifySharedContextOnSave;
-
-/**
- @name Notifications
- Stops notifying the shared context with changes when a save is performed.
- */
-- (void)stopNotifyingSharedContextOnSave;
+#pragma mark - Properties
 
 /**
  @name Undo

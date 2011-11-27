@@ -27,28 +27,28 @@
 
 @implementation NSFetchedResultsController (NLCoreData)
 
-- (id)initInSharedContextWithFetchRequest:(NSFetchRequest *)fetchRequest
+- (id)initWithFetchRequest:(NSFetchRequest *)fetchRequest
 {
 	return [self initWithFetchRequest:fetchRequest
-				 managedObjectContext:[[NLCoreData shared] context]
+				 managedObjectContext:[NSManagedObjectContext contextForThread]
 				   sectionNameKeyPath:nil
 							cacheName:nil];
 }
 
-- (id)initInSharedContextWithFetchRequest:(NSFetchRequest *)fetchRequest cacheName:(NSString *)name
+- (id)initWithFetchRequest:(NSFetchRequest *)fetchRequest cacheName:(NSString *)name
 {
 	return [self initWithFetchRequest:fetchRequest
-				 managedObjectContext:[[NLCoreData shared] context]
+				 managedObjectContext:[NSManagedObjectContext contextForThread]
 				   sectionNameKeyPath:nil
 							cacheName:name];
 }
 
-- (id)initInSharedContextWithFetchRequest:(NSFetchRequest *)fetchRequest
-					   sectionNameKeyPath:(NSString *)sectionNameKeyPath
-								cacheName:(NSString *)name
+- (id)initWithFetchRequest:(NSFetchRequest *)fetchRequest
+		sectionNameKeyPath:(NSString *)sectionNameKeyPath
+				 cacheName:(NSString *)name
 {
 	return [self initWithFetchRequest:fetchRequest
-				 managedObjectContext:[[NLCoreData shared] context]
+				 managedObjectContext:[NSManagedObjectContext contextForThread]
 				   sectionNameKeyPath:sectionNameKeyPath
 							cacheName:name];
 }

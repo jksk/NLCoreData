@@ -26,64 +26,296 @@
 
 @interface NSManagedObject (NLCoreData)
 
-#pragma mark - New
+#pragma mark - Insert
 
+/**
+ @name Insert
+ Inserts a new object.
+ @param context The context to insert the object in.
+ @return The inserted object.
+ */
 + (id)insertInContext:(NSManagedObjectContext *)context;
-+ (id)insertInSharedContext;
+
+/**
+ @name Insert
+ Inserts a new object in the shared context for current thread.
+ @return The inserted object.
+ */
++ (id)insert;
 
 #pragma mark - Count
 
-+ (NSUInteger)countInContext:(NSManagedObjectContext *)context;
+/**
+ @name Count
+ Counts objects filtered by predicate.
+ @param context The context to count the objects in.
+ @param predicate The predicate to filter the objects before counting.
+ @return The number of objects.
+ */
 + (NSUInteger)countInContext:(NSManagedObjectContext *)context withPredicate:(NSPredicate *)predicate;
-+ (NSUInteger)countInSharedContext;
-+ (NSUInteger)countInSharedContextWithPredicate:(NSPredicate *)predicate;
+
+/**
+ @name Count
+ Counts objects.
+ @param context The context to count the objects in.
+ @return The number of objects.
+ */
++ (NSUInteger)countInContext:(NSManagedObjectContext *)context;
+
+/**
+ @name Count
+ Counts objects in the shared context for the current thread filtered by predicate.
+ @param predicate The predicate to filter the objects before counting.
+ @return The number of objects.
+ */
++ (NSUInteger)countWithPredicate:(NSPredicate *)predicate;
+
+/**
+ @name Count
+ Counts objects in the shared context for the current thread filtered by predicate.
+ @return The number of objects.
+ */
++ (NSUInteger)count;
 
 #pragma mark - Delete
 
-- (void)deleteFromContext;
-+ (void)deleteFromContext:(NSManagedObjectContext *)context;
+/**
+ @name Delete
+ Deletes objects filtered by predicate.
+ @param context The context to delete the objects from.
+ @param predicate The predicate to filter the objects before deleting.
+ */
 + (void)deleteFromContext:(NSManagedObjectContext *)context withPredicate:(NSPredicate *)predicate;
-+ (void)deleteFromSharedContext;
-+ (void)deleteFromSharedContextWithPredicate:(NSPredicate *)predicate;
+
+/**
+ @name Delete
+ Deletes objects.
+ @param context The context to delete the objects from.
+ */
++ (void)deleteFromContext:(NSManagedObjectContext *)context;
+
+/**
+ @name Delete
+ Deletes objects from the shared context for current thread filtered by predicate.
+ @param predicate The predicate to filter the objects before deleting.
+ */
++ (void)deleteWithPredicate:(NSPredicate *)predicate;
+
+/**
+ @name Delete
+ Deletes objects from the shared context for the current thread.
+ */
++ (void)delete;
+
+/**
+ @name Delete
+ Deletes this object from the context it belongs to.
+ */
+- (void)delete;
 
 #pragma mark - Fetch single objects
 
-+ (id)singleFetchFromContext:(NSManagedObjectContext *)context;
+/**
+ @name Fetch single objects
+ Fetches a single object filtered by predicate.
+ @param context The context to fetch the object from.
+ @param predicate The predicate to filter the objects before fetching.
+ @return The object, or nil if none found.
+ */
 + (id)singleFetchFromContext:(NSManagedObjectContext *)context withPredicate:(NSPredicate *)predicate;
-+ (id)singleFetchOrInsertInContext:(NSManagedObjectContext *)context;
+
+/**
+ @name Fetch single objects
+ Fetches a single object.
+ @param context The context to fetch the object from.
+ @return The object, or nil if none found.
+ */
++ (id)singleFetchFromContext:(NSManagedObjectContext *)context;
+
+/**
+ @name Fetch single objects
+ Fetches a single object from the shared context for current thread filtered by predicate.
+ @param predicate The predicate to filter the objects before fetching.
+ @return The object, or nil if none found.
+ */
++ (id)singleFetchWithPredicate:(NSPredicate *)predicate;
+
+/**
+ @name Fetch single objects
+ Fetches a single object from the shared context for current thread.
+ @return The object, or nil if none found.
+ */
++ (id)singleFetch;
+
+/**
+ @name Fetch single objects
+ Fetches a single object filtered by predicate, or inserts one if not found.
+ @param context The context to fetch the object from.
+ @param predicate The predicate to filter the objects before fetching.
+ @return The object.
+ */
 + (id)singleFetchOrInsertInContext:(NSManagedObjectContext *)context withPredicate:(NSPredicate *)predicate;
-+ (id)singleFetchFromSharedContext;
-+ (id)singleFetchFromSharedContextWithPredicate:(NSPredicate *)predicate;
-+ (id)singleFetchOrInsertInSharedContext;
-+ (id)singleFetchOrInsertInSharedContextWithPredicate:(NSPredicate *)predicate;
+
+/**
+ @name Fetch single objects
+ Fetches a single object or inserts one if not found.
+ @param context The context to fetch the object from.
+ @return The object.
+ */
++ (id)singleFetchOrInsertInContext:(NSManagedObjectContext *)context;
+
+/**
+ @name Fetch single objects
+ Fetches a single object from the shared context for current thread filtered by predicate, or inserts one if not found.
+ @param predicate The predicate to filter the objects before fetching.
+ @return The object.
+ */
++ (id)singleFetchOrInsertWithPredicate:(NSPredicate *)predicate;
+
+/**
+ @name Fetch single objects
+ Fetches a single object from the shared context for current thread, or inserts one if not found.
+ @return The object.
+ */
++ (id)singleFetchOrInsert;
 
 #pragma mark - Fetch multiple objects
 
-+ (NSArray *)fetchFromContext:(NSManagedObjectContext *)context;
-+ (NSArray *)fetchFromContext:(NSManagedObjectContext *)context withPredicate:(NSPredicate *)predicate;
-+ (NSArray *)fetchFromContext:(NSManagedObjectContext *)context withSortDescriptors:(NSArray *)sortDescriptors;
-+ (NSArray *)fetchFromContext:(NSManagedObjectContext *)context
-				withPredicate:(NSPredicate *)predicate
-		   andSortDescriptors:(NSArray *)sortDescriptors;
+/**
+ @name Fetch multiple objects
+ Fetches all objects filtered by predicate, sorted.
+ @param context The context to fetch the objects from.
+ @param predicate The predicate to filter the objects before counting.
+ @param sortDescriptors An array of NSSortDescriptors.
+ @param limit Limits the number of results returned. 0 disables the limit.
+ @return An array of objects. May be empty if none are found.
+ */
 + (NSArray *)fetchFromContext:(NSManagedObjectContext *)context
 				withPredicate:(NSPredicate *)predicate
 		   andSortDescriptors:(NSArray *)sortDescriptors
 				 limitResults:(NSUInteger)limit;
 
-+ (NSArray *)fetchFromSharedContext;
-+ (NSArray *)fetchFromSharedContextWithPredicate:(NSPredicate *)predicate;
-+ (NSArray *)fetchFromSharedContextWithSortDescriptors:(NSArray *)sortDescriptors;
-+ (NSArray *)fetchFromSharedContextWithPredicate:(NSPredicate *)predicate andSortDescriptors:(NSArray *)sortDescriptors;
-+ (NSArray *)fetchFromSharedContextWithPredicate:(NSPredicate *)predicate
-							  andSortDescriptors:(NSArray *)sortDescriptors
-									limitResults:(NSUInteger)limit;
+/**
+ @name Fetch multiple objects
+ Fetches all objects filtered by predicate, sorted.
+ @param context The context to fetch the objects from.
+ @param predicate The predicate to filter the objects before counting.
+ @param sortDescriptors An array of NSSortDescriptors.
+ @return An array of objects. May be empty if none are found.
+ */
++ (NSArray *)fetchFromContext:(NSManagedObjectContext *)context
+				withPredicate:(NSPredicate *)predicate
+		   andSortDescriptors:(NSArray *)sortDescriptors;
+
+/**
+ @name Fetch multiple objects
+ Fetches all objects filtered by predicate.
+ @param context The context to fetch the objects from.
+ @param predicate The predicate to filter the objects before counting.
+ @return An array of objects. May be empty if none are found.
+ */
++ (NSArray *)fetchFromContext:(NSManagedObjectContext *)context withPredicate:(NSPredicate *)predicate;
+
+/**
+ @name Fetch multiple objects
+ Fetches all objects, sorted.
+ @param context The context to fetch the objects from.
+ @param key The key to sort by.
+ @param ascending is key ascending?
+ @return An array of objects. May be empty if none are found.
+ */
++ (NSArray *)fetchFromContext:(NSManagedObjectContext *)context sortByKey:(NSString *)key ascending:(BOOL)ascending;
+
+/**
+ @name Fetch multiple objects
+ Fetches all objects, sorted.
+ @param context The context to fetch the objects from.
+ @param sortDescriptors An array of NSSortDescriptors.
+ @return An array of objects. May be empty if none are found.
+ */
++ (NSArray *)fetchFromContext:(NSManagedObjectContext *)context withSortDescriptors:(NSArray *)sortDescriptors;
+
+/**
+ @name Fetch multiple objects
+ Fetches all objects.
+ @param context The context to fetch the objects from.
+ @return An array of objects. May be empty if none are found.
+ */
++ (NSArray *)fetchFromContext:(NSManagedObjectContext *)context;
+
+/**
+ @name Fetch multiple objects
+ Fetches all objects from the shared context for current thread filtered by predicate, sorted.
+ @param predicate The predicate to filter the objects before counting.
+ @param sortDescriptors An array of NSSortDescriptors.
+ @param limit Limits the number of results returned. 0 disables the limit.
+ @return An array of objects. May be empty if none are found.
+ */
++ (NSArray *)fetchWithPredicate:(NSPredicate *)predicate
+			 andSortDescriptors:(NSArray *)sortDescriptors
+				   limitResults:(NSUInteger)limit;
+
+/**
+ @name Fetch multiple objects
+ Fetches all objects from the shared context for current thread filtered by predicate, sorted.
+ @param predicate The predicate to filter the objects before counting.
+ @param sortDescriptors An array of NSSortDescriptors.
+ @return An array of objects. May be empty if none are found.
+ */
++ (NSArray *)fetchWithPredicate:(NSPredicate *)predicate andSortDescriptors:(NSArray *)sortDescriptors;
+
+/**
+ @name Fetch multiple objects
+ Fetches all objects from the shared context for current thread filtered by predicate.
+ @param predicate The predicate to filter the objects before counting.
+ @param limit Limits the number of results returned. 0 disables the limit.
+ @return An array of objects. May be empty if none are found.
+ */
++ (NSArray *)fetchWithPredicate:(NSPredicate *)predicate;
+
+/**
+ @name Fetch multiple objects
+ Fetches all objects from the shared context for current thread, sorted.
+ @param key The key to sort by.
+ @param ascending is key ascending?
+ @return An array of objects. May be empty if none are found.
+ */
++ (NSArray *)fetchAndSortByKey:(NSString *)key ascending:(BOOL)ascending;
+
+/**
+ @name Fetch multiple objects
+ Fetches all objects from the shared context for current thread, sorted.
+ @param sortDescriptors An array of NSSortDescriptors.
+ @return An array of objects. May be empty if none are found.
+ */
++ (NSArray *)fetchWithSortDescriptors:(NSArray *)sortDescriptors;
+
+/**
+ @name Fetch multiple objects
+ Fetches all objects from the shared context for current thread.
+ @return An array of objects. May be empty if none are found.
+ */
++ (NSArray *)fetch;
 
 #pragma mark - Miscellaneous
+
+/**
+ Retrieves a list of the properties in the NSManagedObject model.
+ @return A list of strings.
+ */
+- (NSArray *)managedAttributeNames;
 
 /**
  Checks if an object is saved to the persistent store.
  @return YES if the object is unsaved, otherwise NO.
  */
 - (BOOL)isNew;
+
+/**
+ Forces an object to be marked as updated.
+ Useful if you update faults and want an NSFetchedResultsController to update.
+ Does nothing if it doesn't find any attributes on the object.
+ */
+- (void)touch;
 
 @end

@@ -27,37 +27,37 @@
 @interface NSFetchedResultsController (NLCoreData)
 
 /**
- @name Initialization
- Returns a NSFetchedResultsController set to the shared context.
+ @name Lifecycle
+ Returns a NSFetchedResultsController set to the shared context for current thread.
  @param fetchRequest The fetch request used to get the objects.
  @return The NSFetchedResultsController.
  */
-- (id)initInSharedContextWithFetchRequest:(NSFetchRequest *)fetchRequest;
+- (id)initWithFetchRequest:(NSFetchRequest *)fetchRequest;
 
 /**
- @name Initialization
- Returns a NSFetchedResultsController set to the shared context.
+ @name Lifecycle
+ Returns a NSFetchedResultsController set to the shared context for current thread.
  @param fetchRequest The fetch request used to get the objects.
  @param name The name of the cache file the receiver should use. Pass nil to prevent caching.
  @return The NSFetchedResultsController.
  */
-- (id)initInSharedContextWithFetchRequest:(NSFetchRequest *)fetchRequest cacheName:(NSString *)name;
+- (id)initWithFetchRequest:(NSFetchRequest *)fetchRequest cacheName:(NSString *)name;
 
 /**
- @name Initialization
+ @name Lifecycle
  Returns a NSFetchedResultsController set to the shared context.
  @param fetchRequest The fetch request used to get the objects.
  @param The key path on the fetched objects used to determine the section they belong to.
  @param name The name of the cache file the receiver should use. Pass nil to prevent caching.
  @return The NSFetchedResultsController.
  */
-- (id)initInSharedContextWithFetchRequest:(NSFetchRequest *)fetchRequest
-					   sectionNameKeyPath:(NSString *)sectionNameKeyPath
-								cacheName:(NSString *)name;
+- (id)initWithFetchRequest:(NSFetchRequest *)fetchRequest
+		sectionNameKeyPath:(NSString *)sectionNameKeyPath
+				 cacheName:(NSString *)name;
 
 /**
- @name Initialization
- Returns a NSFetchedResultsController set to the shared context.
+ @name Lifecycle
+ Returns a NSFetchedResultsController.
  @param fetchRequest The fetch request used to get the objects.
  @param context The context against which fetchRequest is executed.
  @return The NSFetchedResultsController.
@@ -65,8 +65,8 @@
 - (id)initWithFetchRequest:(NSFetchRequest *)fetchRequest managedObjectContext:(NSManagedObjectContext *)context;
 
 /**
- @name Initialization
- Returns a NSFetchedResultsController set to the shared context.
+ @name Lifecycle
+ Returns a NSFetchedResultsController.
  @param fetchRequest The fetch request used to get the objects.
  @param context The context against which fetchRequest is executed.
  @param name The name of the cache file the receiver should use. Pass nil to prevent caching.

@@ -1,6 +1,5 @@
 NLCoreData is meant as a drop-in wrapper for most of your Core Data needs on iOS (untested on OS X).
-
-Now supports ARC.
+Requires ARC. Requres iOS 4+.
 
 Goals
 -----
@@ -8,8 +7,7 @@ Goals
 * Make code more readable.
 * More compile-time checks.
 
-There are two ways to access the convenience methods for insertion, deletion, counting and fetching.
-Either through the singleton that wraps the core data store and model (NLCoreData) or through class
+You access convenience methods for insertion, deletion, counting and fetching through class
 and instance methods on your NSManagedObject subclasses.
 
 You no longer access objects by typing an NSString with an entity name, instead you use the entity class.
@@ -18,93 +16,82 @@ Instead of @"Person", use [Person class]. This provides a compile-time typo chec
 
 Contexts
 --------
-NLCoreData provides a shared NSManagedObjectContext, which you presumable want to use as your main/ui context.
-If you want to access the shared context through the singleton, simply use the instance methods:
-	[[NLCoreData shared] doSomething];
+NLCoreData provides lazily loaded shared NSManagedObjectContexts for all threads. To access:
 
-If you want to access another context through the singleton, use the class methods:
-	[NLCoreData doSomethingWithContext:context];
+	NSManagedObjectContext* context = [NSManagedObjectContext contextForThread];
 	
-REMEMBER: on the singleton, instance methods are for your shared context, class methods for other contexts.
+Or if you're in a threaded environment and the context for the UI thread:
 
-If you want to create a new context:
-	NSManagedObjectContext* context = [NLCoreData createContext];
+	NSManagedObjectContext* context = [NSManagedObjectContext contextForThread:[NSThread mainThread]];
+
+If you want another context in addition to the shared one:
+
+	NSManagedObjectContext* context = [NSManagedObjectContext context];
 
 And to save it:
-	BOOL success = [NLCoreData saveContext:context];
-or:
+
 	BOOL success = [context save];
 	
-If you want to save the shared context:
-	BOOL success = [[NLCoreData shared] saveContext];
-
 
 Methods
 -------
-If you want to fetch all Person objects in your shared context, you can do it in two ways.
-Either:
-	NSArray* results = [[NLCoreData shared] fetch:[Person class]];
-or:
-	NSArray* results = [Person fetchFromSharedContext];
+If you want to fetch all Person objects in your shared context:
+	NSArray* results = [Person fetch];
 
-If you want to delete all Person objects in the context myContext, you can do it in two ways:
-Either:
-	[NLCoreData delete:[Person class] fromContext:myContext];
-or:
-	[Person deleteInContext:myContext];
+If you want to delete all Person objects in the context myContext:
+
+	[Person deleteFromContext:myContext];
 	
-If you want to count all Person objects that match the predicate myPredicate in your shared context,
-you can do it in two ways. Either:
-	NSUInteger count = [[NLCoreData shared] count:[Person class] withPredicate:myPredicate];
-or:
-	NSUInteger count = [Person countInSharedContextWithPredicate:myPredicate];
+If you want to count all Person objects that match the predicate myPredicate:
+
+	NSUInteger count = [Person countWithPredicate:myPredicate];
 
 	
 Fetching
 --------
-You can either a collection of objects or a single objects. If you want all Person objects in the shared context.
-Either:
-	NSArray* results = [[NLCoreData shared] fetch:[Person class]];
-or:
-	NSArray* results = [Person fetchFromSharedContext];
+You can fetch either an array of objects or a single object. If you want all Person objects in the shared context:
+
+	NSArray* results = [Person fetch];
 	
 If you want a single object in the shared context:
-Either:
-	Person* person = [[NLCoreData shared] singleFetch:[Person class]];
-or:
-	Person* person = [Person singleFetchFromSharedContext];
+
+	Person* person = [Person singleFetch];
 
 The single fetch can be useful if there is only one object of that type, or if you provide a predicate
-that you're certain only matches one object. The fetch returns the first object found in case of single fetch.
-It's your responsibility to make sure that object is the correct one.
+that you're certain only matches one object. The fetch raises an exception if it finds more than one object.
 
-In some cases, you want to return a single object, or create one if it doesn't exist. You can do that in two ways.
-Either:
-	Person* person = [[NLCoreData shared] singleFetchOrInsert:[Person class]];
-or:
-	Person* person = [Person singleFetchOrInsertInSharedContext];
+In some cases, you want to return a single object, or create one if it doesn't exist:
+
+	Person* person = [Person singleFetchOrInsert];
 
 
 Context interactivity
 ---------------------
-To have a context be notified on changes in another context.
-Either:
-	[dataDownloadContext notifyContextOnSave:someOtherContext];
-or:
-	[dataDownloadContext notifySharedContextOnSave];
+To have a context be notified on changes in another context:
 
-When you're done, decouple the contexts.
-Either:
+	[dataDownloadContext notifyContextOnSave:someOtherContext];
+
+When you're done, decouple the contexts:
+
 	[dataDownloadContext stopNotifyingContextOnSave:someOtherContext];
-or:
-	[dataDownloadContext stopNotifyingSharedContextOnSave];
 
 
 Fetch Requests
 --------------
 If you need to create an NSFetchRequest (e.g., for use in an NSFetchedResultsController),
 you can do that with a provided convenience method:
-	NSFetchRequest* request = [NSFetchRequest fetchRequestWithEntityInSharedContext:[Person class]];
+
+	NSFetchRequest* request = [NSFetchRequest fetchRequestWithEntity:[Person class]];
+
+
+Initialization
+--------------
+You have to option to supply a pre-seeded sqlite database. First, check so that Core Data isn't initialized yet.
+Typically in application:didFinishLaunchingWithOptions: on your first run:
+
+	if ([[NLCoreData shared] storeExists] == NO)
+		[[NLCoreData shared] usePreSeededFile:pathToMyFile];
+
 
 
 NLCoreData is not for you if you
@@ -119,8 +106,8 @@ Notes
 	(i.e., if you have an entity named Person, you need a subclass named Person).
 
 
-Installation
-------------
+Setup
+-----
 1. Add the NLCoreData folder to your project.
 2. #import NLCoreData.h where you need it (in prefix.pch for easy access).
-3. #define NLCOREDATA_STORENAME to whatever your model is named.
+3. Set modelName to what your model is named: [[NLCoreData shared] setModelName:@"MyModel"];

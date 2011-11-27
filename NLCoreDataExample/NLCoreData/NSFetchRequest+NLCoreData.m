@@ -36,13 +36,9 @@
 	return request;
 }
 
-+ (NSFetchRequest *)fetchRequestWithEntityInSharedContext:(Class)entity
++ (NSFetchRequest *)fetchRequestWithEntity:(Class)entity
 {
-	NSFetchRequest* request = [[NSFetchRequest alloc] init];
-	[request setEntity:[NSEntityDescription
-						entityForName:NSStringFromClass(entity)
-						inManagedObjectContext:[[NLCoreData shared] context]]];
-	return request;
+	return [self fetchRequestWithEntity:entity inContext:[NSManagedObjectContext contextForThread]];
 }
 
 - (void)sortByKey:(NSString *)key ascending:(BOOL)ascending
@@ -50,9 +46,7 @@
 	NSMutableArray* newDescriptors = [NSMutableArray array];
 	NSArray* existingDescriptors = [self sortDescriptors];
 	
-	if (existingDescriptors) {
-		[newDescriptors addObjectsFromArray:existingDescriptors];
-	}
+	if (existingDescriptors) [newDescriptors addObjectsFromArray:existingDescriptors];
 	
 	NSSortDescriptor* sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:key ascending:ascending];
 	[newDescriptors addObject:sortDescriptor];

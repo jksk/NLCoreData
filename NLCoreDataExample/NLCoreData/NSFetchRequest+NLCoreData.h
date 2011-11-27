@@ -28,11 +28,11 @@
 
 /**
  @name Initialization
- A fetch request set to be executed on the shared context.
+ A fetch request set to be executed in the shared context for the current thread.
  @param entity The NSManagedObject subclass of the entity.
  @return The NSFetchRequest.
  */
-+ (NSFetchRequest *)fetchRequestWithEntityInSharedContext:(Class)entity;
++ (NSFetchRequest *)fetchRequestWithEntity:(Class)entity;
 
 /**
  @name Initialization
@@ -44,7 +44,7 @@
 + (NSFetchRequest *)fetchRequestWithEntity:(Class)entity inContext:(NSManagedObjectContext *)context;
 
 /**
- Adds add a sort descriptor the fetch request. First added is primary, etc.
+ Adds add a sort descriptor the fetch request. First added is primary, second added is secondary, etc.
  @param key The keypath to use when performing a comparison.
  @param ascending YES if the receiver specifies sorting in ascending order, otherwise NO.
  */

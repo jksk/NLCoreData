@@ -25,32 +25,28 @@
 #import <CoreData/CoreData.h>
 #import "NLCoreData.h"
 
-@interface NLCoreData ()
-
-@property (strong, nonatomic) NSPersistentStoreCoordinator*	storeCoordinator;
-@property (strong, nonatomic) NSManagedObjectModel*			managedObjectModel;
-
-- (NSString *)storePath;
-- (NSURL *)storeURL;
-
-@end
+static NLCoreData* NLCoreDataSingleton_ = nil;
 
 #pragma mark -
 @implementation NLCoreData
 
-#ifndef NLCOREDATA_STORENAME
-#error define NLCOREDATA_STORENAME as an NSString with the name of your model
-#endif
-
 @synthesize
+modelName			= modelName_,
 storeCoordinator	= storeCoordinator_,
-managedObjectModel	= managedObjectModel_,
-context				= managedObjectContext_;
+managedObjectModel	= managedObjectModel_;
 
-@dynamic
-undoEnabled;
+#pragma mark - Lifecycle
 
-#pragma mark - Initialization
++ (NLCoreData *)shared
+{
+	@synchronized(self) {
+		
+		if (!NLCoreDataSingleton_) NLCoreDataSingleton_ = [[self alloc] init];
+		return NLCoreDataSingleton_;
+	}
+	
+	return nil;
+}
 
 - (void)usePreSeededFile:(NSString *)filePath
 {
@@ -69,308 +65,12 @@ undoEnabled;
 	}
 }
 
-#pragma mark - Context
-
-+ (NSManagedObjectContext *)createContext
-{
-	NSManagedObjectContext* context = [[NSManagedObjectContext alloc] init];
-	[context setPersistentStoreCoordinator:[[self shared] storeCoordinator]];
-	
-	return context;
-}
-
-+ (BOOL)saveContext:(NSManagedObjectContext *)context
-{
-	if (![context hasChanges]) return YES;
-	
-	NSError* error = nil;
-	
-	if (![context save:&error]) {
-#ifdef DEBUG
-		NSLog(@"NSManagedObjectContext Error: %@",
-			  [error userInfo]);
-		
-		NSArray* details = [[error userInfo] objectForKey:@"NSDetailedErrors"];
-		for (NSError* err in details) {
-			NSLog(@"Error %i: %@", [err code], [err userInfo]);
-		}
-#endif
-		return NO;
-	}
-	
-	return YES;
-}
-
-- (BOOL)saveContext
-{
-	return [[self class] saveContext:[self context]];
-}
-
-#pragma mark - Heavy lifting
-
-+ (id)insert:(Class)entity inContext:(NSManagedObjectContext *)context
-{
-	return [NSEntityDescription
-			insertNewObjectForEntityForName:NSStringFromClass(entity)
-			inManagedObjectContext:context];
-}
-
-+ (NSUInteger)count:(Class)entity inContext:(NSManagedObjectContext *)context withPredicate:(NSPredicate *)predicate
-{
-	NSFetchRequest* request = [[NSFetchRequest alloc] init];
-	[request setEntity:[NSEntityDescription
-						entityForName:NSStringFromClass(entity)
-						inManagedObjectContext:context]];
-	if (predicate) {
-		[request setPredicate:predicate];
-	}
-	
-	NSError* error = nil;
-	NSUInteger count = [context countForFetchRequest:request error:&error];
-	
-#ifdef DEBUG
-	if (error) {
-		[NSException raise:@"Count Exception"
-					format:@"Count Error: %@", [error localizedDescription]];
-	}
-#endif
-	
-	return count;
-}
-
-+ (void)delete:(Class)entity fromContext:(NSManagedObjectContext *)context withPredicate:(NSPredicate *)predicate
-{
-	NSArray* objects = [self fetch:entity
-					   fromContext:context
-					 withPredicate:predicate
-				andSortDescriptors:nil
-					  limitResults:0];
-	
-	for (NSManagedObject* object in objects) {
-		[context deleteObject:object];
-	}
-}
-
-+ (id)singleFetchOrInsert:(Class)entity
-			  fromContext:(NSManagedObjectContext *)context
-			withPredicate:(NSPredicate *)predicate
-{
-	id obj = [self singleFetch:entity fromContext:context withPredicate:predicate];
-	if (!obj) obj = [[self class] insert:entity inContext:context];
-	
-	return obj;
-}
-
-+ (NSArray *)fetch:(Class)entity
-	   fromContext:(NSManagedObjectContext *)context
-	 withPredicate:(NSPredicate *)predicate
-andSortDescriptors:(NSArray *)sortDescriptors
-	  limitResults:(NSUInteger)limit
-{
-	NSFetchRequest* request = [NSFetchRequest fetchRequestWithEntity:entity inContext:context];
-	[request setReturnsObjectsAsFaults:NO];
-	
-	if (predicate) [request setPredicate:predicate];
-	if (sortDescriptors) [request setSortDescriptors:sortDescriptors];
-	if (limit > 0) [request setFetchLimit:limit];
-	
-	NSError* error = nil;
-	NSArray* results = [context executeFetchRequest:request error:&error];
-	
-#ifdef DEBUG
-	if (!results) {
-		[NSException raise:@"Fetch Exception"
-					format:@"Error fetching: %@", [error localizedDescription]];
-	}
-#endif
-	
-	return results;
-}
-
-#pragma mark - Insert
-
-- (id)insert:(Class)entity
-{
-	return [[self class] insert:entity inContext:[self context]];
-}
-
-#pragma mark - Count
-
-+ (NSUInteger)count:(Class)entity inContext:(NSManagedObjectContext *)context
-{
-	return [self count:entity inContext:context withPredicate:nil];
-}
-
-- (NSUInteger)count:(Class)entity
-{
-	return [[self class] count:entity inContext:[self context] withPredicate:nil];
-}
-
-- (NSUInteger)count:(Class)entity withPredicate:(NSPredicate *)predicate
-{
-	return [[self class] count:entity inContext:[self context] withPredicate:predicate];
-}
-
-#pragma mark - Delete
-
-+ (void)delete:(Class)entity fromContext:(NSManagedObjectContext *)context
-{
-	[self delete:entity fromContext:context withPredicate:nil];
-}
-
-- (void)delete:(Class)entity
-{
-	[[self class] delete:entity fromContext:[self context] withPredicate:nil];
-}
-
-- (void)delete:(Class)entity withPredicate:(NSPredicate *)predicate
-{
-	[[self class] delete:entity fromContext:[self context] withPredicate:predicate];
-}
-
-#pragma mark - Fetch
-
-+ (id)singleFetch:(Class)entity fromContext:(NSManagedObjectContext *)context
-{
-	return [[self fetch:entity
-			fromContext:context
-		  withPredicate:nil
-	 andSortDescriptors:nil
-		   limitResults:1] lastObject];
-}
-
-+ (id)singleFetch:(Class)entity fromContext:(NSManagedObjectContext *)context withPredicate:(NSPredicate *)predicate
-{
-	return [[self fetch:entity
-			fromContext:context
-		  withPredicate:predicate
-	 andSortDescriptors:nil
-		   limitResults:1] lastObject];
-}
-
-+ (id)singleFetchOrInsert:(Class)entity fromContext:(NSManagedObjectContext *)context
-{
-	return [self singleFetchOrInsert:entity
-						 fromContext:context
-					   withPredicate:nil];
-}
-
-+ (NSArray *)fetch:(Class)entity fromContext:(NSManagedObjectContext *)context
-{
-	return [self fetch:entity
-		   fromContext:context
-		 withPredicate:nil
-	andSortDescriptors:nil
-		  limitResults:0];
-}
-
-+ (NSArray *)fetch:(Class)entity fromContext:(NSManagedObjectContext *)context withPredicate:(NSPredicate *)predicate
-{
-	return [self fetch:entity
-		   fromContext:context
-		 withPredicate:predicate
-	andSortDescriptors:nil
-		  limitResults:0];
-}
-
-+ (NSArray *)fetch:(Class)entity
-	fromContext:(NSManagedObjectContext *)context
-	withSortDescriptors:(NSArray *)sortDescriptors
-{
-	return [self fetch:entity
-		   fromContext:context
-		 withPredicate:nil
-	andSortDescriptors:sortDescriptors
-		  limitResults:0];
-}
-
-+ (NSArray *)fetch:(Class)entity
-	   fromContext:(NSManagedObjectContext *)context
-	 withPredicate:(NSPredicate *)predicate
-andSortDescriptors:(NSArray *)sortDescriptors
-{
-	return [self fetch:entity
-		   fromContext:context
-		 withPredicate:predicate
-	andSortDescriptors:sortDescriptors
-		  limitResults:0];
-}
-
-- (id)singleFetch:(Class)entity
-{
-	return [[self class] singleFetch:entity fromContext:[self context] withPredicate:nil];
-}
-
-- (id)singleFetch:(Class)entity withPredicate:(NSPredicate *)predicate
-{
-	return [[self class] singleFetch:entity fromContext:[self context] withPredicate:predicate];
-}
-
-- (id)singleFetchOrInsert:(Class)entity
-{
-	return [[self class] singleFetchOrInsert:entity fromContext:[self context] withPredicate:nil];
-}
-
-- (id)singleFetchOrInsert:(Class)entity
-			withPredicate:(NSPredicate *)predicate
-{
-	return [[self class] singleFetchOrInsert:entity fromContext:[self context] withPredicate:predicate];
-}
-
-- (NSArray *)fetch:(Class)entity
-{
-	return [[self class] fetch:entity
-				   fromContext:[self context]
-				 withPredicate:nil
-			andSortDescriptors:nil
-				  limitResults:0];
-}
-
-- (NSArray *)fetch:(Class)entity withPredicate:(NSPredicate *)predicate
-{
-	return [[self class] fetch:entity
-				   fromContext:[self context]
-				 withPredicate:predicate
-			andSortDescriptors:nil
-				  limitResults:0];
-}
-
-- (NSArray *)fetch:(Class)entity withSortDescriptors:(NSArray *)sortDescriptors
-{
-	return [[self class] fetch:entity
-				   fromContext:[self context]
-				 withPredicate:nil
-			andSortDescriptors:sortDescriptors
-				  limitResults:0];
-}
-
-- (NSArray *)fetch:(Class)entity withPredicate:(NSPredicate *)predicate andSortDescriptors:(NSArray *)sortDescriptors
-{
-	return [[self class] fetch:entity
-				   fromContext:[self context]
-				 withPredicate:predicate
-			andSortDescriptors:sortDescriptors
-				  limitResults:0];
-}
-
-- (NSArray *)fetch:(Class)entity
-	 withPredicate:(NSPredicate *)predicate
-andSortDescriptors:(NSArray *)sortDescriptors
-	  limitResults:(NSUInteger)limit
-{
-	return [[self class] fetch:entity
-				   fromContext:[self context]
-				 withPredicate:predicate
-			andSortDescriptors:sortDescriptors
-				  limitResults:limit];
-}
-
-#pragma mark - Properties
+#pragma mark - Property Accessors
 
 - (NSString *)storePath
 {
 	return [[NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject]
-			stringByAppendingPathComponent:[NLCOREDATA_STORENAME stringByAppendingString:@".sqlite"]];
+			stringByAppendingPathComponent:[modelName_ stringByAppendingString:@".sqlite"]];
 }
 
 - (NSURL *)storeURL
@@ -378,7 +78,7 @@ andSortDescriptors:(NSArray *)sortDescriptors
 	NSURL* path = [[[NSFileManager defaultManager] URLsForDirectory:NSLibraryDirectory
 														  inDomains:NSUserDomainMask] lastObject];
 	
-	return [path URLByAppendingPathComponent:[NLCOREDATA_STORENAME stringByAppendingString:@".sqlite"]];
+	return [path URLByAppendingPathComponent:[modelName_ stringByAppendingString:@".sqlite"]];
 }
 
 - (void)setStoreEncrypted:(BOOL)storeEncrypted
@@ -393,7 +93,7 @@ andSortDescriptors:(NSArray *)sortDescriptors
 #ifdef DEBUG		
 		[NSException
 		 raise:@"Persistent Store Exception"
-		 format:@"Error Encryping Store: %@", [error localizedDescription]];
+		 format:@"Error Encrypting Store: %@", [error localizedDescription]];
 #endif
 	}
 }
@@ -424,14 +124,16 @@ andSortDescriptors:(NSArray *)sortDescriptors
 	
 	storeCoordinator_ = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:[self managedObjectModel]];
 	
+	NSMutableDictionary* options = [NSMutableDictionary dictionary];
+	[options setObject:[NSNumber numberWithBool:YES] forKey:NSMigratePersistentStoresAutomaticallyOption];
+	
 	NSError* error = nil;
 	if (![storeCoordinator_
 		  addPersistentStoreWithType:NSSQLiteStoreType
 		  configuration:nil
 		  URL:[self storeURL]
-		  options:nil
+		  options:options
 		  error:&error]) {
-		
 #ifdef DEBUG
 		[NSException
 		 raise:@"Persistent Store Exception"
@@ -446,28 +148,9 @@ andSortDescriptors:(NSArray *)sortDescriptors
 {
 	if (managedObjectModel_) return managedObjectModel_;
 	
-	NSURL* url = [[NSBundle mainBundle] URLForResource:NLCOREDATA_STORENAME withExtension:@"momd"];
+	NSURL* url = [[NSBundle mainBundle] URLForResource:modelName_ withExtension:@"momd"];
 	managedObjectModel_ = [[NSManagedObjectModel alloc] initWithContentsOfURL:url];
 	return managedObjectModel_;
-}
-
-- (NSManagedObjectContext *)context
-{
-	if (managedObjectContext_) return managedObjectContext_;
-	
-	managedObjectContext_ = [[NSManagedObjectContext alloc] init];
-	[managedObjectContext_ setPersistentStoreCoordinator:[self storeCoordinator]];
-	return managedObjectContext_;
-}
-
-- (void)setUndoEnabled:(BOOL)undoEnabled
-{
-	[[self context] setUndoEnabled:undoEnabled];
-}
-
-- (BOOL)isUndoEnabled
-{
-	return [[self context] isUndoEnabled];
 }
 
 @end
