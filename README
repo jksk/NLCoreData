@@ -95,10 +95,10 @@ Typically in application:didFinishLaunchingWithOptions: on your first run:
 
 
 
-NLCoreData is not for you if you
---------------------------------
-* need more than one persistent store.
-* don't want to subclass NSManagedObject
+NLCoreData is not for you if
+----------------------------
+* you need more than one persistent store.
+* you don't want to subclass NSManagedObject
 
 
 Notes
@@ -110,5 +110,5 @@ Notes
 Setup
 -----
 1. Add the NLCoreData folder to your project.
-2. #import NLCoreData.h where you need it (in prefix.pch for easy access).
+2. #import "NLCoreData.h" where you need it (in prefix.pch for easy access).
 3. Set modelName to what your model is named: [[NLCoreData shared] setModelName:@"MyModel"];

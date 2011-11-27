@@ -9,13 +9,14 @@
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
 
-@class User;
+@class
+User;
 
 #pragma mark -
 @interface Group : NSManagedObject
 
-@property (nonatomic, retain) NSString*	name;
-@property (nonatomic, retain) NSSet*	users;
+@property (strong, nonatomic) NSString*	name;
+@property (strong, nonatomic) NSSet*	users;
 
 @end
 

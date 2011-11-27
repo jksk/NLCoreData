@@ -11,11 +11,12 @@
 
 @implementation User
 
-@dynamic username;
-@dynamic password;
-@dynamic group;
+@dynamic
+username,
+password,
+group;
 
-#pragma mark - Initialization
+#pragma mark - Lifecycle
 
 - (void)awakeFromInsert
 {

@@ -20,7 +20,7 @@
 #pragma mark -
 @implementation NLCoreDataTests
 
-#pragma mark - Setup/Teardown
+#pragma mark - Lifecycle
 
 - (void)setUp
 {
@@ -37,29 +37,29 @@
 - (void)testInsert
 {
 	[self seedUsers:1];
-	STAssertNotNil([User singleFetchFromSharedContext], @"");
+	STAssertNotNil([User fetchSingle], @"");
 	[self deleteUsers];
 }
 
 - (void)testFetch
 {
 	[self seedUsers:1];
-	STAssertNotNil([User singleFetchFromSharedContext], @"");
-	STAssertTrue([[User fetchFromSharedContext] count] == 1, @"");
+	STAssertNotNil([User fetchSingle], @"");
+	STAssertTrue([[User fetch] count] == 1, @"");
 	[self deleteUsers];
 }
 
 - (void)testDelete
 {
 	[self seedUsers:1];
-	[User deleteFromSharedContext];
-	STAssertNil([User singleFetchFromSharedContext], @"");
+	[User delete];
+	STAssertNil([User fetchSingle], @"");
 }
 
 - (void)testCount
 {
 	[self seedUsers:1];
-	STAssertTrue([User countInSharedContext] == 1, @"");
+	STAssertTrue([User count] == 1, @"");
 }
 
 #pragma mark - Helpers
@@ -68,17 +68,17 @@
 {
 	for (int i = 0; i < count; i++) {
 		
-		User* user = [User insertInSharedContext];
+		User* user = [User insert];
 		[user setUsername:@""];
 	}
 	
-	[[NLCoreData shared] saveContext];
+	[[NSManagedObjectContext contextForThread] save];
 }
 
 - (void)deleteUsers
 {
-	[User deleteFromSharedContext];
-	[[NLCoreData shared] saveContext];
+	[User delete];
+	[[NSManagedObjectContext contextForThread] save];
 }
 
 @end

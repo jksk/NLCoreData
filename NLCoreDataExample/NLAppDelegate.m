@@ -10,7 +10,8 @@
 
 @implementation NLAppDelegate
 
-@synthesize window	= window_;
+@synthesize
+window = window_;
 
 #pragma mark - Application lifecycle
 
@@ -40,7 +41,7 @@
 {
 }
 
-#pragma mark - Properties
+#pragma mark - Property Accessors
 
 - (UIWindow *)window
 {

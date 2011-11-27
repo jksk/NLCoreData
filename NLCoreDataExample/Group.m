@@ -11,10 +11,11 @@
 
 @implementation Group
 
-@dynamic name;
-@dynamic users;
+@dynamic
+name,
+users;
 
-#pragma mark - Initialization
+#pragma mark - Lifecycle
 
 - (void)awakeFromInsert
 {
