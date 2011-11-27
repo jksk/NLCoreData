@@ -122,7 +122,7 @@
  @param predicate The predicate to filter the objects before fetching.
  @return The object, or nil if none found.
  */
-+ (id)singleFetchFromContext:(NSManagedObjectContext *)context withPredicate:(NSPredicate *)predicate;
++ (id)fetchSingleFromContext:(NSManagedObjectContext *)context withPredicate:(NSPredicate *)predicate;
 
 /**
  @name Fetch single objects
@@ -130,7 +130,7 @@
  @param context The context to fetch the object from.
  @return The object, or nil if none found.
  */
-+ (id)singleFetchFromContext:(NSManagedObjectContext *)context;
++ (id)fetchSingleFromContext:(NSManagedObjectContext *)context;
 
 /**
  @name Fetch single objects
@@ -138,14 +138,14 @@
  @param predicate The predicate to filter the objects before fetching.
  @return The object, or nil if none found.
  */
-+ (id)singleFetchWithPredicate:(NSPredicate *)predicate;
++ (id)fetchSingleWithPredicate:(NSPredicate *)predicate;
 
 /**
  @name Fetch single objects
  Fetches a single object from the shared context for current thread.
  @return The object, or nil if none found.
  */
-+ (id)singleFetch;
++ (id)fetchSingle;
 
 /**
  @name Fetch single objects
@@ -154,7 +154,7 @@
  @param predicate The predicate to filter the objects before fetching.
  @return The object.
  */
-+ (id)singleFetchOrInsertInContext:(NSManagedObjectContext *)context withPredicate:(NSPredicate *)predicate;
++ (id)fetchSingleOrInsertInContext:(NSManagedObjectContext *)context withPredicate:(NSPredicate *)predicate;
 
 /**
  @name Fetch single objects
@@ -162,7 +162,7 @@
  @param context The context to fetch the object from.
  @return The object.
  */
-+ (id)singleFetchOrInsertInContext:(NSManagedObjectContext *)context;
++ (id)fetchSingleOrInsertInContext:(NSManagedObjectContext *)context;
 
 /**
  @name Fetch single objects
@@ -170,14 +170,14 @@
  @param predicate The predicate to filter the objects before fetching.
  @return The object.
  */
-+ (id)singleFetchOrInsertWithPredicate:(NSPredicate *)predicate;
++ (id)fetchSingleOrInsertWithPredicate:(NSPredicate *)predicate;
 
 /**
  @name Fetch single objects
  Fetches a single object from the shared context for current thread, or inserts one if not found.
  @return The object.
  */
-+ (id)singleFetchOrInsert;
++ (id)fetchSingleOrInsert;
 
 #pragma mark - Fetch multiple objects
 

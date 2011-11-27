@@ -20,7 +20,7 @@ NLCoreData provides lazily loaded shared NSManagedObjectContexts for all threads
 
 	NSManagedObjectContext* context = [NSManagedObjectContext contextForThread];
 	
-Or if you're in a threaded environment and the context for the UI thread:
+Or if you're in a threaded environment and you want the context for the UI thread:
 
 	NSManagedObjectContext* context = [NSManagedObjectContext contextForThread:[NSThread mainThread]];
 
@@ -28,7 +28,7 @@ If you want another context in addition to the shared one:
 
 	NSManagedObjectContext* context = [NSManagedObjectContext context];
 
-And to save it:
+To save a context:
 
 	BOOL success = [context save];
 	
@@ -36,6 +36,7 @@ And to save it:
 Methods
 -------
 If you want to fetch all Person objects in your shared context:
+
 	NSArray* results = [Person fetch];
 
 If you want to delete all Person objects in the context myContext:

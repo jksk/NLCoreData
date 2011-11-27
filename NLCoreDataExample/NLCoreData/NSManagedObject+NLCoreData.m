@@ -50,7 +50,7 @@
 	return results;
 }
 
-+ (id)singleFetchFromContext:(NSManagedObjectContext *)context withPredicate:(NSPredicate *)predicate
++ (id)fetchSingleFromContext:(NSManagedObjectContext *)context withPredicate:(NSPredicate *)predicate
 {
 	NSArray* objects = [self fetchFromContext:context
 								withPredicate:predicate
@@ -63,9 +63,9 @@
 	return [objects count] ? [objects objectAtIndex:0] : nil;
 }
 
-+ (id)singleFetchOrInsertInContext:(NSManagedObjectContext *)context withPredicate:(NSPredicate *)predicate
++ (id)fetchSingleOrInsertInContext:(NSManagedObjectContext *)context withPredicate:(NSPredicate *)predicate
 {
-	id object = [self singleFetchFromContext:context withPredicate:predicate];
+	id object = [self fetchSingleFromContext:context withPredicate:predicate];
 	if (!object) object = [[self class] insertInContext:context];
 	return object;
 }
@@ -152,34 +152,34 @@
 
 #pragma mark - Fetch single objects convenience methods
 
-+ (id)singleFetchFromContext:(NSManagedObjectContext *)context
++ (id)fetchSingleFromContext:(NSManagedObjectContext *)context
 {
-	return [self singleFetchFromContext:context withPredicate:nil];
+	return [self fetchSingleFromContext:context withPredicate:nil];
 }
 
-+ (id)singleFetchOrInsertInContext:(NSManagedObjectContext *)context
++ (id)fetchSingleOrInsertInContext:(NSManagedObjectContext *)context
 {
-	return [self singleFetchOrInsertInContext:context withPredicate:nil];
+	return [self fetchSingleOrInsertInContext:context withPredicate:nil];
 }
 
-+ (id)singleFetch
++ (id)fetchSingle
 {
-	return [self singleFetchFromContext:[NSManagedObjectContext contextForThread] withPredicate:nil];
+	return [self fetchSingleFromContext:[NSManagedObjectContext contextForThread] withPredicate:nil];
 }
 
-+ (id)singleFetchWithPredicate:(NSPredicate *)predicate
++ (id)fetchSingleWithPredicate:(NSPredicate *)predicate
 {
-	return [self singleFetchFromContext:[NSManagedObjectContext contextForThread] withPredicate:predicate];
+	return [self fetchSingleFromContext:[NSManagedObjectContext contextForThread] withPredicate:predicate];
 }
 
-+ (id)singleFetchOrInsert
++ (id)fetchSingleOrInsert
 {
-	return [self singleFetchOrInsertInContext:[NSManagedObjectContext contextForThread] withPredicate:nil];
+	return [self fetchSingleOrInsertInContext:[NSManagedObjectContext contextForThread] withPredicate:nil];
 }
 
-+ (id)singleFetchOrInsertWithPredicate:(NSPredicate *)predicate
++ (id)fetchSingleOrInsertWithPredicate:(NSPredicate *)predicate
 {
-	return [self singleFetchOrInsertInContext:[NSManagedObjectContext contextForThread] withPredicate:predicate];
+	return [self fetchSingleOrInsertInContext:[NSManagedObjectContext contextForThread] withPredicate:predicate];
 }
 
 #pragma mark - Fetch multiple objects convenience methods
