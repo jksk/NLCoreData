@@ -56,14 +56,14 @@ You can fetch either an array of objects or a single object. If you want all Per
 	
 If you want a single object in the shared context:
 
-	Person* person = [Person singleFetch];
+	Person* person = [Person fetchSingle];
 
 The single fetch can be useful if there is only one object of that type, or if you provide a predicate
 that you're certain only matches one object. The fetch raises an exception if it finds more than one object.
 
 In some cases, you want to return a single object, or create one if it doesn't exist:
 
-	Person* person = [Person singleFetchOrInsert];
+	Person* person = [Person fetchSingleOrInsert];
 
 
 Context interactivity
