@@ -23,18 +23,11 @@
 		09DC265D1432629F004E1280 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0919D503143248D40087B006 /* Foundation.framework */; };
 		09DC26631432629F004E1280 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 09DC26611432629F004E1280 /* InfoPlist.strings */; };
 		09DC26661432629F004E1280 /* NLCoreDataTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 09DC26651432629F004E1280 /* NLCoreDataTests.m */; };
-		09DC266C143265AF004E1280 /* NLCoreData.m in Sources */ = {isa = PBXBuildFile; fileRef = 0919D532143248EC0087B006 /* NLCoreData.m */; };
-		09DC266D143265AF004E1280 /* NSFetchedResultsController+NLCoreData.m in Sources */ = {isa = PBXBuildFile; fileRef = 0919D534143248EC0087B006 /* NSFetchedResultsController+NLCoreData.m */; };
-		09DC266E143265AF004E1280 /* NSFetchRequest+NLCoreData.m in Sources */ = {isa = PBXBuildFile; fileRef = 0919D536143248EC0087B006 /* NSFetchRequest+NLCoreData.m */; };
 		09F384A01444D673003B1B5F /* NSManagedObjectContext+NLCoreData.m in Sources */ = {isa = PBXBuildFile; fileRef = 09F3849F1444D673003B1B5F /* NSManagedObjectContext+NLCoreData.m */; };
 		09FAE02114370E0E006CEF72 /* CoreDataStore.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 09FAE01F14370E0E006CEF72 /* CoreDataStore.xcdatamodeld */; };
-		09FAE02314370E15006CEF72 /* CoreDataStore.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 09FAE01F14370E0E006CEF72 /* CoreDataStore.xcdatamodeld */; };
 		09FAE02714370EDE006CEF72 /* User.m in Sources */ = {isa = PBXBuildFile; fileRef = 09FAE02614370EDE006CEF72 /* User.m */; };
-		09FAE02814370EDE006CEF72 /* User.m in Sources */ = {isa = PBXBuildFile; fileRef = 09FAE02614370EDE006CEF72 /* User.m */; };
 		09FAE02B14370EDE006CEF72 /* Group.m in Sources */ = {isa = PBXBuildFile; fileRef = 09FAE02A14370EDE006CEF72 /* Group.m */; };
-		09FAE02C14370EDE006CEF72 /* Group.m in Sources */ = {isa = PBXBuildFile; fileRef = 09FAE02A14370EDE006CEF72 /* Group.m */; };
 		09FAE0331437307E006CEF72 /* NSManagedObject+NLCoreData.m in Sources */ = {isa = PBXBuildFile; fileRef = 09FAE0321437307D006CEF72 /* NSManagedObject+NLCoreData.m */; };
-		09FAE0341437307E006CEF72 /* NSManagedObject+NLCoreData.m in Sources */ = {isa = PBXBuildFile; fileRef = 09FAE0321437307D006CEF72 /* NSManagedObject+NLCoreData.m */; };
 		09FAE03514373AC4006CEF72 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0919D5631432503F0087B006 /* CoreData.framework */; };
 /* End PBXBuildFile section */
 
@@ -339,13 +332,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				09DC26661432629F004E1280 /* NLCoreDataTests.m in Sources */,
-				09DC266C143265AF004E1280 /* NLCoreData.m in Sources */,
-				09DC266D143265AF004E1280 /* NSFetchedResultsController+NLCoreData.m in Sources */,
-				09DC266E143265AF004E1280 /* NSFetchRequest+NLCoreData.m in Sources */,
-				09FAE02314370E15006CEF72 /* CoreDataStore.xcdatamodeld in Sources */,
-				09FAE02814370EDE006CEF72 /* User.m in Sources */,
-				09FAE02C14370EDE006CEF72 /* Group.m in Sources */,
-				09FAE0341437307E006CEF72 /* NSManagedObject+NLCoreData.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -91,9 +91,8 @@ managedObjectModel	= managedObjectModel_;
 										  ofItemAtPath:[self storePath]
 												 error:&error]) {
 #ifdef DEBUG		
-		[NSException
-		 raise:@"Persistent Store Exception"
-		 format:@"Error Encrypting Store: %@", [error localizedDescription]];
+		[NSException raise:@"Persistent Store Exception"
+					format:@"Error Encrypting Store: %@", [error localizedDescription]];
 #endif
 	}
 }

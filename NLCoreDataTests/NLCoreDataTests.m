@@ -7,6 +7,7 @@
 //
 
 #import "NLCoreDataTests.h"
+#import "NLCoreData.h"
 #import "User.h"
 #import "Group.h"
 
@@ -25,6 +26,8 @@
 - (void)setUp
 {
 	[super setUp];
+	
+	[[NLCoreData shared] setModelName:@"CoreDataStore"];
 }
 
 - (void)tearDown
@@ -60,6 +63,57 @@
 {
 	[self seedUsers:1];
 	STAssertTrue([User count] == 1, @"");
+}
+
+- (void)testNotification
+{
+	[User delete];
+	STAssertTrue([User count] == 0, @"");
+	
+	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+		
+		NSManagedObjectContext* context = [NSManagedObjectContext contextForThread];
+		
+		STAssertTrue([User count] == 0, @"");
+		[User insert];
+		STAssertTrue([User count] == 1, @"");
+		
+		[context notifyMainThreadContextOnSave];
+		[context save];
+		
+		dispatch_async(dispatch_get_main_queue(), ^{
+			
+			STAssertTrue([User count] == 1, @"");
+		});
+	});
+}
+
+- (void)testNotificationWithBlock
+{
+	[User delete];
+	STAssertTrue([User count] == 0, @"");
+	
+	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+		
+		NSManagedObjectContext* context = [NSManagedObjectContext contextForThread];
+		
+		STAssertTrue([User count] == 0, @"");
+		[User insert];
+		STAssertTrue([User count] == 1, @"");
+		
+		[context notifyMainThreadContextOnSaveWithBlock:^(NSNotification *note) {
+			
+			STAssertTrue([NSThread mainThread] == [NSThread currentThread], @"");
+			STAssertTrue([User count] == 1, @"");
+		}];
+		
+		[context save];
+		
+		dispatch_async(dispatch_get_main_queue(), ^{
+			
+			STAssertTrue([User count] == 1, @"");
+		});
+	});
 }
 
 #pragma mark - Helpers

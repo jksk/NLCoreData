@@ -24,6 +24,9 @@
 
 #import <CoreData/CoreData.h>
 
+typedef void(^NLCoreDataNotificationBlock)(NSNotification* note);
+
+#pragma mark -
 @interface NSManagedObjectContext (NLCoreData)
 
 #pragma mark - Lifecycle
@@ -58,17 +61,22 @@
 
 /**
  @name Notifications
- Notifies context with changes when a save is performed.
- @param context The context to notify.
+ Notifies main thread context with changes when a save is performed. The block is run on the main thread.
+ @param completion Block to performed after save. Can be nil.
  */
-- (void)notifyContextOnSave:(NSManagedObjectContext *)context;
+- (void)notifyMainThreadContextOnSaveWithBlock:(NLCoreDataNotificationBlock)block;
 
 /**
  @name Notifications
- Stops notifying context with changes when a save is performed.
- @param context The context to stop notifying.
+ Notifies main thread context with changes when a save is performed.
  */
-- (void)stopNotifyingContextOnSave:(NSManagedObjectContext *)context;
+- (void)notifyMainThreadContextOnSave;
+
+/**
+ @name Notifications
+ Stops notifying main thread context on save.
+ */
+- (void)stopNotifyingMainThreadContextOnSave;
 
 #pragma mark - Properties
 

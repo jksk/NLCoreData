@@ -24,6 +24,9 @@
 
 #import "NSManagedObjectContext+NLCoreData.h"
 
+static NSString* kNLCoreDataNotifyBlockKey	= @"NLCoreDataContextNotifyBlock";
+static NSString* kNLCoreDataContextKey		= @"NLCoreDataContext";
+
 @implementation NSManagedObjectContext (NLCoreData)
 
 @dynamic
@@ -65,12 +68,11 @@ undoEnabled;
 
 + (NSManagedObjectContext *)contextForThread:(NSThread *)thread
 {
-	static NSString* key = @"NLCoreDataContext";
-	NSManagedObjectContext* context = [[thread threadDictionary] objectForKey:key];
+	NSManagedObjectContext* context = [[thread threadDictionary] objectForKey:kNLCoreDataContextKey];
 	
 	if (!context) {
 		context = [self context];
-		[[thread threadDictionary] setObject:context forKey:key];
+		[[thread threadDictionary] setObject:context forKey:kNLCoreDataContextKey];
 	}
 	
 	return context;
@@ -78,17 +80,29 @@ undoEnabled;
 
 #pragma mark - Notifications
 
-- (void)notifyContextOnSave:(NSManagedObjectContext *)context
+- (void)notifyMainThreadContextOnSaveWithBlock:(NLCoreDataNotificationBlock)block
 {
-	if (!context || context == self) return;
+	NSManagedObjectContext* context = [[[NSThread mainThread] threadDictionary] objectForKey:kNLCoreDataContextKey];
+	if (!context || self == context) return;
 	
-	[[NSNotificationCenter defaultCenter]
-	 addObserver:self selector:@selector(contextDidSave:)
-	 name:NSManagedObjectContextDidSaveNotification object:context];
+	if (block)
+		[[[NSThread currentThread] threadDictionary] setObject:block forKey:kNLCoreDataNotifyBlockKey];
+	
+	[[NSNotificationCenter defaultCenter] addObserver:self
+											 selector:@selector(contextDidSave:)
+												 name:NSManagedObjectContextDidSaveNotification
+											   object:context];
 }
 
-- (void)stopNotifyingContextOnSave:(NSManagedObjectContext *)context
+- (void)notifyMainThreadContextOnSave
 {
+	[self notifyMainThreadContextOnSaveWithBlock:nil];
+}
+
+- (void)stopNotifyingMainThreadContextOnSave
+{
+	NSManagedObjectContext* context = [[[NSThread mainThread] threadDictionary] objectForKey:kNLCoreDataContextKey];
+	
 	[[NSNotificationCenter defaultCenter]
 	 removeObserver:self name:NSManagedObjectContextDidSaveNotification object:context];
 }
@@ -97,7 +111,16 @@ undoEnabled;
 
 - (void)contextDidSave:(NSNotification *)note
 {
-	[self mergeChangesFromContextDidSaveNotification:note];
+	NLCoreDataNotificationBlock block = [[[NSThread currentThread] threadDictionary]
+										 objectForKey:kNLCoreDataNotifyBlockKey];
+	
+	dispatch_async(dispatch_get_main_queue(), ^{
+		
+		NSManagedObjectContext* context = [NSManagedObjectContext contextForThread];
+		[context mergeChangesFromContextDidSaveNotification:note];
+		
+		if (block) block(note);
+	});
 }
 
 #pragma mark - Property Accessors

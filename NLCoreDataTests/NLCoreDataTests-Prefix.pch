@@ -5,10 +5,8 @@
 
 #ifdef __OBJC__
 
-	#define NLCOREDATA_STORENAME @"CoreDataStore"
-
 	#import <UIKit/UIKit.h>
 	#import <Foundation/Foundation.h>
-	#import "NLCoreData.h"
+//	#import "NLCoreData.h"
 
 #endif
