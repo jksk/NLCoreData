@@ -41,11 +41,11 @@ managedObjectModel	= managedObjectModel_;
 {
 	@synchronized(self) {
 		
-		if (!NLCoreDataSingleton_) NLCoreDataSingleton_ = [[self alloc] init];
+		if (!NLCoreDataSingleton_)
+			NLCoreDataSingleton_ = [[self alloc] init];
+		
 		return NLCoreDataSingleton_;
 	}
-	
-	return nil;
 }
 
 - (void)usePreSeededFile:(NSString *)filePath
@@ -134,6 +134,13 @@ managedObjectModel	= managedObjectModel_;
 		  options:options
 		  error:&error]) {
 #ifdef DEBUG
+		NSDictionary* meta = [NSPersistentStoreCoordinator
+							  metadataForPersistentStoreOfType:nil URL:[self storeURL] error:nil];
+		NSLog(@"metaData: %@", meta);
+		NSLog(@"source and dest equivalent? %@", ([[[error userInfo] valueForKeyPath:@"sourceModel"] isEqual:
+										 [[error userInfo] valueForKeyPath:@"destinationModel"]]) ? @"YES" : @"NO");
+		NSLog(@"failreason: %@", [[error userInfo] valueForKeyPath:@"reason"]);	
+		
 		[NSException
 		 raise:@"Persistent Store Exception"
 		 format:@"Error Creating Store: %@", [error localizedDescription]];
