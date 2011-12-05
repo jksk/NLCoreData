@@ -25,8 +25,6 @@
 #import <CoreData/CoreData.h>
 #import "NLCoreData.h"
 
-static NLCoreData* NLCoreDataSingleton_ = nil;
-
 #pragma mark -
 @implementation NLCoreData
 
@@ -39,13 +37,11 @@ managedObjectModel	= managedObjectModel_;
 
 + (NLCoreData *)shared
 {
-	@synchronized(self) {
-		
-		if (!NLCoreDataSingleton_)
-			NLCoreDataSingleton_ = [[self alloc] init];
-		
-		return NLCoreDataSingleton_;
-	}
+	static dispatch_once_t onceToken;
+	__strong static id NLCoreDataSingleton_ = nil;
+	
+	dispatch_once(&onceToken, ^{ NLCoreDataSingleton_ = [[self alloc] init]; });
+	return NLCoreDataSingleton_;
 }
 
 - (void)usePreSeededFile:(NSString *)filePath
