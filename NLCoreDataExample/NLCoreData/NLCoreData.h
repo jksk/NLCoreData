@@ -94,4 +94,13 @@ NSManagedObjectContext;
  */
 - (void)usePreSeededFile:(NSString *)filePath;
 
+/**
+ @name Lifecycle
+ Copies a preseeded database file to be used as your Core Data store.
+ The filetype should be sqlite and it should conform to your model.
+ Checks the main bundle for a sqlite file with the same name as your model.
+ @warning This should be called before using Core Data on first run, but after setting the modelName.
+ */
+- (void)usePreSeededFileFromBundle;
+
 @end

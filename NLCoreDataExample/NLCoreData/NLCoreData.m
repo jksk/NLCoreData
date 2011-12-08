@@ -61,6 +61,18 @@ managedObjectModel	= managedObjectModel_;
 	}
 }
 
+- (void)usePreSeededFileFromBundle
+{
+	NSString* filePath = [[NSBundle mainBundle] pathForResource:[self modelName] ofType:@"sqlite"];
+	
+	if ([[NSFileManager defaultManager] fileExistsAtPath:filePath])
+		[self usePreSeededFile:filePath];
+#ifdef DEBUG
+	else
+		[NSException raise:@"Preseed-file does not exist at path" format:@"%@", filePath];
+#endif
+}
+
 #pragma mark - Property Accessors
 
 - (NSString *)storePath
