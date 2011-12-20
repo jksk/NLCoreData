@@ -113,11 +113,6 @@
 
 #pragma mark - Count convenience methods
 
-+ (NSUInteger)countInContext:(NSManagedObjectContext *)context
-{
-	return [self countInContext:context withPredicate:nil];
-}
-
 + (NSUInteger)count
 {
 	return [self countInContext:[NSManagedObjectContext contextForThread] withPredicate:nil];
@@ -135,11 +130,6 @@
 	[[self managedObjectContext] deleteObject:self];
 }
 
-+ (void)deleteFromContext:(NSManagedObjectContext *)context
-{
-	[self deleteFromContext:context withPredicate:nil];
-}
-
 + (void)delete
 {
 	[self deleteFromContext:[NSManagedObjectContext contextForThread] withPredicate:nil];
@@ -151,16 +141,6 @@
 }
 
 #pragma mark - Fetch single objects convenience methods
-
-+ (id)fetchSingleFromContext:(NSManagedObjectContext *)context
-{
-	return [self fetchSingleFromContext:context withPredicate:nil];
-}
-
-+ (id)fetchSingleOrInsertInContext:(NSManagedObjectContext *)context
-{
-	return [self fetchSingleOrInsertInContext:context withPredicate:nil];
-}
 
 + (id)fetchSingle
 {
@@ -183,49 +163,6 @@
 }
 
 #pragma mark - Fetch multiple objects convenience methods
-
-+ (NSArray *)fetchFromContext:(NSManagedObjectContext *)context
-{
-	return [self fetchFromContext:context
-					withPredicate:nil
-			   andSortDescriptors:nil
-					 limitResults:0];
-}
-
-+ (NSArray *)fetchFromContext:(NSManagedObjectContext *)context withPredicate:(NSPredicate *)predicate
-{
-	return [self fetchFromContext:context
-					withPredicate:predicate
-			   andSortDescriptors:nil
-					 limitResults:0];
-}
-
-+ (NSArray *)fetchFromContext:(NSManagedObjectContext *)context sortByKey:(NSString *)key ascending:(BOOL)ascending
-{
-	NSSortDescriptor* sort = [NSSortDescriptor sortDescriptorWithKey:key ascending:ascending];
-	return [self fetchFromContext:context
-					withPredicate:nil
-			   andSortDescriptors:[NSArray arrayWithObject:sort]
-					 limitResults:0];
-}
-
-+ (NSArray *)fetchFromContext:(NSManagedObjectContext *)context withSortDescriptors:(NSArray *)sortDescriptors
-{
-	return [self fetchFromContext:context
-					withPredicate:nil
-			   andSortDescriptors:sortDescriptors
-					 limitResults:0];
-}
-
-+ (NSArray *)fetchFromContext:(NSManagedObjectContext *)context
-				withPredicate:(NSPredicate *)predicate
-		   andSortDescriptors:(NSArray *)sortDescriptors
-{
-	return [self fetchFromContext:context
-					withPredicate:predicate
-			   andSortDescriptors:sortDescriptors
-					 limitResults:0];
-}
 
 + (NSArray *)fetch
 {

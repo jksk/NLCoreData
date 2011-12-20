@@ -56,14 +56,6 @@
 
 /**
  @name Count
- Counts objects.
- @param context The context to count the objects in.
- @return The number of objects.
- */
-+ (NSUInteger)countInContext:(NSManagedObjectContext *)context;
-
-/**
- @name Count
  Counts objects in the shared context for the current thread filtered by predicate.
  @param predicate The predicate to filter the objects before counting.
  @return The number of objects.
@@ -86,13 +78,6 @@
  @param predicate The predicate to filter the objects before deleting.
  */
 + (void)deleteFromContext:(NSManagedObjectContext *)context withPredicate:(NSPredicate *)predicate;
-
-/**
- @name Delete
- Deletes objects.
- @param context The context to delete the objects from.
- */
-+ (void)deleteFromContext:(NSManagedObjectContext *)context;
 
 /**
  @name Delete
@@ -126,14 +111,6 @@
 
 /**
  @name Fetch single objects
- Fetches a single object.
- @param context The context to fetch the object from.
- @return The object, or nil if none found.
- */
-+ (id)fetchSingleFromContext:(NSManagedObjectContext *)context;
-
-/**
- @name Fetch single objects
  Fetches a single object from the shared context for current thread filtered by predicate.
  @param predicate The predicate to filter the objects before fetching.
  @return The object, or nil if none found.
@@ -155,14 +132,6 @@
  @return The object.
  */
 + (id)fetchSingleOrInsertInContext:(NSManagedObjectContext *)context withPredicate:(NSPredicate *)predicate;
-
-/**
- @name Fetch single objects
- Fetches a single object or inserts one if not found.
- @param context The context to fetch the object from.
- @return The object.
- */
-+ (id)fetchSingleOrInsertInContext:(NSManagedObjectContext *)context;
 
 /**
  @name Fetch single objects
@@ -194,54 +163,6 @@
 				withPredicate:(NSPredicate *)predicate
 		   andSortDescriptors:(NSArray *)sortDescriptors
 				 limitResults:(NSUInteger)limit;
-
-/**
- @name Fetch multiple objects
- Fetches all objects filtered by predicate, sorted.
- @param context The context to fetch the objects from.
- @param predicate The predicate to filter the objects before counting.
- @param sortDescriptors An array of NSSortDescriptors.
- @return An array of objects. May be empty if none are found.
- */
-+ (NSArray *)fetchFromContext:(NSManagedObjectContext *)context
-				withPredicate:(NSPredicate *)predicate
-		   andSortDescriptors:(NSArray *)sortDescriptors;
-
-/**
- @name Fetch multiple objects
- Fetches all objects filtered by predicate.
- @param context The context to fetch the objects from.
- @param predicate The predicate to filter the objects before counting.
- @return An array of objects. May be empty if none are found.
- */
-+ (NSArray *)fetchFromContext:(NSManagedObjectContext *)context withPredicate:(NSPredicate *)predicate;
-
-/**
- @name Fetch multiple objects
- Fetches all objects, sorted.
- @param context The context to fetch the objects from.
- @param key The key to sort by.
- @param ascending is key ascending?
- @return An array of objects. May be empty if none are found.
- */
-+ (NSArray *)fetchFromContext:(NSManagedObjectContext *)context sortByKey:(NSString *)key ascending:(BOOL)ascending;
-
-/**
- @name Fetch multiple objects
- Fetches all objects, sorted.
- @param context The context to fetch the objects from.
- @param sortDescriptors An array of NSSortDescriptors.
- @return An array of objects. May be empty if none are found.
- */
-+ (NSArray *)fetchFromContext:(NSManagedObjectContext *)context withSortDescriptors:(NSArray *)sortDescriptors;
-
-/**
- @name Fetch multiple objects
- Fetches all objects.
- @param context The context to fetch the objects from.
- @return An array of objects. May be empty if none are found.
- */
-+ (NSArray *)fetchFromContext:(NSManagedObjectContext *)context;
 
 /**
  @name Fetch multiple objects
