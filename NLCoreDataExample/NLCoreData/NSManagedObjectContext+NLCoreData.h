@@ -61,14 +61,14 @@ typedef void(^NLCoreDataNotificationBlock)(NSNotification* note);
 
 /**
  @name Notifications
- Notifies main thread context with changes when a save is performed. The block is run on the main thread.
+ Notifies and merges main thread context with changes when a save is performed. The block is run on the main thread.
  @param completion Block to performed after save. Can be nil.
  */
 - (void)notifyMainThreadContextOnSaveWithBlock:(NLCoreDataNotificationBlock)block;
 
 /**
  @name Notifications
- Notifies main thread context with changes when a save is performed.
+ Notifies and merges main thread context with changes when a save is performed.
  */
 - (void)notifyMainThreadContextOnSave;
 
