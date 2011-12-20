@@ -37,6 +37,13 @@
 
 #pragma mark - Logic tests
 
+- (void)testContext
+{
+	NSManagedObjectContext* context = [NSManagedObjectContext contextForThread];
+	
+	STAssertTrue(context && context == [NSManagedObjectContext contextForThread:[NSThread currentThread]], @"");
+}
+
 - (void)testInsert
 {
 	[self seedUsers:1];
