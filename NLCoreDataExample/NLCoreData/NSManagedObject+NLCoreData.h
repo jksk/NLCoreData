@@ -268,7 +268,16 @@
  @name Fetch multiple objects
  Fetches all objects from the shared context for current thread filtered by predicate.
  @param predicate The predicate to filter the objects before counting.
- @param limit Limits the number of results returned. 0 disables the limit.
+ @param key The key to sort by.
+ @param ascending is key ascending?
+ @return An array of objects. May be empty if none are found.
+ */
++ (NSArray *)fetchWithPredicate:(NSPredicate *)predicate sortByKey:(NSString *)key ascending:(BOOL)ascending;
+
+/**
+ @name Fetch multiple objects
+ Fetches all objects from the shared context for current thread filtered by predicate.
+ @param predicate The predicate to filter the objects before counting.
  @return An array of objects. May be empty if none are found.
  */
 + (NSArray *)fetchWithPredicate:(NSPredicate *)predicate;

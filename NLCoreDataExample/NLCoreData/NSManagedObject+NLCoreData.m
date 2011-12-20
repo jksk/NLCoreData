@@ -243,6 +243,15 @@
 					 limitResults:0];
 }
 
++ (NSArray *)fetchWithPredicate:(NSPredicate *)predicate sortByKey:(NSString *)key ascending:(BOOL)ascending
+{
+	NSSortDescriptor* sort = [NSSortDescriptor sortDescriptorWithKey:key ascending:ascending];
+	return [self fetchFromContext:[NSManagedObjectContext contextForThread]
+					withPredicate:predicate
+			   andSortDescriptors:[NSArray arrayWithObject:sort]
+					 limitResults:0];
+}
+
 + (NSArray *)fetchAndSortByKey:(NSString *)key ascending:(BOOL)ascending
 {
 	NSSortDescriptor* sort = [NSSortDescriptor sortDescriptorWithKey:key ascending:ascending];
