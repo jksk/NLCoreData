@@ -226,18 +226,6 @@
 
 #pragma mark - Miscellaneous
 
-- (void)populateWithDictionary:(NSDictionary *)dictionary
-{
-	for (id key in dictionary) {
-		
-		if (![key isKindOfClass:[NSString class]]) continue;					// skip if key isn't a string
-		if (![[self managedAttributeNames] containsObject:key]) continue;		// skip if attribute doesn't exist
-		
-		id obj = [dictionary objectForKey:key];
-		[self setValue:obj forKey:key];
-	}
-}
-
 - (NSArray *)managedAttributeNames
 {
 	return [[[self entity] attributesByName] allKeys];
