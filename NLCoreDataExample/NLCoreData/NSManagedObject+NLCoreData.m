@@ -243,6 +243,11 @@
 	return [[[self entity] attributesByName] allKeys];
 }
 
+- (NSArray *)managedRelationshipNames
+{
+	return [[[self entity] relationshipsByName] allKeys];
+}
+
 - (BOOL)isNew
 {
 	return [[self committedValuesForKeys:nil] count] == 0;

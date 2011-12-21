@@ -230,16 +230,22 @@
 #pragma mark - Miscellaneous
 
 /**
- Populates the object with external data. Only makes sure keys match, performs no other type of data or type checks.
+ Populates the object with external data. Only makes sure keys match, performs no other data or type checks.
  @param dictionary External data (e.g., decoded JSON)
  */
 - (void)populateWithDictionary:(NSDictionary *)dictionary;
 
 /**
- Retrieves a list of the properties in the NSManagedObject model.
+ Retrieves a list of the attributes in the NSManagedObject model.
  @return A list of strings.
  */
 - (NSArray *)managedAttributeNames;
+
+/**
+ Retrieves a list of the relationships in the NSManagedObject model.
+ @return A list of strings.
+ */
+- (NSArray *)managedRelationshipNames;
 
 /**
  Checks if an object is saved to the persistent store.
