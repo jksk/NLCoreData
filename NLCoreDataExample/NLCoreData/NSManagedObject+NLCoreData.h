@@ -230,7 +230,7 @@
 #pragma mark - Miscellaneous
 
 /**
- Retrieves a list of the properties in the NSManagedObject model.
+ Retrieves a list of the attributes in the NSManagedObject model.
  @return A list of strings.
  */
 - (NSArray *)managedAttributeNames;

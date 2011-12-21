@@ -48,7 +48,7 @@ managedObjectModel	= managedObjectModel_;
 {
 	if (![[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
 #ifdef DEBUG
-		[NSException raise:@"Preseed-file does not exist at path" format:@"%@", filePath];
+		[NSException raise:@"Preseeded file does not exist at path" format:@"%@", filePath];
 #endif
 		return;
 	}
@@ -56,7 +56,7 @@ managedObjectModel	= managedObjectModel_;
 	NSError* error = nil;
 	if (![[NSFileManager defaultManager] copyItemAtPath:filePath toPath:[self storePath] error:&error]) {
 #ifdef DEBUG
-		[NSException raise:@"Copy preseed-file failed" format:@"%@", [error localizedDescription]];
+		[NSException raise:@"Copy of preseeded file failed" format:@"%@", [error localizedDescription]];
 #endif
 	}
 }
@@ -69,7 +69,7 @@ managedObjectModel	= managedObjectModel_;
 		[self usePreSeededFile:filePath];
 #ifdef DEBUG
 	else
-		[NSException raise:@"Preseed-file does not exist at path" format:@"%@", filePath];
+		[NSException raise:@"Preseeded file does not exist at path" format:@"%@", filePath];
 #endif
 }
 
