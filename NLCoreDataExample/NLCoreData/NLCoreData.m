@@ -75,6 +75,14 @@ managedObjectModel	= managedObjectModel_;
 
 #pragma mark - Property Accessors
 
+- (NSString *)modelName
+{
+	if (modelName_) return modelName_;
+	
+	modelName_ = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"];
+	return modelName_;
+}
+
 - (NSString *)storePath
 {
 	return [[NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject]

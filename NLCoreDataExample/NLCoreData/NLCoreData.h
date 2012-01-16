@@ -45,6 +45,8 @@ NSManagedObjectContext;
 /**
  Model name. Set this before use, typically in application:didFinishLaunchingWithOptions:
  If your data model is named MyDataModel.xcdatamodeld, set modelName to @"MyDataModel".
+ This is optional. If not explicitly set, NLCoreData uses CFBundleName for the main bundle.
+ E.g., if the app is named "MyApp", the model should be named "MyApp".
  */
 @property (strong, nonatomic) NSString*	modelName;
 
