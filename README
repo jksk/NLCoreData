@@ -111,4 +111,6 @@ Setup
 -----
 1. Add the NLCoreData folder to your project.
 2. #import "NLCoreData.h" where you need it (in prefix.pch for easy access).
-3. Set modelName to what your model is named: [[NLCoreData shared] setModelName:@"MyModel"];
+3. Optionally, set modelName to what your model is named: [[NLCoreData shared] setModelName:@"MyModel"];
+
+Step 3 is skippable if your model name is the same as your app name.
