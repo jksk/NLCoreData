@@ -86,7 +86,7 @@ managedObjectModel	= managedObjectModel_;
 - (NSString *)storePath
 {
 	return [[NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject]
-			stringByAppendingPathComponent:[modelName_ stringByAppendingString:@".sqlite"]];
+			stringByAppendingPathComponent:[[self modelName] stringByAppendingString:@".sqlite"]];
 }
 
 - (NSURL *)storeURL
@@ -94,7 +94,7 @@ managedObjectModel	= managedObjectModel_;
 	NSURL* path = [[[NSFileManager defaultManager] URLsForDirectory:NSLibraryDirectory
 														  inDomains:NSUserDomainMask] lastObject];
 	
-	return [path URLByAppendingPathComponent:[modelName_ stringByAppendingString:@".sqlite"]];
+	return [path URLByAppendingPathComponent:[[self modelName] stringByAppendingString:@".sqlite"]];
 }
 
 - (void)setStoreEncrypted:(BOOL)storeEncrypted
@@ -170,7 +170,7 @@ managedObjectModel	= managedObjectModel_;
 {
 	if (managedObjectModel_) return managedObjectModel_;
 	
-	NSURL* url = [[NSBundle mainBundle] URLForResource:modelName_ withExtension:@"momd"];
+	NSURL* url = [[NSBundle mainBundle] URLForResource:[self modelName] withExtension:@"momd"];
 	managedObjectModel_ = [[NSManagedObjectModel alloc] initWithContentsOfURL:url];
 	return managedObjectModel_;
 }
