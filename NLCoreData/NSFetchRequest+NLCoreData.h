@@ -44,6 +44,7 @@
 + (NSFetchRequest *)fetchRequestWithEntity:(Class)entity inContext:(NSManagedObjectContext *)context;
 
 /**
+ @name Sorting
  Adds add a sort descriptor the fetch request. First added is primary, second added is secondary, etc.
  @param key The keypath to use when performing a comparison.
  @param ascending YES if the receiver specifies sorting in ascending order, otherwise NO.

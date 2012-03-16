@@ -29,6 +29,26 @@
 
 #pragma mark - Heavy lifting
 
++ (id)fetchSingleFromContext:(NSManagedObjectContext *)context withObjectID:(NSManagedObjectID *)objectID
+{
+	id object = [context objectRegisteredForID:objectID];
+	if (object) return object;
+	
+	object = [context objectWithID:objectID];
+	if (![object isFault]) return object;
+	
+	NSError* error = nil;
+	object = [context existingObjectWithID:objectID error:&error];
+	
+#ifdef DEBUG
+	if (error)
+		[NSException raise:@"Fetch Exception"
+					format:@"Error getting object with id %@: %@", objectID, [error localizedDescription]];
+#endif
+	
+	return object;
+}
+
 + (NSArray *)fetchFromContext:(NSManagedObjectContext *)context
 				withPredicate:(NSPredicate *)predicate
 		   andSortDescriptors:(NSArray *)sortDescriptors
@@ -141,6 +161,11 @@
 }
 
 #pragma mark - Fetch single objects convenience methods
+
++ (id)fetchSingleWithObjectID:(NSManagedObjectID *)objectID
+{
+	return [self fetchSingleFromContext:[NSManagedObjectContext contextForThread] withObjectID:objectID];
+}
 
 + (id)fetchSingle
 {

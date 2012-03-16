@@ -102,6 +102,25 @@
 
 /**
  @name Fetch single objects
+ Fetches a single object with specified object ID.
+ Attempts to avoid disk IO if possible.
+ @param context The context to fetch the object from.
+ @param objectID The object ID to fetch.
+ @return The object, or nil if none found
+ */
++ (id)fetchSingleFromContext:(NSManagedObjectContext *)context withObjectID:(NSManagedObjectID *)objectID;
+
+/**
+ @name Fetch single objects
+ Fetches a single object with specified object ID from shared context for current thread.
+ Attempts to avoid disk IO if possible.
+ @param objectID The object ID to fetch.
+ @return The object, or nil if none found
+ */
++ (id)fetchSingleWithObjectID:(NSManagedObjectID *)objectID;
+
+/**
+ @name Fetch single objects
  Fetches a single object filtered by predicate.
  @param context The context to fetch the object from.
  @param predicate The predicate to filter the objects before fetching.
