@@ -259,6 +259,25 @@
 					   limitResults:(NSUInteger)limit
 						 completion:(void (^)(NSArray* objectIDs))completion;
 
+/**
+ @name Fetch multiple object IDs
+ Fetches all matching object IDs asynchronously.
+ @param predicate The predicate to filter the objects before fetching.
+ @param sortDescriptors An array of NSSortDescriptors.
+ @param completion Block to run on completion. Runs on main thread. Must be non-nil.
+ */
++ (void)fetchObjectIDsWithPredicate:(NSPredicate *)predicate
+				 andSortDescriptors:(NSArray *)sortDescriptors
+						 completion:(void (^)(NSArray* objectIDs))completion;
+
+/**
+ @name Fetch multiple object IDs
+ Fetches all matching object IDs asynchronously.
+ @param predicate The predicate to filter the objects before fetching.
+ @param completion Block to run on completion. Runs on main thread. Must be non-nil.
+ */
++ (void)fetchObjectIDsWithPredicate:(NSPredicate *)predicate completion:(void (^)(NSArray* objectIDs))completion;
+
 #pragma mark - Miscellaneous
 
 /**

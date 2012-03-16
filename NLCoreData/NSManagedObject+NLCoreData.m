@@ -274,6 +274,24 @@
 					 limitResults:limit];
 }
 
++ (void)fetchObjectIDsWithPredicate:(NSPredicate *)predicate
+				 andSortDescriptors:(NSArray *)sortDescriptors
+						 completion:(void (^)(NSArray *))completion
+{
+	return [self fetchObjectIDsWithPredicate:predicate
+						  andSortDescriptors:sortDescriptors
+								limitResults:0
+								  completion:completion];
+}
+
++ (void)fetchObjectIDsWithPredicate:(NSPredicate *)predicate completion:(void (^)(NSArray *))completion
+{
+	return [self fetchObjectIDsWithPredicate:predicate
+						  andSortDescriptors:nil
+								limitResults:0
+								  completion:completion];
+}
+
 #pragma mark - Miscellaneous
 
 - (NSArray *)managedAttributeNames
