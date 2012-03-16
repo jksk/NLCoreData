@@ -25,6 +25,9 @@
 #import "NSManagedObject+NLCoreData.h"
 #import "NLCoreData.h"
 
+#define EXCEPTION_FETCH	@"NLCoreData Fetch Exception"
+#define EXCEPTION_COUNT	@"NLCoreData Count Exception"
+
 @implementation NSManagedObject (NLCoreData)
 
 #pragma mark - Heavy lifting
@@ -42,7 +45,7 @@
 	
 #ifdef DEBUG
 	if (error)
-		[NSException raise:@"Fetch Exception"
+		[NSException raise:EXCEPTION_FETCH
 					format:@"Error getting object with id %@: %@", objectID, [error localizedDescription]];
 #endif
 	
@@ -65,7 +68,7 @@
 	NSArray* results = [context executeFetchRequest:request error:&error];
 	
 #ifdef DEBUG
-	if (!results) [NSException raise:@"Fetch Exception" format:@"Error fetching: %@", [error localizedDescription]];
+	if (!results) [NSException raise:EXCEPTION_FETCH format:@"Error fetching: %@", [error localizedDescription]];
 #endif
 	return results;
 }
@@ -78,7 +81,7 @@
 								 limitResults:0];
 #ifdef DEBUG
 	if ([objects count] > 1)
-		[NSException raise:@"Multiple objects fetched in single fetch" format:@"objects: %i", [objects count]];
+		[NSException raise:EXCEPTION_FETCH format:@"Expected single object, retrieved %i objects", [objects count]];
 #endif
 	return [objects count] ? [objects objectAtIndex:0] : nil;
 }
@@ -109,7 +112,7 @@
 	NSUInteger count = [context countForFetchRequest:request error:&error];
 	
 #ifdef DEBUG
-	if (error) [NSException raise:@"Count Exception" format:@"Count Error: %@", [error localizedDescription]];
+	if (error) [NSException raise:EXCEPTION_COUNT format:@"Count Error: %@", [error localizedDescription]];
 #endif
 	return count;
 }
