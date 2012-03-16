@@ -127,6 +127,28 @@
 	for (NSManagedObject* object in objects) [context deleteObject:object];
 }
 
++ (void)fetchObjectIDsWithPredicate:(NSPredicate *)predicate
+				 andSortDescriptors:(NSArray *)sortDescriptors
+					   limitResults:(NSUInteger)limit
+						 completion:(void (^)(NSArray *))completion
+{
+#ifdef DEBUG
+	if (!completion)
+		[NSException raise:EXCEPTION_FETCH format:@"completion block must not be nil"];
+#endif
+	
+	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+		
+		NSArray* objects = [self fetchWithPredicate:predicate andSortDescriptors:sortDescriptors limitResults:limit];
+		NSMutableArray* objectIDs = [NSMutableArray arrayWithCapacity:[objects count]];
+		
+		for (NSManagedObject* obj in objects)
+			[objectIDs addObject:[obj objectID]];
+		
+		dispatch_async(dispatch_get_main_queue(), ^{ completion([NSArray arrayWithArray:objectIDs]); });
+	});
+}
+
 #pragma mark - Insert convenience methods
 
 + (id)insert
