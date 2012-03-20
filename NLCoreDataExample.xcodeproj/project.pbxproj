@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		090E130715185AC200119CA4 /* NLCoreData.podspec in Resources */ = {isa = PBXBuildFile; fileRef = 090E130615185AC200119CA4 /* NLCoreData.podspec */; };
 		0919D502143248D40087B006 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0919D501143248D40087B006 /* UIKit.framework */; };
 		0919D504143248D40087B006 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0919D503143248D40087B006 /* Foundation.framework */; };
 		0919D506143248D40087B006 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0919D505143248D40087B006 /* CoreGraphics.framework */; };
@@ -42,6 +43,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		090E130615185AC200119CA4 /* NLCoreData.podspec */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = NLCoreData.podspec; sourceTree = "<group>"; };
 		0919D4FD143248D40087B006 /* NLCoreDataExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NLCoreDataExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0919D501143248D40087B006 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		0919D503143248D40087B006 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -107,6 +109,7 @@
 		0919D4F2143248D40087B006 = {
 			isa = PBXGroup;
 			children = (
+				090E130615185AC200119CA4 /* NLCoreData.podspec */,
 				09C244E514375C1200E96E64 /* README */,
 				09C30BCD14CDF1B000D82024 /* NLCoreData */,
 				0919D507143248D40087B006 /* NLCoreDataExample */,
@@ -280,6 +283,7 @@
 			files = (
 				0919D50C143248D40087B006 /* InfoPlist.strings in Resources */,
 				09C244E614375C1200E96E64 /* README in Resources */,
+				090E130715185AC200119CA4 /* NLCoreData.podspec in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
