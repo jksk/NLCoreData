@@ -27,11 +27,6 @@
 @interface NSFetchRequest (NLCoreData)
 
 /**
- 
- */
-+ (void)setDefaults:(void (^)(NSFetchRequest* request))block;
-
-/**
  @name Initialization
  A fetch request set to be executed in the shared context for the current thread.
  @param entity The NSManagedObject subclass of the entity.

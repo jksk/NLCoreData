@@ -32,6 +32,9 @@
 
 - (void)tearDown
 {
+	[User deleteWithPredicate:nil];
+	[Group deleteWithPredicate:nil];
+	
 	[super tearDown];
 }
 
@@ -80,6 +83,7 @@
 	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 		
 		NSManagedObjectContext* context = [NSManagedObjectContext contextForThread];
+		[User deleteWithPredicate:nil];
 		
 		STAssertTrue([User countWithPredicate:nil] == 0, @"");
 		[User insert];

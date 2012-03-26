@@ -26,18 +26,7 @@
 #import "NSFetchRequest+NLCoreData.h"
 #import "NLCoreData.h"
 
-typedef void(^NLCoreDataFetchRequestBlock)(NSFetchRequest* request);
-
-const static void* NLCoreDataFetchRequestDefaultsBlockKey = "NLCoreDataFetchRequestDefaultsBlockKey";
-
 @implementation NSFetchRequest (NLCoreData)
-
-+ (void)setDefaults:(void (^)(NSFetchRequest *))block
-{
-	uintptr_t policy = block ? OBJC_ASSOCIATION_COPY : OBJC_ASSOCIATION_ASSIGN;
-	
-	objc_setAssociatedObject(self, NLCoreDataFetchRequestDefaultsBlockKey, block, policy);
-}
 
 + (NSFetchRequest *)fetchRequestWithEntity:(Class)entity
 {
@@ -51,11 +40,6 @@ const static void* NLCoreDataFetchRequestDefaultsBlockKey = "NLCoreDataFetchRequ
 	[request setEntity:[NSEntityDescription
 						entityForName:NSStringFromClass(entity)
 						inManagedObjectContext:context]];
-	
-	NLCoreDataFetchRequestBlock block = objc_getAssociatedObject(self, NLCoreDataFetchRequestDefaultsBlockKey);
-	
-	if (block)
-		block(request);
 	
 	return request;
 }
