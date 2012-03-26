@@ -39,13 +39,6 @@ typedef void(^NLCoreDataNotificationBlock)(NSNotification* note);
 
 /**
  @name Lifecycle
- Creates a new context. Use this is you need a secondary context for the same thread.
- */
-+ (NSManagedObjectContext *)context;
-
-/**
- @name Lifecycle
- Typically use this instead of +context above.
  @return The shared context for current thread. Lazily loaded if non-existant.
  */
 + (NSManagedObjectContext *)contextForThread;
@@ -61,22 +54,10 @@ typedef void(^NLCoreDataNotificationBlock)(NSNotification* note);
 
 /**
  @name Notifications
- Notifies and merges main thread context with changes when a save is performed. The block is run on the main thread.
- @param completion Block to performed after save. Can be nil.
+ Merges receiver with another context.
+ @parameter completion Optional block to run after merge.
  */
-- (void)notifyMainThreadContextOnSaveWithBlock:(NLCoreDataNotificationBlock)block;
-
-/**
- @name Notifications
- Notifies and merges main thread context with changes when a save is performed.
- */
-- (void)notifyMainThreadContextOnSave;
-
-/**
- @name Notifications
- Stops notifying main thread context on save.
- */
-- (void)stopNotifyingMainThreadContextOnSave;
+- (void)mergeWithContextOnThread:(NSThread *)thread completion:(void (^)(NSNotification* note))completion;
 
 #pragma mark - Properties
 

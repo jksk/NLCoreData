@@ -7,6 +7,8 @@
 //
 
 #import "NLAppDelegate.h"
+#import "User.h"
+#import "Group.h"
 
 @implementation NLAppDelegate
 

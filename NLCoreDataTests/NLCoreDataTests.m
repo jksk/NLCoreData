@@ -47,79 +47,49 @@
 - (void)testInsert
 {
 	[self seedUsers:1];
-	STAssertNotNil([User fetchSingle], @"");
+	STAssertNotNil([User fetchSingle:0 withPredicate:nil], @"");
 	[self deleteUsers];
 }
 
 - (void)testFetch
 {
 	[self seedUsers:1];
-	STAssertNotNil([User fetchSingle], @"");
-	STAssertTrue([[User fetch] count] == 1, @"");
+	STAssertNotNil([User fetchSingle:0 withPredicate:nil], @"");
+	STAssertTrue([[User fetchWithPredicate:nil] count] == 1, @"");
 	[self deleteUsers];
 }
 
 - (void)testDelete
 {
 	[self seedUsers:1];
-	[User delete];
-	STAssertNil([User fetchSingle], @"");
+	[User deleteWithPredicate:nil];
+	STAssertNil([User fetchSingle:0 withPredicate:nil], @"");
 }
 
 - (void)testCount
 {
 	[self seedUsers:1];
-	STAssertTrue([User count] == 1, @"");
+	STAssertTrue([User countWithPredicate:nil] == 1, @"");
 }
 
 - (void)testNotification
 {
-	[User delete];
-	STAssertTrue([User count] == 0, @"");
+	[User deleteWithPredicate:nil];
+	STAssertTrue([User countWithPredicate:nil] == 0, @"");
 	
 	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 		
 		NSManagedObjectContext* context = [NSManagedObjectContext contextForThread];
 		
-		STAssertTrue([User count] == 0, @"");
+		STAssertTrue([User countWithPredicate:nil] == 0, @"");
 		[User insert];
-		STAssertTrue([User count] == 1, @"");
+		STAssertTrue([User countWithPredicate:nil] == 1, @"");
 		
-		[context notifyMainThreadContextOnSave];
-		[context save];
-		
-		dispatch_async(dispatch_get_main_queue(), ^{
+		[context mergeWithContextOnThread:[NSThread mainThread] completion:^(NSNotification *note) {
 			
-			STAssertTrue([User count] == 1, @"");
-		});
-	});
-}
-
-- (void)testNotificationWithBlock
-{
-	[User delete];
-	STAssertTrue([User count] == 0, @"");
-	
-	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-		
-		NSManagedObjectContext* context = [NSManagedObjectContext contextForThread];
-		
-		STAssertTrue([User count] == 0, @"");
-		[User insert];
-		STAssertTrue([User count] == 1, @"");
-		
-		[context notifyMainThreadContextOnSaveWithBlock:^(NSNotification *note) {
-			
-			STAssertTrue([NSThread mainThread] == [NSThread currentThread], @"");
-			STAssertTrue([User count] == 1, @"");
+			STAssertTrue([[NSThread currentThread] isMainThread], @"not on main thread");
+			STAssertTrue([User countWithPredicate:nil] == 1, @"contexts not merged");
 		}];
-		
-		[context save];
-		
-		dispatch_async(dispatch_get_main_queue(), ^{
-			
-			STAssertTrue([User count] == 1, @"");
-		});
 	});
 }
 
@@ -132,14 +102,11 @@
 		User* user = [User insert];
 		[user setUsername:@""];
 	}
-	
-	[[NSManagedObjectContext contextForThread] save];
 }
 
 - (void)deleteUsers
 {
-	[User delete];
-	[[NSManagedObjectContext contextForThread] save];
+	[User deleteWithPredicate:nil];
 }
 
 @end

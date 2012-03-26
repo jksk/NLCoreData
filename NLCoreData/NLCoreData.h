@@ -29,15 +29,24 @@
 
 #import <Foundation/Foundation.h>
 
+#import "NSThread+NLCoreData.h"
 #import "NSManagedObject+NLCoreData.h"
 #import "NSManagedObjectContext+NLCoreData.h"
 #import "NSFetchRequest+NLCoreData.h"
 #import "NSFetchedResultsController+NLCoreData.h"
 
 @class
-NSPersistentStoreCoordinator,
 NSManagedObjectModel,
+NSPersistentStoreCoordinator,
 NSManagedObjectContext;
+
+extern const struct NLCoreDataExceptionsStruct
+{
+	__unsafe_unretained NSString* predicate;
+	__unsafe_unretained NSString* count;
+	__unsafe_unretained NSString* parameter;
+	__unsafe_unretained NSString* merge;
+} NLCoreDataExceptions;
 
 #pragma mark -
 @interface NLCoreData : NSObject

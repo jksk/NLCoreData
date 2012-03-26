@@ -22,35 +22,54 @@
 //  IN THE SOFTWARE.
 //  
 
+#import <objc/runtime.h>
 #import "NSFetchRequest+NLCoreData.h"
 #import "NLCoreData.h"
 
+typedef void(^NLCoreDataFetchRequestBlock)(NSFetchRequest* request);
+
+const static void* NLCoreDataFetchRequestDefaultsBlockKey = "NLCoreDataFetchRequestDefaultsBlockKey";
+
 @implementation NSFetchRequest (NLCoreData)
 
-+ (NSFetchRequest *)fetchRequestWithEntity:(Class)entity inContext:(NSManagedObjectContext *)context
++ (void)setDefaults:(void (^)(NSFetchRequest *))block
 {
-	NSFetchRequest* request = [[NSFetchRequest alloc] init];
-	[request setEntity:[NSEntityDescription
-						entityForName:NSStringFromClass(entity)
-						inManagedObjectContext:context]];
-	return request;
+	uintptr_t policy = block ? OBJC_ASSOCIATION_COPY : OBJC_ASSOCIATION_ASSIGN;
+	
+	objc_setAssociatedObject(self, NLCoreDataFetchRequestDefaultsBlockKey, block, policy);
 }
 
 + (NSFetchRequest *)fetchRequestWithEntity:(Class)entity
 {
-	return [self fetchRequestWithEntity:entity inContext:[NSManagedObjectContext contextForThread]];
+	return [self fetchRequestWithEntity:entity context:[NSManagedObjectContext contextForThread]];
+}
+
++ (NSFetchRequest *)fetchRequestWithEntity:(Class)entity context:(NSManagedObjectContext *)context
+{
+	NSFetchRequest* request = [[NSFetchRequest alloc] init];
+	
+	[request setEntity:[NSEntityDescription
+						entityForName:NSStringFromClass(entity)
+						inManagedObjectContext:context]];
+	
+	NLCoreDataFetchRequestBlock block = objc_getAssociatedObject(self, NLCoreDataFetchRequestDefaultsBlockKey);
+	
+	if (block)
+		block(request);
+	
+	return request;
 }
 
 - (void)sortByKey:(NSString *)key ascending:(BOOL)ascending
 {
-	NSMutableArray* newDescriptors = [NSMutableArray array];
-	NSArray* existingDescriptors = [self sortDescriptors];
+	NSSortDescriptor* sortDescriptor	= [NSSortDescriptor sortDescriptorWithKey:key ascending:ascending];
+	NSMutableArray* newDescriptors		= [NSMutableArray array];
+	NSArray* existingDescriptors		= [self sortDescriptors];
 	
-	if (existingDescriptors) [newDescriptors addObjectsFromArray:existingDescriptors];
+	if (existingDescriptors)
+		[newDescriptors addObjectsFromArray:existingDescriptors];
 	
-	NSSortDescriptor* sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:key ascending:ascending];
 	[newDescriptors addObject:sortDescriptor];
-	
 	[self setSortDescriptors:newDescriptors];
 }
 

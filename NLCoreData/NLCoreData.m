@@ -25,6 +25,13 @@
 #import <CoreData/CoreData.h>
 #import "NLCoreData.h"
 
+const struct NLCoreDataExceptionsStruct NLCoreDataExceptions = {
+	.predicate	= @"Predicate Exception",
+	.count		= @"Count Exception",
+	.parameter	= @"Parameter Exception",
+	.merge		= @"Merge Exception"
+};
+
 #pragma mark -
 @implementation NLCoreData
 

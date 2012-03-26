@@ -25,294 +25,302 @@
 #import "NSManagedObject+NLCoreData.h"
 #import "NLCoreData.h"
 
-#define EXCEPTION_FETCH	@"NLCoreData Fetch Exception"
-#define EXCEPTION_COUNT	@"NLCoreData Count Exception"
+#ifdef DEBUG
+#define SET_PREDICATE_WITH_VARIADIC_ARGS \
+	NSPredicate* predicate = nil; \
+	if ([predicateOrString isKindOfClass:[NSString class]]) { \
+		va_list args; \
+		va_start(args, predicateOrString); \
+		predicate = [NSPredicate predicateWithFormat:predicateOrString arguments:args]; \
+		va_end(args); \
+	} \
+	else if ([predicateOrString isKindOfClass:[NSPredicate class]]) \
+		predicate = predicateOrString; \
+	else if (predicateOrString) \
+		[NSException raise:NLCoreDataExceptions.predicate format:@"invalid predicate: %@", predicateOrString];
+#else
+#define SET_PREDICATE_WITH_VARIADIC_ARGS \
+	NSPredicate* predicate = nil; \
+	if ([predicateOrString isKindOfClass:[NSString class]]) { \
+		va_list args; \
+		va_start(args, predicateOrString); \
+		predicate = [NSPredicate predicateWithFormat:predicateOrString arguments:args]; \
+		va_end(args); \
+	} \
+	else if ([predicateOrString isKindOfClass:[NSPredicate class]]) \
+		predicate = predicateOrString;
+#endif
 
+#pragma mark -
 @implementation NSManagedObject (NLCoreData)
 
-#pragma mark - Heavy lifting
-
-+ (id)fetchSingleFromContext:(NSManagedObjectContext *)context withObjectID:(NSManagedObjectID *)objectID
-{
-	id object = [context objectRegisteredForID:objectID];
-	if (object) return object;
-	
-	object = [context objectWithID:objectID];
-	if (![object isFault]) return object;
-	
-	NSError* error = nil;
-	object = [context existingObjectWithID:objectID error:&error];
-	
-#ifdef DEBUG
-	if (error)
-		[NSException raise:EXCEPTION_FETCH
-					format:@"Error getting object with id %@: %@", objectID, [error localizedDescription]];
-#endif
-	
-	return object;
-}
-
-+ (NSArray *)fetchFromContext:(NSManagedObjectContext *)context
-				withPredicate:(NSPredicate *)predicate
-		   andSortDescriptors:(NSArray *)sortDescriptors
-				 limitResults:(NSUInteger)limit
-{
-	NSFetchRequest* request = [NSFetchRequest fetchRequestWithEntity:[self class] inContext:context];
-	[request setReturnsObjectsAsFaults:NO];
-	
-	if (predicate) [request setPredicate:predicate];
-	if (sortDescriptors) [request setSortDescriptors:sortDescriptors];
-	if (limit > 0) [request setFetchLimit:limit];
-	
-	NSError* error = nil;
-	NSArray* results = [context executeFetchRequest:request error:&error];
-	
-#ifdef DEBUG
-	if (!results) [NSException raise:EXCEPTION_FETCH format:@"Error fetching: %@", [error localizedDescription]];
-#endif
-	return results;
-}
-
-+ (id)fetchSingleFromContext:(NSManagedObjectContext *)context withPredicate:(NSPredicate *)predicate
-{
-	NSArray* objects = [self fetchFromContext:context
-								withPredicate:predicate
-						   andSortDescriptors:nil
-								 limitResults:0];
-#ifdef DEBUG
-	if ([objects count] > 1)
-		[NSException raise:EXCEPTION_FETCH format:@"Expected single object, retrieved %i objects", [objects count]];
-#endif
-	return [objects count] ? [objects objectAtIndex:0] : nil;
-}
-
-+ (id)fetchSingleOrInsertInContext:(NSManagedObjectContext *)context withPredicate:(NSPredicate *)predicate
-{
-	id object = [self fetchSingleFromContext:context withPredicate:predicate];
-	if (!object) object = [[self class] insertInContext:context];
-	return object;
-}
-
-+ (id)insertInContext:(NSManagedObjectContext *)context
-{
-	return [NSEntityDescription insertNewObjectForEntityForName:NSStringFromClass([self class])
-										   inManagedObjectContext:context];
-}
-
-+ (NSUInteger)countInContext:(NSManagedObjectContext *)context withPredicate:(NSPredicate *)predicate
-{
-	NSFetchRequest* request = [[NSFetchRequest alloc] init];
-	[request setEntity:[NSEntityDescription
-						entityForName:NSStringFromClass([self class])
-						inManagedObjectContext:context]];
-	
-	if (predicate) [request setPredicate:predicate];
-	
-	NSError* error = nil;
-	NSUInteger count = [context countForFetchRequest:request error:&error];
-	
-#ifdef DEBUG
-	if (error) [NSException raise:EXCEPTION_COUNT format:@"Count Error: %@", [error localizedDescription]];
-#endif
-	return count;
-}
-
-+ (void)deleteFromContext:(NSManagedObjectContext *)context withPredicate:(NSPredicate *)predicate
-{
-	NSArray* objects = [self fetchFromContext:context
-								withPredicate:predicate
-						   andSortDescriptors:nil
-								 limitResults:0];
-	
-	for (NSManagedObject* object in objects) [context deleteObject:object];
-}
-
-+ (void)fetchObjectIDsWithPredicate:(NSPredicate *)predicate
-				 andSortDescriptors:(NSArray *)sortDescriptors
-					   limitResults:(NSUInteger)limit
-						 completion:(void (^)(NSArray *))completion
-{
-#ifdef DEBUG
-	if (!completion)
-		[NSException raise:EXCEPTION_FETCH format:@"completion block must not be nil"];
-#endif
-	
-	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-		
-		NSArray* objects = [self fetchWithPredicate:predicate andSortDescriptors:sortDescriptors limitResults:limit];
-		NSMutableArray* objectIDs = [NSMutableArray arrayWithCapacity:[objects count]];
-		
-		for (NSManagedObject* obj in objects)
-			[objectIDs addObject:[obj objectID]];
-		
-		dispatch_async(dispatch_get_main_queue(), ^{ completion([NSArray arrayWithArray:objectIDs]); });
-	});
-}
-
-#pragma mark - Insert convenience methods
+#pragma mark - Inserting
 
 + (id)insert
 {
 	return [self insertInContext:[NSManagedObjectContext contextForThread]];
 }
 
-#pragma mark - Count convenience methods
-
-+ (NSUInteger)count
++ (id)insertInContext:(NSManagedObjectContext *)context
 {
-	return [self countInContext:[NSManagedObjectContext contextForThread] withPredicate:nil];
+	return [NSEntityDescription insertNewObjectForEntityForName:NSStringFromClass([self class])
+										 inManagedObjectContext:context];
 }
 
-+ (NSUInteger)countWithPredicate:(NSPredicate *)predicate
-{
-	return [self countInContext:[NSManagedObjectContext contextForThread] withPredicate:predicate];
-}
-
-#pragma mark - Delete convenience methods
+#pragma mark - Deleting
 
 - (void)delete
 {
 	[[self managedObjectContext] deleteObject:self];
 }
 
-+ (void)delete
++ (void)deleteWithRequest:(void (^)(NSFetchRequest* request))block
 {
-	[self deleteFromContext:[NSManagedObjectContext contextForThread] withPredicate:nil];
+	[self deleteWithRequest:block context:[NSManagedObjectContext contextForThread]];
 }
 
-+ (void)deleteWithPredicate:(NSPredicate *)predicate
++ (void)deleteWithRequest:(void (^)(NSFetchRequest* request))block context:(NSManagedObjectContext *)context
 {
-	[self deleteFromContext:[NSManagedObjectContext contextForThread] withPredicate:predicate];
-}
-
-#pragma mark - Fetch single objects convenience methods
-
-+ (id)fetchSingleWithObjectID:(NSManagedObjectID *)objectID
-{
-	return [self fetchSingleFromContext:[NSManagedObjectContext contextForThread] withObjectID:objectID];
-}
-
-+ (id)fetchSingle
-{
-	return [self fetchSingleFromContext:[NSManagedObjectContext contextForThread] withPredicate:nil];
-}
-
-+ (id)fetchSingleWithPredicate:(NSPredicate *)predicate
-{
-	return [self fetchSingleFromContext:[NSManagedObjectContext contextForThread] withPredicate:predicate];
-}
-
-+ (id)fetchSingleOrInsert
-{
-	return [self fetchSingleOrInsertInContext:[NSManagedObjectContext contextForThread] withPredicate:nil];
-}
-
-+ (id)fetchSingleOrInsertWithPredicate:(NSPredicate *)predicate
-{
-	return [self fetchSingleOrInsertInContext:[NSManagedObjectContext contextForThread] withPredicate:predicate];
-}
-
-#pragma mark - Fetch multiple objects convenience methods
-
-+ (NSArray *)fetch
-{
-	return [self fetchFromContext:[NSManagedObjectContext contextForThread]
-					withPredicate:nil
-			   andSortDescriptors:nil
-					 limitResults:0];
-}
-
-+ (NSArray *)fetchWithPredicate:(NSPredicate *)predicate
-{
-	return [self fetchFromContext:[NSManagedObjectContext contextForThread]
-					withPredicate:predicate
-			   andSortDescriptors:nil
-					 limitResults:0];
-}
-
-+ (NSArray *)fetchWithPredicate:(NSPredicate *)predicate sortByKey:(NSString *)key ascending:(BOOL)ascending
-{
-	NSSortDescriptor* sort = [NSSortDescriptor sortDescriptorWithKey:key ascending:ascending];
-	return [self fetchFromContext:[NSManagedObjectContext contextForThread]
-					withPredicate:predicate
-			   andSortDescriptors:[NSArray arrayWithObject:sort]
-					 limitResults:0];
-}
-
-+ (NSArray *)fetchAndSortByKey:(NSString *)key ascending:(BOOL)ascending
-{
-	NSSortDescriptor* sort = [NSSortDescriptor sortDescriptorWithKey:key ascending:ascending];
-	return [self fetchFromContext:[NSManagedObjectContext contextForThread]
-					withPredicate:nil
-			   andSortDescriptors:[NSArray arrayWithObject:sort]
-					 limitResults:0];
-}
-
-+ (NSArray *)fetchWithSortDescriptors:(NSArray *)sortDescriptors
-{
-	return [self fetchFromContext:[NSManagedObjectContext contextForThread]
-					withPredicate:nil
-			   andSortDescriptors:sortDescriptors
-					 limitResults:0];
-}
-
-+ (NSArray *)fetchWithPredicate:(NSPredicate *)predicate andSortDescriptors:(NSArray *)sortDescriptors
-{
-	return [self fetchFromContext:[NSManagedObjectContext contextForThread]
-					withPredicate:predicate
-			   andSortDescriptors:sortDescriptors
-					 limitResults:0];
-}
-
-+ (NSArray *)fetchWithPredicate:(NSPredicate *)predicate
-			 andSortDescriptors:(NSArray *)sortDescriptors
-				   limitResults:(NSUInteger)limit
-{
-	return [self fetchFromContext:[NSManagedObjectContext contextForThread]
-					withPredicate:predicate
-			   andSortDescriptors:sortDescriptors
-					 limitResults:limit];
-}
-
-+ (void)fetchObjectIDsWithPredicate:(NSPredicate *)predicate
-				 andSortDescriptors:(NSArray *)sortDescriptors
-						 completion:(void (^)(NSArray *))completion
-{
-	return [self fetchObjectIDsWithPredicate:predicate
-						  andSortDescriptors:sortDescriptors
-								limitResults:0
-								  completion:completion];
-}
-
-+ (void)fetchObjectIDsWithPredicate:(NSPredicate *)predicate completion:(void (^)(NSArray *))completion
-{
-	return [self fetchObjectIDsWithPredicate:predicate
-						  andSortDescriptors:nil
-								limitResults:0
-								  completion:completion];
-}
-
-#pragma mark - Miscellaneous
-
-- (NSArray *)managedAttributeNames
-{
-	return [[[self entity] attributesByName] allKeys];
-}
-
-- (BOOL)isNew
-{
-	return [[self committedValuesForKeys:nil] count] == 0;
-}
-
-- (void)touch
-{
-	NSArray* attributes = [self managedAttributeNames];
+	NSFetchRequest* request = [NSFetchRequest fetchRequestWithEntity:[self class]];
 	
-	if ([attributes count]) {
+	if (block)
+		block(request);
+	
+	[request setIncludesPropertyValues:NO];
+	[request setIncludesSubentities:NO];
+	
+	NSArray* objects = [self fetchWithRequest:nil context:context];
+	
+	for (NSManagedObject* object in objects)
+		[context deleteObject:object];
+}
+
++ (void)deleteWithPredicate:(id)predicateOrString, ...
+{
+	SET_PREDICATE_WITH_VARIADIC_ARGS
+	[self deleteRange:NSMakeRange(0, 0) sortByKey:nil ascending:YES withPredicate:predicate];
+}
+
++ (void)deleteRange:(NSRange)range withPredicate:(id)predicateOrString, ...
+{
+	SET_PREDICATE_WITH_VARIADIC_ARGS
+	[self deleteRange:range sortByKey:nil ascending:YES withPredicate:predicate];
+}
+
++ (void)deleteRange:(NSRange)range
+		  sortByKey:(NSString *)keyPath
+		  ascending:(BOOL)ascending
+	  withPredicate:(id)predicateOrString, ...
+{
+	SET_PREDICATE_WITH_VARIADIC_ARGS
+	[self deleteWithRequest:^(NSFetchRequest *request) {
 		
-		NSString* key = [attributes objectAtIndex:0];
-		[self setValue:[self valueForKey:key] forKey:key];
-	}
+		if (range.length > 0) {
+			
+			[request setFetchOffset:range.location];
+			[request setFetchLimit:range.length];
+		}
+		
+		if (keyPath)
+			[request sortByKey:keyPath ascending:ascending];
+		
+		if (predicate)
+			[request setPredicate:predicate];
+		
+	} context:[NSManagedObjectContext contextForThread]];
+}
+
+#pragma mark - Counting
+
++ (NSUInteger)countWithPredicate:(id)predicateOrString, ...
+{
+	SET_PREDICATE_WITH_VARIADIC_ARGS
+	return [self countWithRequest:^(NSFetchRequest *request) { [request setPredicate:predicate]; }
+						  context:[NSManagedObjectContext contextForThread]];
+}
+
++ (NSUInteger)countWithRequest:(void (^)(NSFetchRequest* request))block
+{
+	return [self countWithRequest:block context:[NSManagedObjectContext contextForThread]];
+}
+
++ (NSUInteger)countWithRequest:(void (^)(NSFetchRequest* request))block context:(NSManagedObjectContext *)context
+{
+	NSFetchRequest* request = [NSFetchRequest fetchRequestWithEntity:[self class]];
+	
+	if (block)
+		block(request);
+	
+	NSError* error;
+	NSUInteger count = [context countForFetchRequest:request error:&error];
+	
+#ifdef DEBUG
+	if (count == NSNotFound)
+		[NSException raise:NLCoreDataExceptions.count format:@"%@", [error localizedDescription]];
+#endif
+	
+	return count;
+}
+
+#pragma mark - Fetching
+
++ (id)fetchWithObjectID:(NSManagedObjectID *)objectID
+{
+	return [self fetchWithObjectID:objectID context:[NSManagedObjectContext contextForThread]];
+}
+
++ (id)fetchWithObjectID:(NSManagedObjectID *)objectID context:(NSManagedObjectContext *)context
+{
+	id object = [context objectRegisteredForID:objectID];
+	
+	if (object)
+		return object;
+	
+	object = [context objectWithID:objectID];
+	
+	if (![object isFault])
+		return object;
+	
+	NSError* error;
+	object = [context existingObjectWithID:objectID error:&error];
+	
+	return object;
+}
+
++ (NSArray *)fetchWithRequest:(void (^)(NSFetchRequest* request))block
+{
+	return [self fetchWithRequest:block context:[NSManagedObjectContext contextForThread]];
+}
+
++ (NSArray *)fetchWithRequest:(void (^)(NSFetchRequest* request))block context:(NSManagedObjectContext *)context
+{
+	NSFetchRequest* request = [NSFetchRequest fetchRequestWithEntity:[self class]];
+	
+	if (block)
+		block(request);
+	
+	NSError* error;
+	NSArray* objects = [context executeFetchRequest:request error:&error];
+	
+	return objects;
+}
+
++ (NSArray *)fetchWithPredicate:(id)predicateOrString, ...
+{
+	SET_PREDICATE_WITH_VARIADIC_ARGS
+	return [self fetchRange:NSMakeRange(0, 0) sortByKey:nil ascending:YES withPredicate:predicate];
+}
+
++ (NSArray *)fetchRange:(NSRange)range withPredicate:(id)predicateOrString, ...
+{
+	SET_PREDICATE_WITH_VARIADIC_ARGS
+	return [self fetchRange:range sortByKey:nil ascending:YES withPredicate:predicate];
+}
+
++ (NSArray *)fetchRange:(NSRange)range
+			  sortByKey:(NSString *)keyPath
+			  ascending:(BOOL)ascending
+		  withPredicate:(id)predicateOrString, ...
+{
+	SET_PREDICATE_WITH_VARIADIC_ARGS
+	return [self fetchWithRequest:^(NSFetchRequest *request) {
+		
+		if (range.length > 0) {
+			
+			[request setFetchOffset:range.location];
+			[request setFetchLimit:range.length];
+		}
+		
+		if (keyPath)
+			[request sortByKey:keyPath ascending:ascending];
+		
+		if (predicate)
+			[request setPredicate:predicate];
+		
+	} context:[NSManagedObjectContext contextForThread]];
+}
+
++ (NSArray *)fetchSingle:(NSUInteger)index withPredicate:(id)predicateOrString, ...
+{
+	SET_PREDICATE_WITH_VARIADIC_ARGS
+	return [self fetchSingle:index sortByKey:nil ascending:YES withPredicate:predicate];
+}
+
++ (NSArray *)fetchSingle:(NSUInteger)index
+			   sortByKey:(NSString *)keyPath
+			   ascending:(BOOL)ascending
+		   withPredicate:(id)predicateOrString, ...
+{
+	SET_PREDICATE_WITH_VARIADIC_ARGS
+	NSArray* objects = [self fetchRange:NSMakeRange(index, 1)
+							  sortByKey:keyPath
+							  ascending:ascending
+						  withPredicate:predicate];
+	
+	return [objects count] ? [objects objectAtIndex:0] : nil;
+}
+
++ (id)fetchOrInsertSingle:(NSUInteger)index withPredicate:(id)predicateOrString, ...
+{
+	SET_PREDICATE_WITH_VARIADIC_ARGS
+	return [self fetchOrInsertSingle:index sortByKey:nil ascending:YES withPredicate:predicate];
+}
+
++ (id)fetchOrInsertSingle:(NSUInteger)index
+				sortByKey:(NSString *)keyPath
+				ascending:(BOOL)ascending
+			withPredicate:(id)predicateOrString, ...
+{
+	SET_PREDICATE_WITH_VARIADIC_ARGS
+	id object = [self fetchSingle:index sortByKey:keyPath ascending:ascending withPredicate:predicate];
+	
+	if (object)
+		return object;
+	
+	return [self insert];
+}
+
++ (void)fetchAsynchronouslyWithRequest:(void (^)(NSFetchRequest* request))block
+							completion:(void (^)(NSArray* objects))completion
+{
+#ifdef DEBUG
+	if (!completion)
+		[NSException raise:NLCoreDataExceptions.parameter format:@"completion block cannot be nil"];
+#endif
+	
+	NSThread* thread = [NSThread currentThread];
+	
+	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+		
+		NSManagedObjectContext* context = [NSManagedObjectContext contextForThread];
+		NSFetchRequest* idRequest		= [NSFetchRequest fetchRequestWithEntity:[self class] context:context];
+		
+		if (block)
+			block(idRequest);
+		
+		[idRequest setResultType:NSManagedObjectIDResultType];
+		[idRequest setSortDescriptors:nil];
+		
+		NSError* idError;
+		NSArray* objectIDs = [context executeFetchRequest:idRequest error:&idError];
+		
+		[thread performBlockOnThread:^{
+			
+			NSPredicate* predicate = [NSPredicate predicateWithFormat:@"SELF IN %@", objectIDs];
+			NSFetchRequest* objRequest = [NSFetchRequest fetchRequestWithEntity:[self class]];
+			
+			if (block)
+				block(objRequest);
+			
+			[objRequest setPredicate:predicate];
+			
+			NSError* objError;
+			NSArray* objects = [[NSManagedObjectContext contextForThread]
+								executeFetchRequest:objRequest error:&objError];
+			
+			completion(objects);
+		}];
+	});
 }
 
 @end

@@ -27,48 +27,19 @@
 
 @implementation NSFetchedResultsController (NLCoreData)
 
-- (id)initWithFetchRequest:(NSFetchRequest *)fetchRequest
++ (id)controllerWithRequest:(NSFetchRequest *)request
 {
-	return [self initWithFetchRequest:fetchRequest
-				 managedObjectContext:[NSManagedObjectContext contextForThread]
-				   sectionNameKeyPath:nil
-							cacheName:nil];
+	return [self controllerWithRequest:request sectionNameKeyPath:nil cacheName:nil];
 }
 
-- (id)initWithFetchRequest:(NSFetchRequest *)fetchRequest cacheName:(NSString *)name
++ (id)controllerWithRequest:(NSFetchRequest *)request
+		 sectionNameKeyPath:(NSString *)keyPath
+				  cacheName:(NSString *)cacheName
 {
-	return [self initWithFetchRequest:fetchRequest
-				 managedObjectContext:[NSManagedObjectContext contextForThread]
-				   sectionNameKeyPath:nil
-							cacheName:name];
-}
-
-- (id)initWithFetchRequest:(NSFetchRequest *)fetchRequest
-		sectionNameKeyPath:(NSString *)sectionNameKeyPath
-				 cacheName:(NSString *)name
-{
-	return [self initWithFetchRequest:fetchRequest
-				 managedObjectContext:[NSManagedObjectContext contextForThread]
-				   sectionNameKeyPath:sectionNameKeyPath
-							cacheName:name];
-}
-
-- (id)initWithFetchRequest:(NSFetchRequest *)fetchRequest managedObjectContext:(NSManagedObjectContext *)context
-{
-	return [self initWithFetchRequest:fetchRequest
-				 managedObjectContext:context
-				   sectionNameKeyPath:nil
-							cacheName:nil];
-}
-
-- (id)initWithFetchRequest:(NSFetchRequest *)fetchRequest
-	  managedObjectContext:(NSManagedObjectContext *)context
-				 cacheName:(NSString *)name
-{
-	return [self initWithFetchRequest:fetchRequest
-				 managedObjectContext:context
-				   sectionNameKeyPath:nil
-							cacheName:name];
+	return [[self alloc] initWithFetchRequest:request
+						 managedObjectContext:[NSManagedObjectContext contextForThread]
+						   sectionNameKeyPath:keyPath
+									cacheName:cacheName];
 }
 
 @end

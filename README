@@ -14,6 +14,26 @@ You no longer access objects by typing an NSString with an entity name, instead 
 Instead of @"Person", use [Person class]. This provides a compile-time typo check.
 
 
+NLCoreData is not for you if
+----------------------------
+* you need more than one persistent store.
+* you don't want to subclass NSManagedObject
+
+
+Initialization
+--------------
+If your Core Data model is named to something other than the name of your main bundle, you need to set the model name
+before first use. Typically in application:didFinishLaunchingWithOptions:.
+
+	[[NLCoreData shared] setModelName:@"MyCoreDataModel"];
+
+You have to option to supply a pre-seeded sqlite database. First, check so that Core Data isn't initialized yet.
+Typically in application:didFinishLaunchingWithOptions: on your first run:
+
+	if ([[NLCoreData shared] storeExists] == NO)
+		[[NLCoreData shared] usePreSeededFile:pathToMyFile];
+
+
 Contexts
 --------
 NLCoreData provides lazily loaded shared NSManagedObjectContexts for all threads. To access:
@@ -24,10 +44,6 @@ Or if you're in a threaded environment and you want the context for the UI threa
 
 	NSManagedObjectContext* context = [NSManagedObjectContext contextForThread:[NSThread mainThread]];
 
-If you want another context in addition to the shared one:
-
-	NSManagedObjectContext* context = [NSManagedObjectContext context];
-
 To save a context:
 
 	BOOL success = [context save];
@@ -37,11 +53,11 @@ Methods
 -------
 If you want to fetch all Person objects in your shared context:
 
-	NSArray* results = [Person fetch];
+	NSArray* results = [Person fetchWithPredicate:nil];
 
 If you want to delete all Person objects in the context myContext:
 
-	[Person deleteFromContext:myContext];
+	[Person deleteWithRequest:nil context:myContext];
 	
 If you want to count all Person objects that match the predicate myPredicate:
 
@@ -52,29 +68,28 @@ Fetching
 --------
 You can fetch either an array of objects or a single object. If you want all Person objects in the shared context:
 
-	NSArray* results = [Person fetch];
+	NSArray* results = [Person fetchWithPredicate:nil];
 	
 If you want a single object in the shared context:
 
-	Person* person = [Person fetchSingle];
+	Person* person = [Person fetchSingleAtIndex:0 withPredicate:nil];
 
 The single fetch can be useful if there is only one object of that type, or if you provide a predicate
-that you're certain only matches one object. The fetch raises an exception if it finds more than one object.
+that you're certain only matches one object.
 
 In some cases, you want to return a single object, or create one if it doesn't exist:
 
-	Person* person = [Person fetchSingleOrInsert];
+	Person* person = [Person fetchOrInsertSingle:0 withPredicate:nil];
 
 
 Context interactivity
 ---------------------
-To have a context be notified on changes in another context:
+Merge a context with the main context (e.g., after downloading and inserting data in the background):
 
-	[dataDownloadContext notifyContextOnSave:someOtherContext];
-
-When you're done, decouple the contexts:
-
-	[dataDownloadContext stopNotifyingContextOnSave:someOtherContext];
+	[context mergeWithContextOnThread:[NSThread mainThread] completion:^(NSNotification* note) {
+		
+		// handle data here
+	}];
 
 
 Fetch Requests
@@ -84,28 +99,18 @@ you can do that with a provided convenience method:
 
 	NSFetchRequest* request = [NSFetchRequest fetchRequestWithEntity:[Person class]];
 
+The somewhat cumbersome setSortDescriptors: is augmented by sortByKey:ascending:
+Though setSortDescriptors: is still available, don't use both on the same NSFetchRequest.
 
-Initialization
---------------
-You have to option to supply a pre-seeded sqlite database. First, check so that Core Data isn't initialized yet.
-Typically in application:didFinishLaunchingWithOptions: on your first run:
-
-	if ([[NLCoreData shared] storeExists] == NO)
-		[[NLCoreData shared] usePreSeededFile:pathToMyFile];
-
-
-
-NLCoreData is not for you if
-----------------------------
-* you need more than one persistent store.
-* you don't want to subclass NSManagedObject
+	[request sortByKey:@"myKeyPath" ascending:NO];
+	[request sortByKey:@"mySecondaryKeyPath" ascending:YES];
 
 
 Notes
 -----
 * Make sure you subclass all your Core Data entities, and that the subclasses are named for their entity
 	(i.e., if you have an entity named Person, you need a subclass named Person).
-
+* I strongly recommend using mogenerator. It's quite excellent. Get it here: http://rentzsch.github.com/mogenerator
 
 Setup
 -----
@@ -113,4 +118,4 @@ Setup
 2. #import "NLCoreData.h" where you need it (in prefix.pch for easy access).
 3. Optionally, set modelName to what your model is named: [[NLCoreData shared] setModelName:@"MyModel"];
 
-Step 3 is skippable if your model name is the same as your app name.
+Step 3 is skippable if your model name is the same as your bundle/app name.

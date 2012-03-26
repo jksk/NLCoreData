@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		090E130715185AC200119CA4 /* NLCoreData.podspec in Resources */ = {isa = PBXBuildFile; fileRef = 090E130615185AC200119CA4 /* NLCoreData.podspec */; };
+		09101DEE151AFA3300F2189F /* NSManagedObject+NLCoreData.m in Sources */ = {isa = PBXBuildFile; fileRef = 09101DED151AFA3300F2189F /* NSManagedObject+NLCoreData.m */; };
 		0919D502143248D40087B006 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0919D501143248D40087B006 /* UIKit.framework */; };
 		0919D504143248D40087B006 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0919D503143248D40087B006 /* Foundation.framework */; };
 		0919D506143248D40087B006 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0919D505143248D40087B006 /* CoreGraphics.framework */; };
@@ -15,17 +16,18 @@
 		0919D50E143248D40087B006 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 0919D50D143248D40087B006 /* main.m */; };
 		0919D512143248D40087B006 /* NLAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 0919D511143248D40087B006 /* NLAppDelegate.m */; };
 		0919D5641432503F0087B006 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0919D5631432503F0087B006 /* CoreData.framework */; };
+		0958CE29151CA20700DB47A4 /* NSThread+NLCoreData.m in Sources */ = {isa = PBXBuildFile; fileRef = 0958CE28151CA20700DB47A4 /* NSThread+NLCoreData.m */; };
 		09C244E614375C1200E96E64 /* README in Resources */ = {isa = PBXBuildFile; fileRef = 09C244E514375C1200E96E64 /* README */; };
 		09C30BD814CDF1B000D82024 /* NLCoreData.m in Sources */ = {isa = PBXBuildFile; fileRef = 09C30BCF14CDF1B000D82024 /* NLCoreData.m */; };
 		09C30BD914CDF1B000D82024 /* NSFetchedResultsController+NLCoreData.m in Sources */ = {isa = PBXBuildFile; fileRef = 09C30BD114CDF1B000D82024 /* NSFetchedResultsController+NLCoreData.m */; };
 		09C30BDA14CDF1B000D82024 /* NSFetchRequest+NLCoreData.m in Sources */ = {isa = PBXBuildFile; fileRef = 09C30BD314CDF1B000D82024 /* NSFetchRequest+NLCoreData.m */; };
-		09C30BDB14CDF1B000D82024 /* NSManagedObject+NLCoreData.m in Sources */ = {isa = PBXBuildFile; fileRef = 09C30BD514CDF1B000D82024 /* NSManagedObject+NLCoreData.m */; };
 		09C30BDC14CDF1B000D82024 /* NSManagedObjectContext+NLCoreData.m in Sources */ = {isa = PBXBuildFile; fileRef = 09C30BD714CDF1B000D82024 /* NSManagedObjectContext+NLCoreData.m */; };
 		09DC265B1432629F004E1280 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0919D519143248D50087B006 /* SenTestingKit.framework */; };
 		09DC265C1432629F004E1280 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0919D501143248D40087B006 /* UIKit.framework */; };
 		09DC265D1432629F004E1280 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0919D503143248D40087B006 /* Foundation.framework */; };
 		09DC26631432629F004E1280 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 09DC26611432629F004E1280 /* InfoPlist.strings */; };
 		09DC26661432629F004E1280 /* NLCoreDataTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 09DC26651432629F004E1280 /* NLCoreDataTests.m */; };
+		09F298AB15185F3D008FB188 /* TODO in Resources */ = {isa = PBXBuildFile; fileRef = 09F298AA15185F3D008FB188 /* TODO */; };
 		09FAE02114370E0E006CEF72 /* CoreDataStore.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 09FAE01F14370E0E006CEF72 /* CoreDataStore.xcdatamodeld */; };
 		09FAE02714370EDE006CEF72 /* User.m in Sources */ = {isa = PBXBuildFile; fileRef = 09FAE02614370EDE006CEF72 /* User.m */; };
 		09FAE02B14370EDE006CEF72 /* Group.m in Sources */ = {isa = PBXBuildFile; fileRef = 09FAE02A14370EDE006CEF72 /* Group.m */; };
@@ -44,6 +46,8 @@
 
 /* Begin PBXFileReference section */
 		090E130615185AC200119CA4 /* NLCoreData.podspec */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = NLCoreData.podspec; sourceTree = "<group>"; };
+		09101DEC151AFA3300F2189F /* NSManagedObject+NLCoreData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSManagedObject+NLCoreData.h"; sourceTree = "<group>"; };
+		09101DED151AFA3300F2189F /* NSManagedObject+NLCoreData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSManagedObject+NLCoreData.m"; sourceTree = "<group>"; };
 		0919D4FD143248D40087B006 /* NLCoreDataExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NLCoreDataExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0919D501143248D40087B006 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		0919D503143248D40087B006 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -56,6 +60,8 @@
 		0919D511143248D40087B006 /* NLAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NLAppDelegate.m; sourceTree = "<group>"; };
 		0919D519143248D50087B006 /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
 		0919D5631432503F0087B006 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		0958CE27151CA20700DB47A4 /* NSThread+NLCoreData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSThread+NLCoreData.h"; sourceTree = "<group>"; };
+		0958CE28151CA20700DB47A4 /* NSThread+NLCoreData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSThread+NLCoreData.m"; sourceTree = "<group>"; };
 		09C244E514375C1200E96E64 /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
 		09C30BCE14CDF1B000D82024 /* NLCoreData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NLCoreData.h; sourceTree = "<group>"; };
 		09C30BCF14CDF1B000D82024 /* NLCoreData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NLCoreData.m; sourceTree = "<group>"; };
@@ -63,8 +69,6 @@
 		09C30BD114CDF1B000D82024 /* NSFetchedResultsController+NLCoreData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSFetchedResultsController+NLCoreData.m"; sourceTree = "<group>"; };
 		09C30BD214CDF1B000D82024 /* NSFetchRequest+NLCoreData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSFetchRequest+NLCoreData.h"; sourceTree = "<group>"; };
 		09C30BD314CDF1B000D82024 /* NSFetchRequest+NLCoreData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSFetchRequest+NLCoreData.m"; sourceTree = "<group>"; };
-		09C30BD414CDF1B000D82024 /* NSManagedObject+NLCoreData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSManagedObject+NLCoreData.h"; sourceTree = "<group>"; };
-		09C30BD514CDF1B000D82024 /* NSManagedObject+NLCoreData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSManagedObject+NLCoreData.m"; sourceTree = "<group>"; };
 		09C30BD614CDF1B000D82024 /* NSManagedObjectContext+NLCoreData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSManagedObjectContext+NLCoreData.h"; sourceTree = "<group>"; };
 		09C30BD714CDF1B000D82024 /* NSManagedObjectContext+NLCoreData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSManagedObjectContext+NLCoreData.m"; sourceTree = "<group>"; };
 		09DC265A1432629F004E1280 /* NLCoreDataTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NLCoreDataTests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -73,6 +77,7 @@
 		09DC26641432629F004E1280 /* NLCoreDataTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NLCoreDataTests.h; sourceTree = "<group>"; };
 		09DC26651432629F004E1280 /* NLCoreDataTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NLCoreDataTests.m; sourceTree = "<group>"; };
 		09DC26671432629F004E1280 /* NLCoreDataTests-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NLCoreDataTests-Prefix.pch"; sourceTree = "<group>"; };
+		09F298AA15185F3D008FB188 /* TODO */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TODO; sourceTree = "<group>"; };
 		09FAE02014370E0E006CEF72 /* CoreDataStore.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = CoreDataStore.xcdatamodel; sourceTree = "<group>"; };
 		09FAE02514370EDE006CEF72 /* User.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = User.h; sourceTree = "<group>"; };
 		09FAE02614370EDE006CEF72 /* User.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = User.m; sourceTree = "<group>"; };
@@ -111,6 +116,7 @@
 			children = (
 				090E130615185AC200119CA4 /* NLCoreData.podspec */,
 				09C244E514375C1200E96E64 /* README */,
+				09F298AA15185F3D008FB188 /* TODO */,
 				09C30BCD14CDF1B000D82024 /* NLCoreData */,
 				0919D507143248D40087B006 /* NLCoreDataExample */,
 				09DC265E1432629F004E1280 /* NLCoreDataTests */,
@@ -171,10 +177,12 @@
 				09C30BD114CDF1B000D82024 /* NSFetchedResultsController+NLCoreData.m */,
 				09C30BD214CDF1B000D82024 /* NSFetchRequest+NLCoreData.h */,
 				09C30BD314CDF1B000D82024 /* NSFetchRequest+NLCoreData.m */,
-				09C30BD414CDF1B000D82024 /* NSManagedObject+NLCoreData.h */,
-				09C30BD514CDF1B000D82024 /* NSManagedObject+NLCoreData.m */,
+				09101DEC151AFA3300F2189F /* NSManagedObject+NLCoreData.h */,
+				09101DED151AFA3300F2189F /* NSManagedObject+NLCoreData.m */,
 				09C30BD614CDF1B000D82024 /* NSManagedObjectContext+NLCoreData.h */,
 				09C30BD714CDF1B000D82024 /* NSManagedObjectContext+NLCoreData.m */,
+				0958CE27151CA20700DB47A4 /* NSThread+NLCoreData.h */,
+				0958CE28151CA20700DB47A4 /* NSThread+NLCoreData.m */,
 			);
 			path = NLCoreData;
 			sourceTree = "<group>";
@@ -284,6 +292,7 @@
 				0919D50C143248D40087B006 /* InfoPlist.strings in Resources */,
 				09C244E614375C1200E96E64 /* README in Resources */,
 				090E130715185AC200119CA4 /* NLCoreData.podspec in Resources */,
+				09F298AB15185F3D008FB188 /* TODO in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -326,8 +335,9 @@
 				09C30BD814CDF1B000D82024 /* NLCoreData.m in Sources */,
 				09C30BD914CDF1B000D82024 /* NSFetchedResultsController+NLCoreData.m in Sources */,
 				09C30BDA14CDF1B000D82024 /* NSFetchRequest+NLCoreData.m in Sources */,
-				09C30BDB14CDF1B000D82024 /* NSManagedObject+NLCoreData.m in Sources */,
 				09C30BDC14CDF1B000D82024 /* NSManagedObjectContext+NLCoreData.m in Sources */,
+				09101DEE151AFA3300F2189F /* NSManagedObject+NLCoreData.m in Sources */,
+				0958CE29151CA20700DB47A4 /* NSThread+NLCoreData.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
