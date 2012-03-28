@@ -37,9 +37,7 @@
 {
 	NSFetchRequest* request = [[NSFetchRequest alloc] init];
 	
-	[request setEntity:[NSEntityDescription
-						entityForName:NSStringFromClass(entity)
-						inManagedObjectContext:context]];
+	[request setEntity:[NSEntityDescription entityForName:NSStringFromClass(entity) inManagedObjectContext:context]];
 	
 	return request;
 }

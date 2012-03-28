@@ -107,8 +107,6 @@ undoEnabled;
 
 - (void)managedObjectContextMerge:(NSNotification *)note
 {
-	NSLog(@"managedObjectContextMerge: mainthr? %i", [NSThread mainThread] == [NSThread currentThread]);
-	
 	NSMutableDictionary* dictionary			= [[NSThread currentThread] threadDictionary];
 	NSThread* thread						= [dictionary objectForKey:NLCoreDataMergeTargetContextKey];
 	NSManagedObjectContext* context			= [NSManagedObjectContext contextForThread:thread];
@@ -121,11 +119,8 @@ undoEnabled;
 	[[NSNotificationCenter defaultCenter]
 	 removeObserver:context name:NSManagedObjectContextDidSaveNotification object:self];
 	
-	[thread performBlockOnThread:^{
-		
-		if (completion)
-			completion(note);
-	}];
+	if (completion)
+		[thread performBlockOnThread:^{ completion(note); }];
 }
 
 #pragma mark - Property Accessors

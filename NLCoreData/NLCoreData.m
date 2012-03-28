@@ -26,10 +26,14 @@
 #import "NLCoreData.h"
 
 const struct NLCoreDataExceptionsStruct NLCoreDataExceptions = {
-	.predicate	= @"Predicate Exception",
-	.count		= @"Count Exception",
-	.parameter	= @"Parameter Exception",
-	.merge		= @"Merge Exception"
+	.predicate			= @"Predicate Exception",
+	.count				= @"Count Exception",
+	.parameter			= @"Parameter Exception",
+	.merge				= @"Merge Exception",
+	.fileExist			= @"File does not exist",
+	.fileCopy			= @"Could not copy file",
+	.encryption			= @"Encryption Exception",
+	.persistentStore	= @"Persistent Store Exception"
 };
 
 #pragma mark -
@@ -51,33 +55,22 @@ managedObjectModel	= managedObjectModel_;
 	return NLCoreDataSingleton_;
 }
 
-- (void)usePreSeededFile:(NSString *)filePath
+- (void)useDatabaseFile:(NSString *)filePath
 {
 	if (![[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
 #ifdef DEBUG
-		[NSException raise:@"Preseeded file does not exist at path" format:@"%@", filePath];
+		[NSException raise:NLCoreDataExceptions.fileExist format:@"%@", filePath];
 #endif
 		return;
 	}
 	
-	NSError* error = nil;
+	NSError* error;
+	
 	if (![[NSFileManager defaultManager] copyItemAtPath:filePath toPath:[self storePath] error:&error]) {
 #ifdef DEBUG
-		[NSException raise:@"Copy of preseeded file failed" format:@"%@", [error localizedDescription]];
+		[NSException raise:NLCoreDataExceptions.fileCopy format:@"%@", [error localizedDescription]];
 #endif
 	}
-}
-
-- (void)usePreSeededFileFromBundle
-{
-	NSString* filePath = [[NSBundle mainBundle] pathForResource:[self modelName] ofType:@"sqlite"];
-	
-	if ([[NSFileManager defaultManager] fileExistsAtPath:filePath])
-		[self usePreSeededFile:filePath];
-#ifdef DEBUG
-	else
-		[NSException raise:@"Preseeded file does not exist at path" format:@"%@", filePath];
-#endif
 }
 
 #pragma mark - Property Accessors
@@ -106,16 +99,13 @@ managedObjectModel	= managedObjectModel_;
 
 - (void)setStoreEncrypted:(BOOL)storeEncrypted
 {
-	NSString* encryption = storeEncrypted ? NSFileProtectionComplete : NSFileProtectionNone;
-	NSDictionary* attributes = [NSDictionary dictionaryWithObject:encryption forKey:NSFileProtectionKey];
+	NSString* encryption		= storeEncrypted ? NSFileProtectionComplete : NSFileProtectionNone;
+	NSDictionary* attributes	= [NSDictionary dictionaryWithObject:encryption forKey:NSFileProtectionKey];
+	NSError* error;
 	
-	NSError* error = nil;
-	if (![[NSFileManager defaultManager] setAttributes:attributes
-										  ofItemAtPath:[self storePath]
-												 error:&error]) {
+	if (![[NSFileManager defaultManager] setAttributes:attributes ofItemAtPath:[self storePath] error:&error]) {
 #ifdef DEBUG		
-		[NSException raise:@"Persistent Store Exception"
-					format:@"Error Encrypting Store: %@", [error localizedDescription]];
+		[NSException raise:NLCoreDataExceptions.encryption format:@"%@", [error localizedDescription]];
 #endif
 	}
 }
@@ -127,12 +117,12 @@ managedObjectModel	= managedObjectModel_;
 
 - (BOOL)isStoreEncrypted
 {
-	NSError* error = nil;
+	NSError* error;
 	NSDictionary* attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[self storePath] error:&error];
+	
 	if (!attributes) {
 #ifdef DEBUG
-		[NSException raise:@"Persistent Store Exception"
-					format:@"Error Retrieving Store Attributes: %@", [error localizedDescription]];
+		[NSException raise:NLCoreDataExceptions.encryption format:@"%@", [error localizedDescription]];
 #endif
 		return NO;
 	}
@@ -144,29 +134,29 @@ managedObjectModel	= managedObjectModel_;
 {
 	if (storeCoordinator_) return storeCoordinator_;
 	
-	storeCoordinator_ = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:[self managedObjectModel]];
+	storeCoordinator_				= [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:
+									   [self managedObjectModel]];
+	NSMutableDictionary* options	= [NSMutableDictionary dictionary];
+	NSError* error;
 	
-	NSMutableDictionary* options = [NSMutableDictionary dictionary];
 	[options setObject:[NSNumber numberWithBool:YES] forKey:NSMigratePersistentStoresAutomaticallyOption];
 	
-	NSError* error = nil;
-	if (![storeCoordinator_
-		  addPersistentStoreWithType:NSSQLiteStoreType
-		  configuration:nil
-		  URL:[self storeURL]
-		  options:options
-		  error:&error]) {
+	if (![storeCoordinator_ addPersistentStoreWithType:NSSQLiteStoreType
+										 configuration:nil
+												   URL:[self storeURL]
+											   options:options
+												 error:&error]) {
 #ifdef DEBUG
-		NSDictionary* meta = [NSPersistentStoreCoordinator
-							  metadataForPersistentStoreOfType:nil URL:[self storeURL] error:nil];
-		NSLog(@"metaData: %@", meta);
-		NSLog(@"source and dest equivalent? %@", ([[[error userInfo] valueForKeyPath:@"sourceModel"] isEqual:
-										 [[error userInfo] valueForKeyPath:@"destinationModel"]]) ? @"YES" : @"NO");
-		NSLog(@"failreason: %@", [[error userInfo] valueForKeyPath:@"reason"]);	
+		NSDictionary* meta	= [NSPersistentStoreCoordinator
+							   metadataForPersistentStoreOfType:nil URL:[self storeURL] error:nil];
+		NSString* equiv		= ([[[error userInfo] valueForKeyPath:@"sourceModel"] isEqual:
+								[[error userInfo] valueForKeyPath:@"destinationModel"]]) ? @"YES" : @"NO";
 		
-		[NSException
-		 raise:@"Persistent Store Exception"
-		 format:@"Error Creating Store: %@", [error localizedDescription]];
+		NSLog(@"metaData: %@", meta);
+		NSLog(@"source and dest equivalent? %@", equiv);
+		NSLog(@"failreason: %@", [[error userInfo] valueForKeyPath:@"reason"]);
+		
+		[NSException raise:NLCoreDataExceptions.persistentStore format:@"%@", [error localizedDescription]];
 #endif
 	}
 	
@@ -177,8 +167,9 @@ managedObjectModel	= managedObjectModel_;
 {
 	if (managedObjectModel_) return managedObjectModel_;
 	
-	NSURL* url = [[NSBundle mainBundle] URLForResource:[self modelName] withExtension:@"momd"];
-	managedObjectModel_ = [[NSManagedObjectModel alloc] initWithContentsOfURL:url];
+	NSURL* url			= [[NSBundle mainBundle] URLForResource:[self modelName] withExtension:@"momd"];
+	managedObjectModel_	= [[NSManagedObjectModel alloc] initWithContentsOfURL:url];
+	
 	return managedObjectModel_;
 }
 

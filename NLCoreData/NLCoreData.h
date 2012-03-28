@@ -46,6 +46,10 @@ extern const struct NLCoreDataExceptionsStruct
 	__unsafe_unretained NSString* count;
 	__unsafe_unretained NSString* parameter;
 	__unsafe_unretained NSString* merge;
+	__unsafe_unretained NSString* fileExist;
+	__unsafe_unretained NSString* fileCopy;
+	__unsafe_unretained NSString* encryption;
+	__unsafe_unretained NSString* persistentStore;
 } NLCoreDataExceptions;
 
 #pragma mark -
@@ -103,15 +107,6 @@ extern const struct NLCoreDataExceptionsStruct
  @param filePath Path to the preseeded file.
  @warning This should be called before using Core Data on first run.
  */
-- (void)usePreSeededFile:(NSString *)filePath;
-
-/**
- @name Lifecycle
- Copies a preseeded database file to be used as your Core Data store.
- The filetype should be sqlite and it should conform to your model.
- Checks the main bundle for a sqlite file with the same name as your model.
- @warning This should be called before using Core Data on first run, but after setting the modelName.
- */
-- (void)usePreSeededFileFromBundle;
+- (void)useDatabaseFile:(NSString *)filePath;
 
 @end
