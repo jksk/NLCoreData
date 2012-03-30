@@ -23,7 +23,7 @@
 //  
 
 #import "NSManagedObjectContext+NLCoreData.h"
-#import "NSThread+NLCoreData.h"
+#import "NLCoreData.h"
 
 static NSString* NLCoreDataContextKey				= @"NLCoreDataContextKey";
 static NSString* NLCoreDataNotificationBlockKey		= @"NLCoreDataNotificationBlockKey";

@@ -29,6 +29,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "NLCoreDataCommon.h"
 #import "NSThread+NLCoreData.h"
 #import "NSManagedObject+NLCoreData.h"
 #import "NSManagedObjectContext+NLCoreData.h"
@@ -39,18 +40,6 @@
 NSManagedObjectModel,
 NSPersistentStoreCoordinator,
 NSManagedObjectContext;
-
-extern const struct NLCoreDataExceptionsStruct
-{
-	__unsafe_unretained NSString* predicate;
-	__unsafe_unretained NSString* count;
-	__unsafe_unretained NSString* parameter;
-	__unsafe_unretained NSString* merge;
-	__unsafe_unretained NSString* fileExist;
-	__unsafe_unretained NSString* fileCopy;
-	__unsafe_unretained NSString* encryption;
-	__unsafe_unretained NSString* persistentStore;
-} NLCoreDataExceptions;
 
 #pragma mark -
 @interface NLCoreData : NSObject

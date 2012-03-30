@@ -22,7 +22,6 @@
 //  IN THE SOFTWARE.
 //  
 
-#import <objc/runtime.h>
 #import "NSFetchRequest+NLCoreData.h"
 #import "NLCoreData.h"
 

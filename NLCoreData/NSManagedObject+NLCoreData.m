@@ -25,32 +25,6 @@
 #import "NSManagedObject+NLCoreData.h"
 #import "NLCoreData.h"
 
-#ifdef DEBUG
-#define SET_PREDICATE_WITH_VARIADIC_ARGS \
-	NSPredicate* predicate = nil; \
-	if ([predicateOrString isKindOfClass:[NSString class]]) { \
-		va_list args; \
-		va_start(args, predicateOrString); \
-		predicate = [NSPredicate predicateWithFormat:predicateOrString arguments:args]; \
-		va_end(args); \
-	} \
-	else if ([predicateOrString isKindOfClass:[NSPredicate class]]) \
-		predicate = predicateOrString; \
-	else if (predicateOrString) \
-		[NSException raise:NLCoreDataExceptions.predicate format:@"invalid predicate: %@", predicateOrString];
-#else
-#define SET_PREDICATE_WITH_VARIADIC_ARGS \
-	NSPredicate* predicate = nil; \
-	if ([predicateOrString isKindOfClass:[NSString class]]) { \
-		va_list args; \
-		va_start(args, predicateOrString); \
-		predicate = [NSPredicate predicateWithFormat:predicateOrString arguments:args]; \
-		va_end(args); \
-	} \
-	else if ([predicateOrString isKindOfClass:[NSPredicate class]]) \
-		predicate = predicateOrString;
-#endif
-
 #pragma mark -
 @implementation NSManagedObject (NLCoreData)
 
