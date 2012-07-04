@@ -84,9 +84,11 @@ undoEnabled;
 {
 	NSManagedObjectContext* context = [NSManagedObjectContext contextForThread:thread];
 	
-#ifdef DEBUG
 	if (self == context)
+#ifdef DEBUG
 		[NSException raise:NLCoreDataExceptions.merge format:@"Can't merge a context with itself"];
+#else
+		return;
 #endif
 	
 	NSMutableDictionary* dictionary = [[NSThread currentThread] threadDictionary];
