@@ -27,7 +27,7 @@
 
 static NSString* NLCoreDataContextKey				= @"NLCoreDataContextKey";
 static NSString* NLCoreDataNotificationBlockKey		= @"NLCoreDataNotificationBlockKey";
-static NSString* NLCoreDataMergeTargetContextKey	= @"NLCoreDataMergeTargetContextKey";
+static NSString* NLCoreDataMergeSourceContextKey	= @"NLCoreDataMergeSourceContextKey";
 
 @implementation NSManagedObjectContext (NLCoreData)
 
@@ -84,45 +84,48 @@ undoEnabled;
 {
 	NSManagedObjectContext* context = [NSManagedObjectContext contextForThread:thread];
 	
-	if (self == context)
+	if (self == context) {
+		
 #ifdef DEBUG
 		[NSException raise:NLCoreDataExceptions.merge format:@"Can't merge a context with itself"];
-#else
-		return;
 #endif
+		return;
+	}
 	
-	NSMutableDictionary* dictionary = [[NSThread currentThread] threadDictionary];
+	NSThread* sourceThread			= [NSThread currentThread];
+	NSMutableDictionary* dictionary	= [thread threadDictionary];
 	
-	if (completion)
-		[dictionary setObject:[completion copy] forKey:NLCoreDataNotificationBlockKey];
-	
-	[dictionary setObject:thread forKey:NLCoreDataMergeTargetContextKey];
-	
-	[[NSNotificationCenter defaultCenter]
-	 addObserver:context
-	 selector:@selector(managedObjectContextMerge:)
-	 name:NSManagedObjectContextDidSaveNotification
-	 object:self];
-	
-	[self save];
+	[dictionary setObject:sourceThread forKey:NLCoreDataMergeSourceContextKey];
+	[thread performBlock:^{
+		
+		if (completion)
+			[dictionary setObject:[completion copy] forKey:NLCoreDataNotificationBlockKey];
+		
+		[[NSNotificationCenter defaultCenter]
+		 addObserver:context
+		 selector:@selector(managedObjectContextMerge:)
+		 name:NSManagedObjectContextDidSaveNotification
+		 object:self];
+		
+		[sourceThread performBlock:^{ [self save]; }];
+	}];
 }
 
 - (void)managedObjectContextMerge:(NSNotification *)note
 {
 	NSMutableDictionary* dictionary			= [[NSThread currentThread] threadDictionary];
-	NSThread* thread						= [dictionary objectForKey:NLCoreDataMergeTargetContextKey];
-	NSManagedObjectContext* context			= [NSManagedObjectContext contextForThread:thread];
-	NLCoreDataNotificationBlock	completion	= [dictionary objectForKey:NLCoreDataNotificationBlockKey];
+	NLCoreDataNotificationBlock completion	= [dictionary objectForKey:NLCoreDataNotificationBlockKey];
+	NSManagedObjectContext* sourceContext	= [dictionary objectForKey:NLCoreDataMergeSourceContextKey];
 	
-	[context mergeChangesFromContextDidSaveNotification:note];
-	[dictionary removeObjectForKey:NLCoreDataMergeTargetContextKey];
-	[dictionary removeObjectForKey:NLCoreDataNotificationBlockKey];
+	[[NSNotificationCenter defaultCenter] removeObserver:self name:NSManagedObjectContextDidSaveNotification object:sourceContext];
+	[[NSManagedObjectContext contextForThread] mergeChangesFromContextDidSaveNotification:note];
+	[dictionary removeObjectForKey:NLCoreDataMergeSourceContextKey];
 	
-	[[NSNotificationCenter defaultCenter]
-	 removeObserver:context name:NSManagedObjectContextDidSaveNotification object:self];
-	
-	if (completion)
-		[thread performBlockOnThread:^{ completion(note); }];
+	if (completion) {
+		
+		[dictionary removeObjectForKey:NLCoreDataNotificationBlockKey];
+		completion(note);
+	}
 }
 
 #pragma mark - Property Accessors
