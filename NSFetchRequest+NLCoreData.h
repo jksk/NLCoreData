@@ -51,4 +51,10 @@
  */
 - (void)sortByKey:(NSString *)key ascending:(BOOL)ascending;
 
+/**
+ @name Predicate
+ 
+ */
+- (void)setPredicateOrString:(id)predicateOrString, ...;
+
 @end

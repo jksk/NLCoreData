@@ -54,4 +54,10 @@
 	[self setSortDescriptors:newDescriptors];
 }
 
+- (void)setPredicateOrString:(id)predicateOrString, ...
+{
+	SET_PREDICATE_WITH_VARIADIC_ARGS
+	[self setPredicate:predicate];
+}
+
 @end

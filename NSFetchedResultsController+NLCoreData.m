@@ -29,7 +29,10 @@
 
 + (id)controllerWithRequest:(NSFetchRequest *)request
 {
-	return [self controllerWithRequest:request sectionNameKeyPath:nil cacheName:nil];
+	return [[self alloc] initWithFetchRequest:request
+						 managedObjectContext:[NSManagedObjectContext contextForThread]
+						   sectionNameKeyPath:nil
+									cacheName:nil];
 }
 
 + (id)controllerWithRequest:(NSFetchRequest *)request
