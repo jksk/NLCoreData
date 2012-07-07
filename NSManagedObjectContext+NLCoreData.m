@@ -126,7 +126,7 @@ undoEnabled;
 }
 
 #pragma mark - Property Accessors
-t
+
 - (void)setUndoEnabled:(BOOL)undoEnabled
 {
 	if (undoEnabled && ![self isUndoEnabled])
