@@ -37,8 +37,7 @@
 
 + (id)insertInContext:(NSManagedObjectContext *)context
 {
-	return [NSEntityDescription insertNewObjectForEntityForName:NSStringFromClass([self class])
-										 inManagedObjectContext:context];
+	return [NSEntityDescription insertNewObjectForEntityForName:NSStringFromClass([self class]) inManagedObjectContext:context];
 }
 
 #pragma mark - Deleting
@@ -81,10 +80,7 @@
 	[self deleteRange:range sortByKey:nil ascending:YES withPredicate:predicate];
 }
 
-+ (void)deleteRange:(NSRange)range
-		  sortByKey:(NSString *)keyPath
-		  ascending:(BOOL)ascending
-	  withPredicate:(id)predicateOrString, ...
++ (void)deleteRange:(NSRange)range sortByKey:(NSString *)keyPath ascending:(BOOL)ascending withPredicate:(id)predicateOrString, ...
 {
 	SET_PREDICATE_WITH_VARIADIC_ARGS
 	[self deleteWithRequest:^(NSFetchRequest *request) {
@@ -109,8 +105,11 @@
 + (NSUInteger)countWithPredicate:(id)predicateOrString, ...
 {
 	SET_PREDICATE_WITH_VARIADIC_ARGS
-	return [self countWithRequest:^(NSFetchRequest *request) { [request setPredicate:predicate]; }
-						  context:[NSManagedObjectContext contextForThread]];
+	return [self countWithRequest:^(NSFetchRequest *request) {
+		
+		[request setPredicate:predicate];
+		
+	} context:[NSManagedObjectContext contextForThread]];
 }
 
 + (NSUInteger)countWithRequest:(void (^)(NSFetchRequest* request))block
@@ -191,10 +190,7 @@
 	return [self fetchRange:range sortByKey:nil ascending:YES withPredicate:predicate];
 }
 
-+ (NSArray *)fetchRange:(NSRange)range
-			  sortByKey:(NSString *)keyPath
-			  ascending:(BOOL)ascending
-		  withPredicate:(id)predicateOrString, ...
++ (NSArray *)fetchRange:(NSRange)range sortByKey:(NSString *)keyPath ascending:(BOOL)ascending withPredicate:(id)predicateOrString, ...
 {
 	SET_PREDICATE_WITH_VARIADIC_ARGS
 	return [self fetchWithRequest:^(NSFetchRequest *request) {
@@ -220,10 +216,7 @@
 	return [self fetchSingle:index sortByKey:nil ascending:YES withPredicate:predicate];
 }
 
-+ (NSArray *)fetchSingle:(NSUInteger)index
-			   sortByKey:(NSString *)keyPath
-			   ascending:(BOOL)ascending
-		   withPredicate:(id)predicateOrString, ...
++ (NSArray *)fetchSingle:(NSUInteger)index sortByKey:(NSString *)keyPath ascending:(BOOL)ascending withPredicate:(id)predicateOrString, ...
 {
 	SET_PREDICATE_WITH_VARIADIC_ARGS
 	NSArray* objects = [self fetchRange:NSMakeRange(index, 1)
@@ -240,10 +233,7 @@
 	return [self fetchOrInsertSingle:index sortByKey:nil ascending:YES withPredicate:predicate];
 }
 
-+ (id)fetchOrInsertSingle:(NSUInteger)index
-				sortByKey:(NSString *)keyPath
-				ascending:(BOOL)ascending
-			withPredicate:(id)predicateOrString, ...
++ (id)fetchOrInsertSingle:(NSUInteger)index sortByKey:(NSString *)keyPath ascending:(BOOL)ascending withPredicate:(id)predicateOrString, ...
 {
 	SET_PREDICATE_WITH_VARIADIC_ARGS
 	id object = [self fetchSingle:index sortByKey:keyPath ascending:ascending withPredicate:predicate];
@@ -254,8 +244,7 @@
 	return [self insert];
 }
 
-+ (void)fetchAsynchronouslyWithRequest:(void (^)(NSFetchRequest* request))block
-							completion:(void (^)(NSArray* objects))completion
++ (void)fetchAsynchronouslyWithRequest:(void (^)(NSFetchRequest* request))block completion:(void (^)(NSArray* objects))completion
 {
 #ifdef DEBUG
 	if (!completion)
@@ -289,8 +278,7 @@
 			[objRequest setPredicate:predicate];
 			
 			NSError* objError;
-			NSArray* objects = [[NSManagedObjectContext contextForThread]
-								executeFetchRequest:objRequest error:&objError];
+			NSArray* objects = [[NSManagedObjectContext contextForThread] executeFetchRequest:objRequest error:&objError];
 			
 			completion(objects);
 		}];
