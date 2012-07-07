@@ -53,7 +53,7 @@
 
 /**
  @name Predicate
- 
+ Sets predicate with variadic arguments or NSPredicate directly.
  */
 - (void)setPredicateOrString:(id)predicateOrString, ...;
 

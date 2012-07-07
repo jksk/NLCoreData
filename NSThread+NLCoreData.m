@@ -17,10 +17,7 @@
 
 - (void)performBlockOnThread:(void (^)(void))block
 {
-	[self performSelector:@selector(performBlock:)
-				 onThread:self
-			   withObject:[block copy]
-			waitUntilDone:NO];
+	[self performSelector:@selector(performBlock:) onThread:self withObject:[block copy] waitUntilDone:NO];
 }
 
 @end

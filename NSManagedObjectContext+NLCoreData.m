@@ -38,7 +38,8 @@ undoEnabled;
 
 - (BOOL)save
 {
-	if (![self hasChanges]) return YES;
+	if (![self hasChanges])
+		return YES;
 	
 	NSError* error = nil;
 	

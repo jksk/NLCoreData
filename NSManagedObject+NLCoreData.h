@@ -56,10 +56,7 @@
  */
 + (void)deleteWithPredicate:(id)predicateOrString, ...;
 + (void)deleteRange:(NSRange)range withPredicate:(id)predicateOrString, ...;
-+ (void)deleteRange:(NSRange)range
-		  sortByKey:(NSString *)keyPath
-		  ascending:(BOOL)ascending
-	  withPredicate:(id)predicateOrString, ...;
++ (void)deleteRange:(NSRange)range sortByKey:(NSString *)keyPath ascending:(BOOL)ascending withPredicate:(id)predicateOrString, ...;
 
 #pragma mark - Counting
 
@@ -93,37 +90,27 @@
  */
 + (NSArray *)fetchWithPredicate:(id)predicateOrString, ...;
 + (NSArray *)fetchRange:(NSRange)range withPredicate:(id)predicateOrString, ...;
-+ (NSArray *)fetchRange:(NSRange)range
-			  sortByKey:(NSString *)keyPath
-			  ascending:(BOOL)ascending
-		  withPredicate:(id)predicateOrString, ...;
++ (NSArray *)fetchRange:(NSRange)range sortByKey:(NSString *)keyPath ascending:(BOOL)ascending withPredicate:(id)predicateOrString, ...;
 
 /**
  @name Fetching
  
  */
 + (id)fetchSingle:(NSUInteger)index withPredicate:(id)predicateOrString, ...;
-+ (id)fetchSingle:(NSUInteger)index
-		sortByKey:(NSString *)keyPath
-		ascending:(BOOL)ascending
-	withPredicate:(id)predicateOrString, ...;
++ (id)fetchSingle:(NSUInteger)index sortByKey:(NSString *)keyPath ascending:(BOOL)ascending withPredicate:(id)predicateOrString, ...;
 
 /**
  @name Fetching
  
  */
 + (id)fetchOrInsertSingle:(NSUInteger)index withPredicate:(id)predicateOrString, ...;
-+ (id)fetchOrInsertSingle:(NSUInteger)index
-				sortByKey:(NSString *)keyPath
-				ascending:(BOOL)ascending
-			withPredicate:(id)predicateOrString, ...;
++ (id)fetchOrInsertSingle:(NSUInteger)index sortByKey:(NSString *)keyPath ascending:(BOOL)ascending withPredicate:(id)predicateOrString, ...;
 
 /**
  @name Fetching
  
  */
-+ (void)fetchAsynchronouslyWithRequest:(void (^)(NSFetchRequest* request))block
-							completion:(void (^)(NSArray* objects))completion;
++ (void)fetchAsynchronouslyWithRequest:(void (^)(NSFetchRequest* request))block completion:(void (^)(NSArray* objects))completion;
 
 /**
  @name Population

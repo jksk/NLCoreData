@@ -31,8 +31,6 @@
  
  */
 + (id)controllerWithRequest:(NSFetchRequest *)request;
-+ (id)controllerWithRequest:(NSFetchRequest *)request
-		 sectionNameKeyPath:(NSString *)keyPath
-				  cacheName:(NSString *)cacheName;
++ (id)controllerWithRequest:(NSFetchRequest *)request sectionNameKeyPath:(NSString *)keyPath cacheName:(NSString *)cacheName;
 
 @end
