@@ -25,9 +25,9 @@
 #import "NSManagedObjectContext+NLCoreData.h"
 #import "NLCoreData.h"
 
-static NSString* NLCoreDataContextKey				= @"NLCoreDataContextKey";
-static NSString* NLCoreDataNotificationBlockKey		= @"NLCoreDataNotificationBlockKey";
-static NSString* NLCoreDataMergeSourceContextKey	= @"NLCoreDataMergeSourceContextKey";
+static NSString* NLCoreDataContextKey			= @"NLCoreDataContextKey";
+static NSString* NLCoreDataNotificationBlockKey	= @"NLCoreDataNotificationBlockKey";
+static NSString* NLCoreDataMergeThreadKey		= @"NLCoreDataMergeThreadKey";
 
 @implementation NSManagedObjectContext (NLCoreData)
 
@@ -93,34 +93,30 @@ undoEnabled;
 		return;
 	}
 	
-	NSThread* sourceThread			= [NSThread currentThread];
-	NSMutableDictionary* dictionary	= [thread threadDictionary];
+	NSMutableDictionary* dictionary	= [[NSThread currentThread] threadDictionary];
+	NSNotificationCenter* nc		= [NSNotificationCenter defaultCenter];
 	
-	[dictionary setObject:sourceThread forKey:NLCoreDataMergeSourceContextKey];
-	[thread performBlock:^{
-		
-		if (completion)
-			[dictionary setObject:[completion copy] forKey:NLCoreDataNotificationBlockKey];
-		
-		[[NSNotificationCenter defaultCenter]
-		 addObserver:context
-		 selector:@selector(managedObjectContextMerge:)
-		 name:NSManagedObjectContextDidSaveNotification
-		 object:self];
-		
-		[sourceThread performBlock:^{ [self save]; }];
-	}];
+	if (completion)
+		[dictionary setObject:[completion copy] forKey:NLCoreDataNotificationBlockKey];
+	
+	[dictionary setObject:thread forKey:NLCoreDataMergeThreadKey];
+	[nc addObserver:context selector:@selector(managedObjectContextMerge:) name:NSManagedObjectContextDidSaveNotification object:self];
+	[self save];
+	[nc removeObserver:context name:NSManagedObjectContextDidSaveNotification object:self];
 }
 
 - (void)managedObjectContextMerge:(NSNotification *)note
 {
 	NSMutableDictionary* dictionary			= [[NSThread currentThread] threadDictionary];
 	NLCoreDataNotificationBlock completion	= [dictionary objectForKey:NLCoreDataNotificationBlockKey];
-	NSManagedObjectContext* sourceContext	= [dictionary objectForKey:NLCoreDataMergeSourceContextKey];
+	NSThread* thread						= [dictionary objectForKey:NLCoreDataMergeThreadKey];
 	
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:NSManagedObjectContextDidSaveNotification object:sourceContext];
-	[[NSManagedObjectContext contextForThread] mergeChangesFromContextDidSaveNotification:note];
-	[dictionary removeObjectForKey:NLCoreDataMergeSourceContextKey];
+	[thread performBlockOnThread:^{
+		
+		[[NSManagedObjectContext contextForThread] mergeChangesFromContextDidSaveNotification:note];
+	}];
+	
+	[dictionary removeObjectForKey:NLCoreDataMergeThreadKey];
 	
 	if (completion) {
 		
@@ -130,7 +126,7 @@ undoEnabled;
 }
 
 #pragma mark - Property Accessors
-
+t
 - (void)setUndoEnabled:(BOOL)undoEnabled
 {
 	if (undoEnabled && ![self isUndoEnabled])

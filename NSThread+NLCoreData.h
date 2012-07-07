@@ -12,5 +12,6 @@
 
 - (void)performBlock:(void (^)(void))block;
 - (void)performBlockOnThread:(void (^)(void))block;
+- (void)performBlockAndWaitOnThread:(void (^)(void))block;
 
 @end

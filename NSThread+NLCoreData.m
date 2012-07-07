@@ -20,4 +20,9 @@
 	[self performSelector:@selector(performBlock:) onThread:self withObject:[block copy] waitUntilDone:NO];
 }
 
+- (void)performBlockAndWaitOnThread:(void (^)(void))block
+{
+	[self performSelector:@selector(performBlock:) onThread:self withObject:[block copy] waitUntilDone:YES];
+}
+
 @end

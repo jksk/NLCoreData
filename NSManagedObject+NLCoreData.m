@@ -219,10 +219,7 @@
 + (NSArray *)fetchSingle:(NSUInteger)index sortByKey:(NSString *)keyPath ascending:(BOOL)ascending withPredicate:(id)predicateOrString, ...
 {
 	SET_PREDICATE_WITH_VARIADIC_ARGS
-	NSArray* objects = [self fetchRange:NSMakeRange(index, 1)
-							  sortByKey:keyPath
-							  ascending:ascending
-						  withPredicate:predicate];
+	NSArray* objects = [self fetchRange:NSMakeRange(index, 1) sortByKey:keyPath ascending:ascending withPredicate:predicate];
 	
 	return [objects count] ? [objects objectAtIndex:0] : nil;
 }
