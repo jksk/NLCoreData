@@ -39,25 +39,33 @@ typedef void(^NLCoreDataNotificationBlock)(NSNotification* note);
 
 /**
  @name Lifecycle
- @return The shared context for current thread. Lazily loaded if non-existant.
+ Saves the context and all parent contexts asynchronously.
  */
-+ (NSManagedObjectContext *)contextForThread;
+- (void)saveNestedAsynchronous;
 
 /**
  @name Lifecycle
- Use if you want the shared context for another thread.
- @return The shared context for specified thread. Lazily loaded if non-existant.
+ Saves the context and all parent contexts synchronously.
  */
-+ (NSManagedObjectContext *)contextForThread:(NSThread *)thread;
-
-#pragma mark - Notifications
+- (BOOL)saveNested;
 
 /**
- @name Notifications
- Merges receiver with another context.
- @parameter completion Optional block to run after merge.
+ @name Lifecycle
+ @return The main thread context. Lazily loaded if non-existant.
  */
-- (void)mergeWithContextOnThread:(NSThread *)thread completion:(void (^)(NSNotification* note))completion;
++ (NSManagedObjectContext *)mainContext;
+
+/**
+ @name Lifecycle
+ @return The context tied to the persistent store. Lazily loaded if non-existant.
+ */
++ (NSManagedObjectContext *)storeContext;
+
+/**
+ @name Lifecycle
+ @return The background thread context. Lazily loaded if non-existant.
+ */
++ (NSManagedObjectContext *)backgroundContext;
 
 #pragma mark - Properties
 

@@ -1,5 +1,5 @@
 NLCoreData is meant as a drop-in wrapper for most of your Core Data needs on iOS (untested on OS X).
-Requires ARC. Requres iOS 4+.
+Requires ARC. Requres iOS 5+.
 
 Goals
 -----
@@ -36,60 +36,61 @@ Typically in application:didFinishLaunchingWithOptions: on your first run:
 
 Contexts
 --------
-NLCoreData provides lazily loaded shared NSManagedObjectContexts for all threads. To access:
+NLCoreData provides three lazily loaded NSManagedObjectContexts. For the main (UI) thread, use:
 
-	NSManagedObjectContext* context = [NSManagedObjectContext contextForThread];
+	NSManagedObjectContext* context = [NSManagedObjectContext mainContext];
+
+If you're doing some heavy lifting, and don't want to block the main thread, use:
+
+	NSManagedObjectContext* context = [NSManagedObjectContext backgroundContext];
 	
-Or if you're in a threaded environment and you want the context for the UI thread:
+Sometimes you may want to skip context synchronicity and simply change stored values. You can access the context for the persistent store with:
 
-	NSManagedObjectContext* context = [NSManagedObjectContext contextForThread:[NSThread mainThread]];
+	NSManagedObjectContext* context = [NSManagedObjectContext storeContext];
 
 To save a context:
 
 	BOOL success = [context save];
-	
+
+This doesn't persist values outside of their own context. To ensure an object is persisted, use:
+
+	BOOL success = [context saveNested];
+
+or:
+
+	[context saveNestedAsynchronous];
+
 
 Methods
 -------
-If you want to fetch all Person objects in your shared context:
+If you want to fetch all Person objects in the main context:
 
 	NSArray* results = [Person fetchWithPredicate:nil];
 
-If you want to delete all Person objects in the context myContext:
+If you want to delete all Person objects and persist the change:
 
-	[Person deleteWithRequest:nil context:myContext];
+	[Person deleteWithRequest:nil context:[NSManagedObjectContext storeContext]];
 	
-If you want to count all Person objects that match the predicate myPredicate:
+If you want to count all Person objects that match the predicate myPredicate (in the main context):
 
 	NSUInteger count = [Person countWithPredicate:myPredicate];
 
 	
 Fetching
 --------
-You can fetch either an array of objects or a single object. If you want all Person objects in the shared context:
+You can fetch either an array of objects or a single object. If you want all Person objects in the main context:
 
 	NSArray* results = [Person fetchWithPredicate:nil];
 	
 If you want a single object in the shared context:
 
-	Person* person = [Person fetchSingleAtIndex:0 withPredicate:nil];
+	Person* person = [Person fetchSingleWithPredicate:nil];
 
-The single fetch can be useful if there is only one object of that type, or if you provide a predicate
-that you're certain only matches one object.
+The single fetch can be useful if there is only one object of that type, or if you provide a predicate that you're certain only matches one object.
 
 In some cases, you want to return a single object, or create one if it doesn't exist:
 
-	Person* person = [Person fetchOrInsertSingle:0 withPredicate:nil];
-
-
-Context interactivity
----------------------
-Merge a context with the main context (e.g., after downloading and inserting data in the background):
-
-	[context mergeWithContextOnThread:[NSThread mainThread] completion:^(NSNotification* note) {
-		
-		// handle data here
-	}];
+	Person* person = [Person fetchOrInsertSingleWithPredicate:nil];
 
 
 Fetch Requests
@@ -105,12 +106,15 @@ Though setSortDescriptors: is still available, don't use both on the same NSFetc
 	[request sortByKey:@"myKeyPath" ascending:NO];
 	[request sortByKey:@"mySecondaryKeyPath" ascending:YES];
 
+You can also set a predicate inline:
+
+	[request setPredicateOrString:@"myAttribute == YES"];
 
 Notes
 -----
 * Make sure you subclass all your Core Data entities, and that the subclasses are named for their entity
 	(i.e., if you have an entity named Person, you need a subclass named Person).
-* I strongly recommend using mogenerator. It's quite excellent. Get it here: http://rentzsch.github.com/mogenerator
+* I strongly recommend using mogenerator. It's quite excellent. Get it via homebrew or at http://rentzsch.github.com/mogenerator
 
 Setup
 -----

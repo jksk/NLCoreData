@@ -27,19 +27,14 @@
 
 @implementation NSFetchedResultsController (NLCoreData)
 
-+ (id)controllerWithRequest:(NSFetchRequest *)request
++ (instancetype)controllerWithRequest:(NSFetchRequest *)request
 {
 	return [self controllerWithRequest:request sectionNameKeyPath:nil cacheName:nil];
 }
 
-+ (id)controllerWithRequest:(NSFetchRequest *)request
-		 sectionNameKeyPath:(NSString *)keyPath
-				  cacheName:(NSString *)cacheName
++ (instancetype)controllerWithRequest:(NSFetchRequest *)request sectionNameKeyPath:(NSString *)keyPath cacheName:(NSString *)cacheName
 {
-	return [[self alloc] initWithFetchRequest:request
-						 managedObjectContext:[NSManagedObjectContext contextForThread]
-						   sectionNameKeyPath:keyPath
-									cacheName:cacheName];
+	return [[self alloc] initWithFetchRequest:request managedObjectContext:[NSManagedObjectContext mainContext] sectionNameKeyPath:keyPath cacheName:cacheName];
 }
 
 @end

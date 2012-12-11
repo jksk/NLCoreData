@@ -25,10 +25,6 @@
 #import "NSManagedObjectContext+NLCoreData.h"
 #import "NLCoreData.h"
 
-static NSString* NLCoreDataContextKey				= @"NLCoreDataContextKey";
-static NSString* NLCoreDataNotificationBlockKey		= @"NLCoreDataNotificationBlockKey";
-static NSString* NLCoreDataMergeTargetContextKey	= @"NLCoreDataMergeTargetContextKey";
-
 @implementation NSManagedObjectContext (NLCoreData)
 
 @dynamic
@@ -57,73 +53,86 @@ undoEnabled;
 	return YES;
 }
 
-+ (NSManagedObjectContext *)contextForThread
+- (void)saveNestedAsynchronous
 {
-	return [self contextForThread:[NSThread currentThread]];
+	if ([self save]) {
+		
+		NSManagedObjectContext* context = [self parentContext];
+		
+		if (context)
+			[context performBlock:^{
+				
+				[context saveNestedAsynchronous];
+			}];
+	}
 }
 
-+ (NSManagedObjectContext *)contextForThread:(NSThread *)thread
+- (BOOL)saveNested
 {
-	NSMutableDictionary* dictionary = [thread threadDictionary];
-	NSManagedObjectContext* context = [dictionary objectForKey:NLCoreDataContextKey];
-	
-	if (!context) {
+	if ([self save]) {
 		
-		context = [[NSManagedObjectContext alloc] init];
+		NSManagedObjectContext* context = [self parentContext];
 		
-		[context setPersistentStoreCoordinator:[[NLCoreData shared] storeCoordinator]];
-		[dictionary setObject:context forKey:NLCoreDataContextKey];
+		if (!context)
+			return YES;
+		
+		__block BOOL save = NO;
+		
+		if (context)
+			[context performBlockAndWait:^{
+				
+				save = [context saveNested];
+			}];
+		
+		return save;
 	}
+	
+	return NO;
+}
+
++ (NSManagedObjectContext *)mainContext
+{
+	static NSManagedObjectContext* context = nil;
+	static dispatch_once_t onceToken;
+	
+	dispatch_once(&onceToken, ^{
+		
+		context = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
+		[context setParentContext:[self storeContext]];
+	});
 	
 	return context;
 }
 
-#pragma mark - Notifications
-
-- (void)mergeWithContextOnThread:(NSThread *)thread completion:(void (^)(NSNotification *))completion
++ (NSManagedObjectContext *)storeContext
 {
-	NSManagedObjectContext* context = [NSManagedObjectContext contextForThread:thread];
+	static NSManagedObjectContext* context = nil;
+	static dispatch_once_t onceToken;
 	
-#ifdef DEBUG
-	if (self == context)
-		[NSException raise:NLCoreDataExceptions.merge format:@"Can't merge a context with itself"];
-#endif
+	dispatch_once(&onceToken, ^{
+		
+		context = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
+		[context setPersistentStoreCoordinator:[[NLCoreData shared] storeCoordinator]];
+	});
 	
-	NSMutableDictionary* dictionary = [[NSThread currentThread] threadDictionary];
-	
-	if (completion)
-		[dictionary setObject:[completion copy] forKey:NLCoreDataNotificationBlockKey];
-	
-	[dictionary setObject:thread forKey:NLCoreDataMergeTargetContextKey];
-	
-	[[NSNotificationCenter defaultCenter]
-	 addObserver:context
-	 selector:@selector(managedObjectContextMerge:)
-	 name:NSManagedObjectContextDidSaveNotification
-	 object:self];
-	
-	[self save];
+	return context;
 }
 
-- (void)managedObjectContextMerge:(NSNotification *)note
++ (NSManagedObjectContext *)backgroundContext
 {
-	NSMutableDictionary* dictionary			= [[NSThread currentThread] threadDictionary];
-	NSThread* thread						= [dictionary objectForKey:NLCoreDataMergeTargetContextKey];
-	NSManagedObjectContext* context			= [NSManagedObjectContext contextForThread:thread];
-	NLCoreDataNotificationBlock	completion	= [dictionary objectForKey:NLCoreDataNotificationBlockKey];
+	static NSManagedObjectContext* context = nil;
+	static dispatch_once_t onceToken;
 	
-	[context mergeChangesFromContextDidSaveNotification:note];
-	[dictionary removeObjectForKey:NLCoreDataMergeTargetContextKey];
-	[dictionary removeObjectForKey:NLCoreDataNotificationBlockKey];
+	dispatch_once(&onceToken, ^{
+		
+		context = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
+		[context setParentContext:[self mainContext]];
+	});
 	
-	[[NSNotificationCenter defaultCenter]
-	 removeObserver:context name:NSManagedObjectContextDidSaveNotification object:self];
-	
-	if (completion)
-		[thread performBlockOnThread:^{ completion(note); }];
+	return context;
 }
 
-#pragma mark - Property Accessors
+#pragma mark - Properties
 
 - (void)setUndoEnabled:(BOOL)undoEnabled
 {

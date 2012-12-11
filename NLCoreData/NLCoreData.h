@@ -30,7 +30,6 @@
 #import <Foundation/Foundation.h>
 
 #import "NLCoreDataCommon.h"
-#import "NSThread+NLCoreData.h"
 #import "NSManagedObject+NLCoreData.h"
 #import "NSManagedObjectContext+NLCoreData.h"
 #import "NSFetchRequest+NLCoreData.h"

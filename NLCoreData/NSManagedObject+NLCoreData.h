@@ -32,8 +32,8 @@
  @name Inserting
  
  */
-+ (id)insert;
-+ (id)insertInContext:(NSManagedObjectContext *)context;
++ (instancetype)insert;
++ (instancetype)insertInContext:(NSManagedObjectContext *)context;
 
 #pragma mark - Deleting
 
@@ -55,11 +55,7 @@
  
  */
 + (void)deleteWithPredicate:(id)predicateOrString, ...;
-+ (void)deleteRange:(NSRange)range withPredicate:(id)predicateOrString, ...;
-+ (void)deleteRange:(NSRange)range
-		  sortByKey:(NSString *)keyPath
-		  ascending:(BOOL)ascending
-	  withPredicate:(id)predicateOrString, ...;
++ (void)deleteInContext:(NSManagedObjectContext *)context predicate:(id)predicateOrString, ...;
 
 #pragma mark - Counting
 
@@ -68,6 +64,12 @@
  
  */
 + (NSUInteger)countWithPredicate:(id)predicateOrString, ...;
++ (NSUInteger)countInContext:(NSManagedObjectContext *)context predicate:(id)predicateOrString, ...;
+
+/**
+ @name Counting
+ 
+ */
 + (NSUInteger)countWithRequest:(void (^)(NSFetchRequest* request))block;
 + (NSUInteger)countWithRequest:(void (^)(NSFetchRequest* request))block context:(NSManagedObjectContext *)context;
 
@@ -77,8 +79,8 @@
  @name Fetching
  
  */
-+ (id)fetchWithObjectID:(NSManagedObjectID *)objectID;
-+ (id)fetchWithObjectID:(NSManagedObjectID *)objectID context:(NSManagedObjectContext *)context;
++ (instancetype)fetchWithObjectID:(NSManagedObjectID *)objectID;
++ (instancetype)fetchWithObjectID:(NSManagedObjectID *)objectID context:(NSManagedObjectContext *)context;
 
 /**
  @name Fetching
@@ -92,37 +94,38 @@
  
  */
 + (NSArray *)fetchWithPredicate:(id)predicateOrString, ...;
-+ (NSArray *)fetchRange:(NSRange)range withPredicate:(id)predicateOrString, ...;
-+ (NSArray *)fetchRange:(NSRange)range
-			  sortByKey:(NSString *)keyPath
-			  ascending:(BOOL)ascending
-		  withPredicate:(id)predicateOrString, ...;
++ (NSArray *)fetchInContext:(NSManagedObjectContext *)context predicate:(id)predicateOrString, ...;
 
 /**
  @name Fetching
  
  */
-+ (id)fetchSingle:(NSUInteger)index withPredicate:(id)predicateOrString, ...;
-+ (id)fetchSingle:(NSUInteger)index
-		sortByKey:(NSString *)keyPath
-		ascending:(BOOL)ascending
-	withPredicate:(id)predicateOrString, ...;
++ (instancetype)fetchSingleWithPredicate:(id)predicateOrString, ...;
++ (instancetype)fetchSingleInContext:(NSManagedObjectContext *)context predicate:(id)predicateOrString, ...;
 
 /**
  @name Fetching
  
  */
-+ (id)fetchOrInsertSingle:(NSUInteger)index withPredicate:(id)predicateOrString, ...;
-+ (id)fetchOrInsertSingle:(NSUInteger)index
-				sortByKey:(NSString *)keyPath
-				ascending:(BOOL)ascending
-			withPredicate:(id)predicateOrString, ...;
++ (instancetype)fetchOrInsertSingleWithPredicate:(id)predicateOrString, ...;
++ (instancetype)fetchOrInsertSingleInContext:(NSManagedObjectContext *)context predicate:(id)predicateOrString, ...;
 
 /**
  @name Fetching
  
  */
-+ (void)fetchAsynchronouslyWithRequest:(void (^)(NSFetchRequest* request))block
-							completion:(void (^)(NSArray* objects))completion;
++ (void)fetchAsynchronouslyWithRequest:(void (^)(NSFetchRequest* request))block completion:(void (^)(NSArray* objects))completion context:(NSManagedObjectContext *)context;
+
+/**
+ @name Population
+ */
+- (void)populateWithDictionary:(NSDictionary *)dictionary;
+
+#pragma mark - Miscellaneous
+
+/**
+ @name Miscellaneous
+ */
+- (BOOL)isPersisted;
 
 @end

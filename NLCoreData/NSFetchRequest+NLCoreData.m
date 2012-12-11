@@ -27,16 +27,17 @@
 
 @implementation NSFetchRequest (NLCoreData)
 
-+ (NSFetchRequest *)fetchRequestWithEntity:(Class)entity
++ (instancetype)fetchRequestWithEntity:(Class)entity
 {
-	return [self fetchRequestWithEntity:entity context:[NSManagedObjectContext contextForThread]];
+	return [self fetchRequestWithEntity:entity context:[NSManagedObjectContext mainContext]];
 }
 
-+ (NSFetchRequest *)fetchRequestWithEntity:(Class)entity context:(NSManagedObjectContext *)context
++ (instancetype)fetchRequestWithEntity:(Class)entity context:(NSManagedObjectContext *)context
 {
 	NSFetchRequest* request = [[NSFetchRequest alloc] init];
 	
 	[request setEntity:[NSEntityDescription entityForName:NSStringFromClass(entity) inManagedObjectContext:context]];
+	[request setIncludesSubentities:NO];
 	
 	return request;
 }
@@ -52,6 +53,12 @@
 	
 	[newDescriptors addObject:sortDescriptor];
 	[self setSortDescriptors:newDescriptors];
+}
+
+- (void)setPredicateOrString:(id)predicateOrString, ...
+{
+	SET_PREDICATE_WITH_VARIADIC_ARGS
+	[self setPredicate:predicate];
 }
 
 @end

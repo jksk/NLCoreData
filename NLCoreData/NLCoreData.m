@@ -27,11 +27,6 @@
 
 @implementation NLCoreData
 
-@synthesize
-modelName			= modelName_,
-storeCoordinator	= storeCoordinator_,
-managedObjectModel	= managedObjectModel_;
-
 #pragma mark - Lifecycle
 
 + (NLCoreData *)shared
@@ -39,7 +34,11 @@ managedObjectModel	= managedObjectModel_;
 	static dispatch_once_t onceToken;
 	__strong static id NLCoreDataSingleton_ = nil;
 	
-	dispatch_once(&onceToken, ^{ NLCoreDataSingleton_ = [[self alloc] init]; });
+	dispatch_once(&onceToken, ^{
+		
+		NLCoreDataSingleton_ = [[self alloc] init];
+	});
+	
 	return NLCoreDataSingleton_;
 }
 
@@ -61,26 +60,29 @@ managedObjectModel	= managedObjectModel_;
 	}
 }
 
-#pragma mark - Property Accessors
+#pragma mark - Properties
 
 - (NSString *)modelName
 {
-	if (modelName_) return modelName_;
+	if (_modelName)
+		return _modelName;
 	
-	modelName_ = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"];
-	return modelName_;
+	_modelName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleName"];
+	
+	return _modelName;
 }
 
 - (NSString *)storePath
 {
-	return [[NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject]
-			stringByAppendingPathComponent:[[self modelName] stringByAppendingString:@".sqlite"]];
+	NSArray* paths			= NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES);
+	NSString* pathComponent = [[self modelName] stringByAppendingString:@".sqlite"];
+	
+	return [[paths lastObject] stringByAppendingPathComponent:pathComponent];
 }
 
 - (NSURL *)storeURL
 {
-	NSURL* path = [[[NSFileManager defaultManager] URLsForDirectory:NSLibraryDirectory
-														  inDomains:NSUserDomainMask] lastObject];
+	NSURL* path = [[[NSFileManager defaultManager] URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask] lastObject];
 	
 	return [path URLByAppendingPathComponent:[[self modelName] stringByAppendingString:@".sqlite"]];
 }
@@ -120,16 +122,16 @@ managedObjectModel	= managedObjectModel_;
 
 - (NSPersistentStoreCoordinator *)storeCoordinator
 {
-	if (storeCoordinator_) return storeCoordinator_;
+	if (_storeCoordinator) return _storeCoordinator;
 	
-	storeCoordinator_				= [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:
+	_storeCoordinator				= [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:
 									   [self managedObjectModel]];
 	NSMutableDictionary* options	= [NSMutableDictionary dictionary];
 	NSError* error;
 	
 	[options setObject:[NSNumber numberWithBool:YES] forKey:NSMigratePersistentStoresAutomaticallyOption];
 	
-	if (![storeCoordinator_ addPersistentStoreWithType:NSSQLiteStoreType
+	if (![_storeCoordinator addPersistentStoreWithType:NSSQLiteStoreType
 										 configuration:nil
 												   URL:[self storeURL]
 											   options:options
@@ -148,17 +150,17 @@ managedObjectModel	= managedObjectModel_;
 #endif
 	}
 	
-	return storeCoordinator_;
+	return _storeCoordinator;
 }
 
 - (NSManagedObjectModel *)managedObjectModel
 {
-	if (managedObjectModel_) return managedObjectModel_;
+	if (_managedObjectModel) return _managedObjectModel;
 	
 	NSURL* url			= [[NSBundle mainBundle] URLForResource:[self modelName] withExtension:@"momd"];
-	managedObjectModel_	= [[NSManagedObjectModel alloc] initWithContentsOfURL:url];
+	_managedObjectModel	= [[NSManagedObjectModel alloc] initWithContentsOfURL:url];
 	
-	return managedObjectModel_;
+	return _managedObjectModel;
 }
 
 @end

@@ -32,7 +32,7 @@
  @param entity The NSManagedObject subclass of the entity.
  @return The NSFetchRequest.
  */
-+ (NSFetchRequest *)fetchRequestWithEntity:(Class)entity;
++ (instancetype)fetchRequestWithEntity:(Class)entity;
 
 /**
  @name Initialization
@@ -41,7 +41,7 @@
  @param context The context in which to execute the fetch request.
  @return The NSFetchRequest.
  */
-+ (NSFetchRequest *)fetchRequestWithEntity:(Class)entity context:(NSManagedObjectContext *)context;
++ (instancetype)fetchRequestWithEntity:(Class)entity context:(NSManagedObjectContext *)context;
 
 /**
  @name Sorting
@@ -50,5 +50,12 @@
  @param ascending YES if the receiver specifies sorting in ascending order, otherwise NO.
  */
 - (void)sortByKey:(NSString *)key ascending:(BOOL)ascending;
+
+/**
+ @name Predicate
+ Sets predicate inline.
+ @param predicateOrString A predicate or a predicate format string.
+ */
+- (void)setPredicateOrString:(id)predicateOrString, ...;
 
 @end

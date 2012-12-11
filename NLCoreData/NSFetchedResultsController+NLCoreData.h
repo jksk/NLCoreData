@@ -30,9 +30,7 @@
  @name Lifecycle
  
  */
-+ (id)controllerWithRequest:(NSFetchRequest *)request;
-+ (id)controllerWithRequest:(NSFetchRequest *)request
-		 sectionNameKeyPath:(NSString *)keyPath
-				  cacheName:(NSString *)cacheName;
++ (instancetype)controllerWithRequest:(NSFetchRequest *)request;
++ (instancetype)controllerWithRequest:(NSFetchRequest *)request sectionNameKeyPath:(NSString *)keyPath cacheName:(NSString *)cacheName;
 
 @end
