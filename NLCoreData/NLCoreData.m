@@ -32,14 +32,14 @@
 + (NLCoreData *)shared
 {
 	static dispatch_once_t onceToken;
-	__strong static id NLCoreDataSingleton_ = nil;
+	__strong static id instance = nil;
 	
 	dispatch_once(&onceToken, ^{
 		
-		NLCoreDataSingleton_ = [[self alloc] init];
+		instance = [[self alloc] init];
 	});
 	
-	return NLCoreDataSingleton_;
+	return instance;
 }
 
 - (void)useDatabaseFile:(NSString *)filePath
@@ -51,7 +51,7 @@
 		return;
 	}
 	
-	NSError* error;
+	NSError* error = nil;
 	
 	if (![[NSFileManager defaultManager] copyItemAtPath:filePath toPath:[self storePath] error:&error]) {
 #ifdef DEBUG
@@ -108,8 +108,8 @@
 
 - (BOOL)isStoreEncrypted
 {
-	NSError* error;
-	NSDictionary* attributes = [[NSFileManager defaultManager] attributesOfItemAtPath:[self storePath] error:&error];
+	NSError* error				= nil;
+	NSDictionary* attributes	= [[NSFileManager defaultManager] attributesOfItemAtPath:[self storePath] error:&error];
 	
 	if (!attributes) {
 #ifdef DEBUG
@@ -118,7 +118,7 @@
 		return NO;
 	}
 	
-	return [[attributes objectForKey:NSFileProtectionKey] isEqualToString:NSFileProtectionComplete];
+	return [attributes[NSFileProtectionKey] isEqualToString:NSFileProtectionComplete];
 }
 
 - (NSPersistentStoreCoordinator *)storeCoordinator

@@ -118,8 +118,16 @@
 
 /**
  @name Population
+ @param dictionary NSDictionary with data to populate object
  */
 - (void)populateWithDictionary:(NSDictionary *)dictionary;
+
+/**
+ @name Population
+ @param dictionary NSDictionary with data to populate object
+ @param matchTypes Check for data type match before setting value
+ */
+- (void)populateWithDictionary:(NSDictionary *)dictionary matchTypes:(BOOL)matchTypes;
 
 #pragma mark - Miscellaneous
 

@@ -265,57 +265,67 @@
 
 - (void)populateWithDictionary:(NSDictionary *)dictionary
 {
+	[self populateWithDictionary:dictionary matchTypes:YES];
+}
+
+- (void)populateWithDictionary:(NSDictionary *)dictionary matchTypes:(BOOL)matchTypes
+{
 	NSDictionary* attributes = [[self entity] attributesByName];
 	NSArray* keys			 = [attributes allKeys];
 	
 	for (id key in dictionary) {
 		
-		if (![keys containsObject:key])
+		if (![keys containsObject:key]) {
+#ifdef DEBUG
+			NSLog(@"Populating %@, key not found: %@", NSStringFromClass([self class]), key);
+#endif
 			continue;
+		}
 		
 		id object							= [dictionary objectForKey:key];
 		NSAttributeDescription* description = [attributes objectForKey:key];
-		BOOL typeMatch						= NO;
+		BOOL typeMatch						= !matchTypes;
 		
-		switch ([description attributeType]) {
-				
-			case NSInteger16AttributeType:
-			case NSInteger32AttributeType:
-			case NSInteger64AttributeType:
-			case NSDecimalAttributeType:
-			case NSDoubleAttributeType:
-			case NSFloatAttributeType:
-			case NSBooleanAttributeType:
-				
-				typeMatch = [object isKindOfClass:[NSNumber class]];
-				break;
-				
-			case NSStringAttributeType:
-				
-				typeMatch = [object isKindOfClass:[NSString class]];
-				break;
-				
-			case NSDateAttributeType:
-				
-				typeMatch = [object isKindOfClass:[NSDate class]];
-				break;
-				
-			case NSBinaryDataAttributeType:
-				
-				typeMatch = [object isKindOfClass:[NSData class]];
-				break;
-				
-			case NSTransformableAttributeType:
-				
-				typeMatch = YES;
-				break;
-				
-			case NSObjectIDAttributeType:
-			case NSUndefinedAttributeType:
-				
-				typeMatch = NO;
-				break;
-		}
+		if (!typeMatch)
+			switch ([description attributeType]) {
+					
+				case NSInteger16AttributeType:
+				case NSInteger32AttributeType:
+				case NSInteger64AttributeType:
+				case NSDecimalAttributeType:
+				case NSDoubleAttributeType:
+				case NSFloatAttributeType:
+				case NSBooleanAttributeType:
+					
+					typeMatch = [object isKindOfClass:[NSNumber class]];
+					break;
+					
+				case NSStringAttributeType:
+					
+					typeMatch = [object isKindOfClass:[NSString class]];
+					break;
+					
+				case NSDateAttributeType:
+					
+					typeMatch = [object isKindOfClass:[NSDate class]];
+					break;
+					
+				case NSBinaryDataAttributeType:
+					
+					typeMatch = [object isKindOfClass:[NSData class]];
+					break;
+					
+				case NSTransformableAttributeType:
+					
+					typeMatch = YES;
+					break;
+					
+				case NSObjectIDAttributeType:
+				case NSUndefinedAttributeType:
+					
+					typeMatch = NO;
+					break;
+			}
 		
 		if (typeMatch)
 			[self setValue:object forKey:key];
