@@ -82,15 +82,16 @@
 
 - (NSURL *)storeURL
 {
-	NSURL* path = [[[NSFileManager defaultManager] URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask] lastObject];
+	NSArray* urls			= [[NSFileManager defaultManager] URLsForDirectory:NSLibraryDirectory inDomains:NSUserDomainMask];
+	NSString* pathComponent	= [[self modelName] stringByAppendingString:@".sqlite"];
 	
-	return [path URLByAppendingPathComponent:[[self modelName] stringByAppendingString:@".sqlite"]];
+	return [[urls lastObject] URLByAppendingPathComponent:pathComponent];
 }
 
 - (void)setStoreEncrypted:(BOOL)storeEncrypted
 {
 	NSString* encryption		= storeEncrypted ? NSFileProtectionComplete : NSFileProtectionNone;
-	NSDictionary* attributes	= [NSDictionary dictionaryWithObject:encryption forKey:NSFileProtectionKey];
+	NSDictionary* attributes	= @{NSFileProtectionKey: encryption};
 	NSError* error;
 	
 	if (![[NSFileManager defaultManager] setAttributes:attributes ofItemAtPath:[self storePath] error:&error]) {
@@ -122,28 +123,17 @@
 
 - (NSPersistentStoreCoordinator *)storeCoordinator
 {
-	if (_storeCoordinator) return _storeCoordinator;
+	if (_storeCoordinator)
+		return _storeCoordinator;
 	
-	_storeCoordinator				= [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:
-									   [self managedObjectModel]];
-	NSMutableDictionary* options	= [NSMutableDictionary dictionary];
-	NSError* error;
+	_storeCoordinator		= [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:[self managedObjectModel]];
+	NSDictionary* options	= @{NSMigratePersistentStoresAutomaticallyOption: @YES};
+	NSError* error			= nil;
 	
-	[options setObject:[NSNumber numberWithBool:YES] forKey:NSMigratePersistentStoresAutomaticallyOption];
-	
-	if (![_storeCoordinator addPersistentStoreWithType:NSSQLiteStoreType
-										 configuration:nil
-												   URL:[self storeURL]
-											   options:options
-												 error:&error]) {
+	if (![_storeCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:[self storeURL] options:options error:&error]) {
 #ifdef DEBUG
-		NSDictionary* meta	= [NSPersistentStoreCoordinator
-							   metadataForPersistentStoreOfType:nil URL:[self storeURL] error:nil];
-		NSString* equiv		= ([[[error userInfo] valueForKeyPath:@"sourceModel"] isEqual:
-								[[error userInfo] valueForKeyPath:@"destinationModel"]]) ? @"YES" : @"NO";
-		
-		NSLog(@"metaData: %@", meta);
-		NSLog(@"source and dest equivalent? %@", equiv);
+		NSLog(@"metaData: %@", [NSPersistentStoreCoordinator metadataForPersistentStoreOfType:nil URL:[self storeURL] error:nil]);
+		NSLog(@"source and dest equivalent? %i", [[[error userInfo] valueForKeyPath:@"sourceModel"] isEqual:[[error userInfo] valueForKeyPath:@"destinationModel"]]);
 		NSLog(@"failreason: %@", [[error userInfo] valueForKeyPath:@"reason"]);
 		
 		[NSException raise:NLCoreDataExceptions.persistentStore format:@"%@", [error localizedDescription]];
@@ -155,7 +145,8 @@
 
 - (NSManagedObjectModel *)managedObjectModel
 {
-	if (_managedObjectModel) return _managedObjectModel;
+	if (_managedObjectModel)
+		return _managedObjectModel;
 	
 	NSURL* url			= [[NSBundle mainBundle] URLForResource:[self modelName] withExtension:@"momd"];
 	_managedObjectModel	= [[NSManagedObjectModel alloc] initWithContentsOfURL:url];
