@@ -53,20 +53,6 @@ undoEnabled;
 	return YES;
 }
 
-- (void)saveNestedAsynchronous
-{
-	if ([self save]) {
-		
-		NSManagedObjectContext* context = [self parentContext];
-		
-		if (context)
-			[context performBlock:^{
-				
-				[context saveNestedAsynchronous];
-			}];
-	}
-}
-
 - (BOOL)saveNested
 {
 	if ([self save]) {
@@ -88,6 +74,30 @@ undoEnabled;
 	}
 	
 	return NO;
+}
+
+- (void)saveNestedAsynchronous
+{
+	[self saveNestedAsynchronousWithCallback:nil];
+}
+
+- (void)saveNestedAsynchronousWithCallback:(NLCoreDataSaveCompleteBlock)block
+{
+	if ([self save]) {
+		
+		NSManagedObjectContext* context = [self parentContext];
+		
+		if (context)
+			[context performBlock:^{
+				
+				[context saveNestedAsynchronousWithCallback:block];
+			}];
+		else if (block)
+			block(YES);
+	}
+	
+	if (block)
+		block(NO);
 }
 
 + (NSManagedObjectContext *)mainContext

@@ -24,7 +24,7 @@
 
 #import <CoreData/CoreData.h>
 
-typedef void(^NLCoreDataNotificationBlock)(NSNotification* note);
+typedef void(^NLCoreDataSaveCompleteBlock)(BOOL success);
 
 #pragma mark -
 @interface NSManagedObjectContext (NLCoreData)
@@ -42,6 +42,13 @@ typedef void(^NLCoreDataNotificationBlock)(NSNotification* note);
  Saves the context and all parent contexts asynchronously.
  */
 - (void)saveNestedAsynchronous;
+
+/**
+ @name Lifecycle
+ Saves the context and all parent contexts asynchronously.
+ @param block Calback for when save is complete
+ */
+- (void)saveNestedAsynchronousWithCallback:(NLCoreDataSaveCompleteBlock)block;
 
 /**
  @name Lifecycle

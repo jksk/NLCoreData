@@ -63,7 +63,7 @@
 		0919D5631432503F0087B006 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		096F4BB81525756200D22A76 /* NLCoreDataCommon.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NLCoreDataCommon.h; sourceTree = "<group>"; };
 		096F4BBA1525760100D22A76 /* NLCoreDataCommon.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NLCoreDataCommon.m; sourceTree = "<group>"; };
-		0995FB0D1677BD1C00BC4F8D /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
+		0995FB0D1677BD1C00BC4F8D /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-568h@2x.png"; path = "../Default-568h@2x.png"; sourceTree = "<group>"; };
 		09C244E514375C1200E96E64 /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
 		09C30BCE14CDF1B000D82024 /* NLCoreData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NLCoreData.h; sourceTree = "<group>"; };
 		09C30BCF14CDF1B000D82024 /* NLCoreData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NLCoreData.m; sourceTree = "<group>"; };
@@ -116,7 +116,6 @@
 		0919D4F2143248D40087B006 = {
 			isa = PBXGroup;
 			children = (
-				0995FB0D1677BD1C00BC4F8D /* Default-568h@2x.png */,
 				090E130615185AC200119CA4 /* NLCoreData.podspec */,
 				09C244E514375C1200E96E64 /* README */,
 				09F298AA15185F3D008FB188 /* TODO */,
@@ -163,6 +162,7 @@
 		0919D508143248D40087B006 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				0995FB0D1677BD1C00BC4F8D /* Default-568h@2x.png */,
 				0919D509143248D40087B006 /* NLCoreDataExample-Info.plist */,
 				0919D50A143248D40087B006 /* InfoPlist.strings */,
 				0919D50D143248D40087B006 /* main.m */,
