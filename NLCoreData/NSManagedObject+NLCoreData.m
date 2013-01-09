@@ -201,7 +201,12 @@
 + (instancetype)fetchSingleInContext:(NSManagedObjectContext *)context predicate:(id)predicateOrString, ...
 {
 	SET_PREDICATE_WITH_VARIADIC_ARGS
-	NSArray* objects = [self fetchInContext:context predicate:predicate];
+	NSArray* objects = [self fetchWithRequest:^(NSFetchRequest *request) {
+		
+		[request setFetchLimit:1];
+		[request setPredicate:predicate];
+		
+	} context:context];
 	
 	return [objects count] ? objects[0] : nil;
 }
