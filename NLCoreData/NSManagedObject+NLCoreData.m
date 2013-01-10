@@ -344,4 +344,18 @@
 	return [[self committedValuesForKeys:nil] count] > 0;
 }
 
+- (BOOL)obtainPermanentID
+{
+	NSError* error = nil;
+	
+	if (![[self managedObjectContext] obtainPermanentIDsForObjects:@[self] error:&error]) {
+#ifdef DEBUG
+		[NSException raise:NLCoreDataExceptions.permanentID	format:@"For object: %@", self];
+#endif
+		return NO;
+	}
+	
+	return YES;
+}
+
 @end

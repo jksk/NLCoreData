@@ -136,4 +136,9 @@
  */
 - (BOOL)isPersisted;
 
+/**
+ @name Miscellaneous
+ */
+- (BOOL)obtainPermanentID;
+
 @end

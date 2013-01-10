@@ -16,5 +16,6 @@ const struct NLCoreDataExceptionsStruct NLCoreDataExceptions = {
 	.fileExist			= @"File does not exist",
 	.fileCopy			= @"Could not copy file",
 	.encryption			= @"Encryption Exception",
-	.persistentStore	= @"Persistent Store Exception"
+	.persistentStore	= @"Persistent Store Exception",
+	.permanentID		= @"Obtain Permanent ID Exception"
 };

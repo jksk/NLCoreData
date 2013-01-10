@@ -44,4 +44,5 @@ extern const struct NLCoreDataExceptionsStruct
 	__unsafe_unretained NSString* fileCopy;
 	__unsafe_unretained NSString* encryption;
 	__unsafe_unretained NSString* persistentStore;
+	__unsafe_unretained NSString* permanentID;
 } NLCoreDataExceptions;
