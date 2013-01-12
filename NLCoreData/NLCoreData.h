@@ -63,8 +63,12 @@ NSManagedObjectContext;
 @property (assign, nonatomic, getter=isStoreEncrypted) BOOL storeEncrypted;
 
 /**
+ Options for the persistent store. Set to automigrate by default.
+ */
+@property (strong, nonatomic) NSDictionary* persistentStoreOptions;
+
+/**
  The persistent store coordinator.
- Set to automatic lightweight migration if needed.
  */
 @property (strong, nonatomic) NSPersistentStoreCoordinator*	storeCoordinator;
 

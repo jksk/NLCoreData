@@ -121,16 +121,25 @@
 	return [attributes[NSFileProtectionKey] isEqualToString:NSFileProtectionComplete];
 }
 
+- (NSDictionary *)persistentStoreOptions
+{
+	if (_persistentStoreOptions)
+		return _persistentStoreOptions;
+	
+	_persistentStoreOptions = @{NSMigratePersistentStoresAutomaticallyOption: @YES, NSInferMappingModelAutomaticallyOption: @YES};
+	
+	return _persistentStoreOptions;
+}
+
 - (NSPersistentStoreCoordinator *)storeCoordinator
 {
 	if (_storeCoordinator)
 		return _storeCoordinator;
 	
 	_storeCoordinator		= [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:[self managedObjectModel]];
-	NSDictionary* options	= @{NSMigratePersistentStoresAutomaticallyOption: @YES};
 	NSError* error			= nil;
 	
-	if (![_storeCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:[self storeURL] options:options error:&error]) {
+	if (![_storeCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:[self storeURL] options:[self persistentStoreOptions] error:&error]) {
 #ifdef DEBUG
 		NSLog(@"metaData: %@", [NSPersistentStoreCoordinator metadataForPersistentStoreOfType:nil URL:[self storeURL] error:nil]);
 		NSLog(@"source and dest equivalent? %i", [[[error userInfo] valueForKeyPath:@"sourceModel"] isEqual:[[error userInfo] valueForKeyPath:@"destinationModel"]]);
