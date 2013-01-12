@@ -228,14 +228,15 @@
 	return [self insertInContext:context];
 }
 
-+ (void)fetchAsynchronouslyWithRequest:(void (^)(NSFetchRequest* request))block completion:(void (^)(NSArray* objects))completion context:(NSManagedObjectContext *)context
++ (void)fetchAsynchronouslyWithRequest:(void (^)(NSFetchRequest* request))block completion:(void (^)(NSArray* objects))completion
 {
 #ifdef DEBUG
 	if (!completion)
 		[NSException raise:NLCoreDataExceptions.parameter format:@"completion block cannot be nil"];
 #endif
 	
-	NSManagedObjectContext* bgContext = [NSManagedObjectContext backgroundContext];
+	NSManagedObjectContext* mainContext	= [NSManagedObjectContext mainContext];
+	NSManagedObjectContext* bgContext	= [NSManagedObjectContext backgroundContext];
 	
 	[bgContext performBlock:^{
 		
@@ -250,18 +251,18 @@
 		NSError* bgError	= nil;
 		NSArray* bgObjects	= [bgContext executeFetchRequest:bgRequest error:&bgError];
 		
-		[context performBlock:^{
+		[mainContext performBlock:^{
 			
 			NSError* error			= nil;
 			NSPredicate* predicate	= [NSPredicate predicateWithFormat:@"SELF IN %@", bgObjects];
-			NSFetchRequest* request	= [NSFetchRequest fetchRequestWithEntity:[self class] context:context];
+			NSFetchRequest* request	= [NSFetchRequest fetchRequestWithEntity:[self class] context:mainContext];
 			
 			if (block)
 				block(request);
 			
 			[request setPredicate:predicate];
 			
-			NSArray* objects = [context executeFetchRequest:request error:&error];
+			NSArray* objects = [mainContext executeFetchRequest:request error:&error];
 			
 			completion(objects);
 		}];

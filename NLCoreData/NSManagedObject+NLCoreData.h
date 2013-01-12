@@ -105,16 +105,17 @@
 
 /**
  @name Fetching
- 
  */
 + (instancetype)fetchOrInsertSingleWithPredicate:(id)predicateOrString, ...;
 + (instancetype)fetchOrInsertSingleInContext:(NSManagedObjectContext *)context predicate:(id)predicateOrString, ...;
 
 /**
  @name Fetching
- 
+ Performs a complex fetch in the background context and passes the object id's to the main context for a faster fetch.
+ @param block
+ @param completion
  */
-+ (void)fetchAsynchronouslyWithRequest:(void (^)(NSFetchRequest* request))block completion:(void (^)(NSArray* objects))completion context:(NSManagedObjectContext *)context;
++ (void)fetchAsynchronouslyWithRequest:(void (^)(NSFetchRequest* request))block completion:(void (^)(NSArray* objects))completion;
 
 /**
  @name Population

@@ -68,6 +68,32 @@
 	STAssertTrue([User countWithPredicate:nil] == 1, @"");
 }
 
+- (void)testAsynchronousFetch
+{
+	[self seedUsers:1];
+	
+	[User fetchAsynchronouslyWithRequest:^(NSFetchRequest *request) {
+		
+	} completion:^(NSArray *objects) {
+		
+		STAssertTrue([objects count] == 1, @"");
+	}];
+}
+
+- (void)testPopulateWithDictionary
+{
+	[self seedUsers:1];
+	
+	User* user			= [User fetchSingleWithPredicate:nil];
+	NSString* username	= @"Bob";
+	NSString* password	= @"myPassword";
+	
+	[user populateWithDictionary:@{@"username": username, @"password": password}];
+	
+	STAssertTrue([[user username] isEqualToString:username], @"");
+	STAssertTrue([[user password] isEqualToString:password], @"");
+}
+
 #pragma mark - Helpers
 
 - (void)seedUsers:(NSInteger)count
