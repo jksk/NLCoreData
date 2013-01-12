@@ -28,7 +28,7 @@
 		09DC265D1432629F004E1280 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0919D503143248D40087B006 /* Foundation.framework */; };
 		09DC26631432629F004E1280 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 09DC26611432629F004E1280 /* InfoPlist.strings */; };
 		09DC26661432629F004E1280 /* NLCoreDataTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 09DC26651432629F004E1280 /* NLCoreDataTests.m */; };
-		09F298AB15185F3D008FB188 /* TODO in Resources */ = {isa = PBXBuildFile; fileRef = 09F298AA15185F3D008FB188 /* TODO */; };
+		09F298AB15185F3D008FB188 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 09F298AA15185F3D008FB188 /* LICENSE */; };
 		09FAE02114370E0E006CEF72 /* CoreDataStore.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 09FAE01F14370E0E006CEF72 /* CoreDataStore.xcdatamodeld */; };
 		09FAE02714370EDE006CEF72 /* User.m in Sources */ = {isa = PBXBuildFile; fileRef = 09FAE02614370EDE006CEF72 /* User.m */; };
 		09FAE02B14370EDE006CEF72 /* Group.m in Sources */ = {isa = PBXBuildFile; fileRef = 09FAE02A14370EDE006CEF72 /* Group.m */; };
@@ -79,7 +79,7 @@
 		09DC26641432629F004E1280 /* NLCoreDataTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NLCoreDataTests.h; sourceTree = "<group>"; };
 		09DC26651432629F004E1280 /* NLCoreDataTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NLCoreDataTests.m; sourceTree = "<group>"; };
 		09DC26671432629F004E1280 /* NLCoreDataTests-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NLCoreDataTests-Prefix.pch"; sourceTree = "<group>"; };
-		09F298AA15185F3D008FB188 /* TODO */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TODO; sourceTree = "<group>"; };
+		09F298AA15185F3D008FB188 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		09FAE02014370E0E006CEF72 /* CoreDataStore.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = CoreDataStore.xcdatamodel; sourceTree = "<group>"; };
 		09FAE02514370EDE006CEF72 /* User.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = User.h; sourceTree = "<group>"; };
 		09FAE02614370EDE006CEF72 /* User.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = User.m; sourceTree = "<group>"; };
@@ -118,7 +118,7 @@
 			children = (
 				090E130615185AC200119CA4 /* NLCoreData.podspec */,
 				09C244E514375C1200E96E64 /* README */,
-				09F298AA15185F3D008FB188 /* TODO */,
+				09F298AA15185F3D008FB188 /* LICENSE */,
 				09C30BCD14CDF1B000D82024 /* NLCoreData */,
 				0919D507143248D40087B006 /* NLCoreDataExample */,
 				09DC265E1432629F004E1280 /* NLCoreDataTests */,
@@ -295,7 +295,7 @@
 				0919D50C143248D40087B006 /* InfoPlist.strings in Resources */,
 				09C244E614375C1200E96E64 /* README in Resources */,
 				090E130715185AC200119CA4 /* NLCoreData.podspec in Resources */,
-				09F298AB15185F3D008FB188 /* TODO in Resources */,
+				09F298AB15185F3D008FB188 /* LICENSE in Resources */,
 				0995FB0E1677BD1D00BC4F8D /* Default-568h@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
