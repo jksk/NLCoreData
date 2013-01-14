@@ -1,8 +1,7 @@
 NLCoreData is meant as a drop-in wrapper for most of your Core Data needs on iOS (untested on OS X).
 Requires ARC. Requres iOS 5+.
 
-Goals
------
+## Goals
 * Write less code.
 * Make code more readable.
 * More compile-time checks.
@@ -14,14 +13,12 @@ You no longer access objects by typing an NSString with an entity name, instead 
 Instead of @"Person", use [Person class]. This provides a compile-time typo check.
 
 
-NLCoreData is not for you if
-----------------------------
+## NLCoreData is not for you if
 * you need more than one persistent store.
 * you don't want to subclass NSManagedObject
 
 
-Initialization
---------------
+## Initialization
 If your Core Data model is named to something other than the name of your main bundle, you need to set the model name
 before first use. Typically in application:didFinishLaunchingWithOptions:.
 
@@ -34,8 +31,7 @@ Typically in application:didFinishLaunchingWithOptions: on your first run:
 		[[NLCoreData shared] usePreSeededFile:pathToMyFile];
 
 
-Contexts
---------
+## Contexts
 NLCoreData provides three lazily loaded NSManagedObjectContexts. For the main (UI) thread, use:
 
 	NSManagedObjectContext* context = [NSManagedObjectContext mainContext];
@@ -61,8 +57,7 @@ or:
 	[context saveNestedAsynchronous];
 
 
-Methods
--------
+## Methods
 If you want to fetch all Person objects in the main context:
 
 	NSArray* results = [Person fetchWithPredicate:nil];
@@ -76,8 +71,7 @@ If you want to count all Person objects that match the predicate myPredicate (in
 	NSUInteger count = [Person countWithPredicate:myPredicate];
 
 	
-Fetching
---------
+## Fetching
 You can fetch either an array of objects or a single object. If you want all Person objects in the main context:
 
 	NSArray* results = [Person fetchWithPredicate:nil];
@@ -93,8 +87,7 @@ In some cases, you want to return a single object, or create one if it doesn't e
 	Person* person = [Person fetchOrInsertSingleWithPredicate:nil];
 
 
-Fetch Requests
---------------
+## Fetch Requests
 If you need to create an NSFetchRequest (e.g., for use in an NSFetchedResultsController),
 you can do that with a provided convenience method:
 
@@ -110,16 +103,16 @@ You can also set a predicate inline:
 
 	[request setPredicateOrString:@"myAttribute == YES"];
 
-Notes
------
+## Notes
 * Make sure you subclass all your Core Data entities, and that the subclasses are named for their entity
 	(i.e., if you have an entity named Person, you need a subclass named Person).
 * I strongly recommend using mogenerator. It's quite excellent. Get it via homebrew or at http://rentzsch.github.com/mogenerator
 
-Setup
------
+## Setup
 1. Add the NLCoreData folder to your project.
+
 2. #import "NLCoreData.h" where you need it (in prefix.pch for easy access).
+
 3. Optionally, set modelName to what your model is named: [[NLCoreData shared] setModelName:@"MyModel"];
 
 Step 3 is skippable if your model name is the same as your bundle/app name.
