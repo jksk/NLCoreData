@@ -105,6 +105,13 @@
 
 /**
  @name Fetching
+ 
+ */
++ (instancetype)fetchSingleSortByKey:(NSString *)key ascending:(BOOL)ascending predicate:(id)predicateOrString, ...;
++ (instancetype)fetchSingleInContext:(NSManagedObjectContext *)context sortByKey:(NSString *)key ascending:(BOOL)ascending predicate:(id)predicateOrString, ...;
+
+/**
+ @name Fetching
  */
 + (instancetype)fetchOrInsertSingleWithPredicate:(id)predicateOrString, ...;
 + (instancetype)fetchOrInsertSingleInContext:(NSManagedObjectContext *)context predicate:(id)predicateOrString, ...;

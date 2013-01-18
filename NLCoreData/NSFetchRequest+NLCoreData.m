@@ -45,14 +45,20 @@
 - (void)sortByKey:(NSString *)key ascending:(BOOL)ascending
 {
 	NSSortDescriptor* sortDescriptor	= [NSSortDescriptor sortDescriptorWithKey:key ascending:ascending];
-	NSMutableArray* newDescriptors		= [NSMutableArray array];
-	NSArray* existingDescriptors		= [self sortDescriptors];
+	NSMutableArray* descriptors			= [NSMutableArray arrayWithArray:[self sortDescriptors]];
 	
-	if (existingDescriptors)
-		[newDescriptors addObjectsFromArray:existingDescriptors];
-	
-	[newDescriptors addObject:sortDescriptor];
-	[self setSortDescriptors:newDescriptors];
+	[descriptors addObject:sortDescriptor];
+	[self setSortDescriptors:descriptors];
+//	
+//	NSSortDescriptor* sortDescriptor	= [NSSortDescriptor sortDescriptorWithKey:key ascending:ascending];
+//	NSMutableArray* newDescriptors		= [NSMutableArray array];
+//	NSArray* existingDescriptors		= [self sortDescriptors];
+//	
+//	if (existingDescriptors)
+//		[newDescriptors addObjectsFromArray:existingDescriptors];
+//	
+//	[newDescriptors addObject:sortDescriptor];
+//	[self setSortDescriptors:newDescriptors];
 }
 
 - (void)setPredicateOrString:(id)predicateOrString, ...

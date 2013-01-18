@@ -94,6 +94,27 @@
 	STAssertTrue([[user password] isEqualToString:password], @"");
 }
 
+- (void)testSortByKey
+{
+	NSFetchRequest* request = [NSFetchRequest fetchRequestWithEntity:[User class]];
+	
+	[request sortByKey:@"username" ascending:YES];
+	[request sortByKey:@"password" ascending:NO];
+	
+	NSArray* descriptors = [request sortDescriptors];
+	
+	STAssertTrue([descriptors count] == 2, @"");
+	
+	NSSortDescriptor* firstSort		= descriptors[0];
+	NSSortDescriptor* secondSort	= descriptors[1];
+	
+	STAssertTrue([[firstSort key] isEqualToString:@"username"], @"");
+	STAssertTrue([[secondSort key] isEqualToString:@"password"], @"");
+	
+	STAssertTrue([firstSort ascending] == YES, @"");
+	STAssertTrue([secondSort ascending] == NO, @"");
+}
+
 #pragma mark - Helpers
 
 - (void)seedUsers:(NSInteger)count

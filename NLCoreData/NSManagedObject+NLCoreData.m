@@ -195,16 +195,33 @@
 + (instancetype)fetchSingleWithPredicate:(id)predicateOrString, ...
 {
 	SET_PREDICATE_WITH_VARIADIC_ARGS
-	return [self fetchSingleInContext:[NSManagedObjectContext mainContext] predicate:predicate];
+	return [self fetchSingleInContext:[NSManagedObjectContext mainContext] sortByKey:nil ascending:NO predicate:predicate];
 }
 
 + (instancetype)fetchSingleInContext:(NSManagedObjectContext *)context predicate:(id)predicateOrString, ...
 {
 	SET_PREDICATE_WITH_VARIADIC_ARGS
+	return [self fetchSingleInContext:context sortByKey:nil ascending:NO predicate:predicate];
+}
+
++ (instancetype)fetchSingleSortByKey:(NSString *)key ascending:(BOOL)ascending predicate:(id)predicateOrString, ...
+{
+	SET_PREDICATE_WITH_VARIADIC_ARGS
+	return [self fetchSingleInContext:[NSManagedObjectContext mainContext] sortByKey:key ascending:ascending predicate:predicate];
+}
+
++ (instancetype)fetchSingleInContext:(NSManagedObjectContext *)context sortByKey:(NSString *)key ascending:(BOOL)ascending predicate:(id)predicateOrString, ...
+{
+	SET_PREDICATE_WITH_VARIADIC_ARGS
 	NSArray* objects = [self fetchWithRequest:^(NSFetchRequest *request) {
 		
 		[request setFetchLimit:1];
-		[request setPredicate:predicate];
+		
+		if (predicate)
+			[request setPredicate:predicate];
+		
+		if (key)
+			[request sortByKey:key ascending:ascending];
 		
 	} context:context];
 	
