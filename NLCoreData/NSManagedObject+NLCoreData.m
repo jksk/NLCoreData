@@ -293,10 +293,11 @@
 
 - (void)populateWithDictionary:(NSDictionary *)dictionary matchTypes:(BOOL)matchTypes
 {
-	NSDictionary* attributes = [[self entity] attributesByName];
-	NSArray* keys			 = [attributes allKeys];
+	NSDictionary* arguments		= [[self class] translatePopulationDictionary:[NSMutableDictionary dictionaryWithDictionary:dictionary]];
+	NSDictionary* attributes	= [[self entity] attributesByName];
+	NSArray* keys				= [attributes allKeys];
 	
-	for (id key in dictionary) {
+	for (id key in arguments) {
 		
 		if (![keys containsObject:key]) {
 #ifdef DEBUG
@@ -305,7 +306,7 @@
 			continue;
 		}
 		
-		id object							= [dictionary objectForKey:key];
+		id object							= [arguments objectForKey:key];
 		NSAttributeDescription* description = [attributes objectForKey:key];
 		BOOL typeMatch						= !matchTypes;
 		
@@ -353,6 +354,11 @@
 		if (typeMatch)
 			[self setValue:object forKey:key];
 	}
+}
+
++ (NSDictionary *)translatePopulationDictionary:(NSMutableDictionary *)dictionary
+{
+	return [NSDictionary dictionaryWithDictionary:dictionary];
 }
 
 #pragma mark - Miscellaneous
