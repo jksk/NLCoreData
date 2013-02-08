@@ -293,9 +293,18 @@
 
 - (void)populateWithDictionary:(NSDictionary *)dictionary matchTypes:(BOOL)matchTypes
 {
-	NSDictionary* arguments		= [[self class] translatePopulationDictionary:[NSMutableDictionary dictionaryWithDictionary:dictionary]];
 	NSDictionary* attributes	= [[self entity] attributesByName];
 	NSArray* keys				= [attributes allKeys];
+	SEL translateSelector		= @selector(translatePopulationDictionary:);
+	NSDictionary* arguments;
+	
+	if ([[self class] respondsToSelector:translateSelector])
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+		arguments = [[self class] performSelector:translateSelector withObject:[NSMutableDictionary dictionaryWithDictionary:dictionary]];
+#pragma clang diagnostic pop
+	else
+		arguments = dictionary;
 	
 	for (id key in arguments) {
 		
@@ -354,11 +363,6 @@
 		if (typeMatch)
 			[self setValue:object forKey:key];
 	}
-}
-
-+ (NSDictionary *)translatePopulationDictionary:(NSMutableDictionary *)dictionary
-{
-	return [NSDictionary dictionaryWithDictionary:dictionary];
 }
 
 #pragma mark - Miscellaneous

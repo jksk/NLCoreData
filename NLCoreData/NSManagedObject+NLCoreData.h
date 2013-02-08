@@ -134,16 +134,9 @@
  @name Population
  @param dictionary NSDictionary with data to populate object
  @param matchTypes Check for data type match before setting value
+ A class can optionally implement +(NSDictionary *)translatePopulationDictionary:(NSMutableDictionary *)dictionary to modify the dictionary before it's sent to this method (e.g., if the server sends "user_id" and your model has a userId, use this to modify the dictionary).
  */
 - (void)populateWithDictionary:(NSDictionary *)dictionary matchTypes:(BOOL)matchTypes;
-
-/**
- @name Population
- @param dictionary NSDictionary with data to populate object
- Called automatically by populateWithDictionary:. Override if a key in the input dictionary doesn't match your model.
- E.g., if the server sends "user_id" and your model has a userId, use this to modify the dictionary.
- */
-+ (NSDictionary *)translatePopulationDictionary:(NSMutableDictionary *)dictionary;
 
 #pragma mark - Miscellaneous
 
