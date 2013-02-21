@@ -27,6 +27,10 @@
 {
 	[super setUp];
 	
+#ifndef DEBUG
+#define DEBUG 1
+#endif
+	
 	[[NLCoreData shared] setModelName:@"CoreDataStore"];
 }
 
@@ -113,6 +117,18 @@
 	
 	STAssertTrue([firstSort ascending] == YES, @"");
 	STAssertTrue([secondSort ascending] == NO, @"");
+}
+
+- (void)testResetStore
+{
+	[self seedUsers:5];
+	[[NSManagedObjectContext mainContext] save];
+	
+	STAssertTrue([User countWithPredicate:nil] == 5, @"");
+	
+	[[NLCoreData shared] resetDatabase];
+	
+	STAssertTrue([User countWithPredicate:nil] == 0, @"");
 }
 
 #pragma mark - Helpers

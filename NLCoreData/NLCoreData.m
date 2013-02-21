@@ -25,6 +25,12 @@
 #import <CoreData/CoreData.h>
 #import "NLCoreData.h"
 
+@interface NLCoreData ()
+
+- (void)addPersistentStore;
+
+@end
+
 @implementation NLCoreData
 
 #pragma mark - Lifecycle
@@ -56,6 +62,61 @@
 	if (![[NSFileManager defaultManager] copyItemAtPath:filePath toPath:[self storePath] error:&error]) {
 #ifdef DEBUG
 		[NSException raise:NLCoreDataExceptions.fileCopy format:@"%@", [error localizedDescription]];
+#endif
+	}
+}
+
+- (BOOL)resetDatabase
+{
+	NSArray* stores = [[self storeCoordinator] persistentStores];
+	
+	if (![stores count])
+		return YES;
+	
+	NSError* storeError = nil;
+	
+	if (![[self storeCoordinator] removePersistentStore:stores[0] error:&storeError]) {
+#ifdef DEBUG
+		[NSException raise:NLCoreDataExceptions.persistentStore format:@"%@", [storeError localizedDescription]];
+#endif
+		return NO;
+	}
+	
+	NSFileManager* fm	= [NSFileManager defaultManager];
+	NSString* storePath	= [self storePath];
+	NSError* fileError	= nil;
+	
+	if (![fm fileExistsAtPath:storePath])
+		return YES;
+	
+	if (![fm removeItemAtPath:storePath error:&fileError]) {
+#ifdef DEBUG
+		[NSException raise:@"" format:@"%@", fileError];
+#endif
+		[self addPersistentStore];
+		return NO;
+	}
+	
+	[NSManagedObjectContext resetAll];
+	[self setManagedObjectModel:nil];
+	[self setStoreCoordinator:nil];
+	
+	return YES;
+}
+
+#pragma mark - Helpers
+
+- (void)addPersistentStore
+{
+	NSError* error = nil;
+	
+	if (![[self storeCoordinator] addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:[self storeURL] options:[self persistentStoreOptions] error:&error]) {
+#ifdef DEBUG
+		NSLog(@"metaData: %@", [NSPersistentStoreCoordinator metadataForPersistentStoreOfType:nil URL:[self storeURL] error:nil]);
+		NSLog(@"source and dest equivalent? %i", [[[error userInfo] valueForKeyPath:@"sourceModel"] isEqual:[[error userInfo] valueForKeyPath:@"destinationModel"]]);
+		NSLog(@"failreason: %@", [[error userInfo] valueForKeyPath:@"reason"]);
+		
+		[NSException raise:NLCoreDataExceptions.persistentStore format:@"%@", [error localizedDescription]];
 #endif
 	}
 }
@@ -136,18 +197,9 @@
 	if (_storeCoordinator)
 		return _storeCoordinator;
 	
-	_storeCoordinator		= [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:[self managedObjectModel]];
-	NSError* error			= nil;
+	_storeCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:[self managedObjectModel]];
 	
-	if (![_storeCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:[self storeURL] options:[self persistentStoreOptions] error:&error]) {
-#ifdef DEBUG
-		NSLog(@"metaData: %@", [NSPersistentStoreCoordinator metadataForPersistentStoreOfType:nil URL:[self storeURL] error:nil]);
-		NSLog(@"source and dest equivalent? %i", [[[error userInfo] valueForKeyPath:@"sourceModel"] isEqual:[[error userInfo] valueForKeyPath:@"destinationModel"]]);
-		NSLog(@"failreason: %@", [[error userInfo] valueForKeyPath:@"reason"]);
-		
-		[NSException raise:NLCoreDataExceptions.persistentStore format:@"%@", [error localizedDescription]];
-#endif
-	}
+	[self addPersistentStore];
 	
 	return _storeCoordinator;
 }

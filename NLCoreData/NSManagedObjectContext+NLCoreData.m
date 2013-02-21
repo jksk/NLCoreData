@@ -100,10 +100,17 @@ undoEnabled;
 		block(NO);
 }
 
++ (void)resetAll
+{
+	[[self mainContext] reset];
+	[[self backgroundContext] reset];
+	[[self storeContext] reset];
+}
+
 + (NSManagedObjectContext *)mainContext
 {
-	static NSManagedObjectContext* context = nil;
-	static dispatch_once_t onceToken;
+	static NSManagedObjectContext* context	= nil;
+	static dispatch_once_t onceToken		= 0;
 	
 	dispatch_once(&onceToken, ^{
 		
@@ -116,8 +123,8 @@ undoEnabled;
 
 + (NSManagedObjectContext *)storeContext
 {
-	static NSManagedObjectContext* context = nil;
-	static dispatch_once_t onceToken;
+	static NSManagedObjectContext* context	= nil;
+	static dispatch_once_t onceToken		= 0;
 	
 	dispatch_once(&onceToken, ^{
 		
@@ -130,8 +137,8 @@ undoEnabled;
 
 + (NSManagedObjectContext *)backgroundContext
 {
-	static NSManagedObjectContext* context = nil;
-	static dispatch_once_t onceToken;
+	static NSManagedObjectContext* context	= nil;
+	static dispatch_once_t onceToken		= 0;
 	
 	dispatch_once(&onceToken, ^{
 		

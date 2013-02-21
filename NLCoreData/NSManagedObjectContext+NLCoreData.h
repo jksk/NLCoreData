@@ -58,6 +58,12 @@ typedef void(^NLCoreDataSaveCompleteBlock)(BOOL success);
 
 /**
  @name Lifecycle
+ Resets all contexts (the background context, the store context and the main context).
+ */
++ (void)resetAll;
+
+/**
+ @name Lifecycle
  @return The main thread context. Lazily loaded if non-existant.
  */
 + (NSManagedObjectContext *)mainContext;

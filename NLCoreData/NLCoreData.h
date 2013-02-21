@@ -101,4 +101,12 @@ NSManagedObjectContext;
  */
 - (void)useDatabaseFile:(NSString *)filePath;
 
+/**
+ @name Lifecycle
+ @return A boolean on whether or not the operation succeeded.
+ Resets the database (deletes all content).
+ @warning If you use this, be sure to drop all references to managed objects beforehand.
+ */
+- (BOOL)resetDatabase;
+
 @end
