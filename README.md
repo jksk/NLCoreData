@@ -39,7 +39,7 @@ NLCoreData provides three lazily loaded NSManagedObjectContexts. For the main (U
 If you're doing some heavy lifting, and don't want to block the main thread, use:
 
 	NSManagedObjectContext* context = [NSManagedObjectContext backgroundContext];
-	
+
 Sometimes you may want to skip context synchronicity and simply change stored values. You can access the context for the persistent store with:
 
 	NSManagedObjectContext* context = [NSManagedObjectContext storeContext];
@@ -65,17 +65,17 @@ If you want to fetch all Person objects in the main context:
 If you want to delete all Person objects and persist the change:
 
 	[Person deleteWithRequest:nil context:[NSManagedObjectContext storeContext]];
-	
+
 If you want to count all Person objects that match the predicate myPredicate (in the main context):
 
 	NSUInteger count = [Person countWithPredicate:myPredicate];
 
-	
+
 ## Fetching
 You can fetch either an array of objects or a single object. If you want all Person objects in the main context:
 
 	NSArray* results = [Person fetchWithPredicate:nil];
-	
+
 If you want a single object in the shared context:
 
 	Person* person = [Person fetchSingleWithPredicate:nil];
@@ -111,7 +111,7 @@ You can also set a predicate inline:
 ## Setup
 1. Add the NLCoreData folder to your project.
 
-2. #import "NLCoreData.h" where you need it (in prefix.pch for easy access).
+2. import "NLCoreData.h" where you need it (in prefix.pch for easy access).
 
 3. Optionally, set modelName to what your model is named: [[NLCoreData shared] setModelName:@"MyModel"];
 
