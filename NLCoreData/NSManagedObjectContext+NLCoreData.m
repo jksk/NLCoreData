@@ -25,6 +25,10 @@
 #import "NSManagedObjectContext+NLCoreData.h"
 #import "NLCoreData.h"
 
+NSManagedObjectContext* NLCoreDataStoreContext;
+NSManagedObjectContext* NLCoreDataMainContext;
+NSManagedObjectContext* NLCoreDataBackgroundContext;
+
 @implementation NSManagedObjectContext (NLCoreData)
 
 @dynamic
@@ -100,53 +104,47 @@ undoEnabled;
 		block(NO);
 }
 
-+ (void)resetAll
++ (void)rebuildAllContexts
 {
-	[[self mainContext] reset];
-	[[self backgroundContext] reset];
-	[[self storeContext] reset];
+	NLCoreDataStoreContext		= nil;
+	NLCoreDataMainContext		= nil;
+	NLCoreDataBackgroundContext	= nil;
 }
 
 + (NSManagedObjectContext *)mainContext
 {
-	static NSManagedObjectContext* context	= nil;
-	static dispatch_once_t onceToken		= 0;
+	if (!NLCoreDataMainContext)
+		@synchronized(NLCoreDataMainContext)
+		{
+			NLCoreDataMainContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
+			[NLCoreDataMainContext setParentContext:[self storeContext]];
+		}
 	
-	dispatch_once(&onceToken, ^{
-		
-		context = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
-		[context setParentContext:[self storeContext]];
-	});
-	
-	return context;
+	return NLCoreDataMainContext;
 }
 
 + (NSManagedObjectContext *)storeContext
 {
-	static NSManagedObjectContext* context	= nil;
-	static dispatch_once_t onceToken		= 0;
+	if (!NLCoreDataStoreContext)
+		@synchronized(NLCoreDataStoreContext)
+		{
+			NLCoreDataStoreContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
+			[NLCoreDataStoreContext setPersistentStoreCoordinator:[[NLCoreData shared] storeCoordinator]];
+		}
 	
-	dispatch_once(&onceToken, ^{
-		
-		context = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
-		[context setPersistentStoreCoordinator:[[NLCoreData shared] storeCoordinator]];
-	});
-	
-	return context;
+	return NLCoreDataStoreContext;
 }
 
 + (NSManagedObjectContext *)backgroundContext
 {
-	static NSManagedObjectContext* context	= nil;
-	static dispatch_once_t onceToken		= 0;
+	if (!NLCoreDataBackgroundContext)
+		@synchronized(NLCoreDataBackgroundContext)
+		{
+			NLCoreDataBackgroundContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
+			[NLCoreDataBackgroundContext setParentContext:[self mainContext]];
+		}
 	
-	dispatch_once(&onceToken, ^{
-		
-		context = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
-		[context setParentContext:[self mainContext]];
-	});
-	
-	return context;
+	return NLCoreDataBackgroundContext;
 }
 
 #pragma mark - Properties

@@ -58,9 +58,10 @@ typedef void(^NLCoreDataSaveCompleteBlock)(BOOL success);
 
 /**
  @name Lifecycle
- Resets all contexts (the background context, the store context and the main context).
+ Rebuilds all contexts (the background context, the store context and the main context).
+ @warning You probably don't want to call this manually.
  */
-+ (void)resetAll;
++ (void)rebuildAllContexts;
 
 /**
  @name Lifecycle

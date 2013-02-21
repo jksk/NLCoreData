@@ -97,9 +97,9 @@
 		return NO;
 	}
 	
-	[NSManagedObjectContext resetAll];
 	[self setManagedObjectModel:nil];
 	[self setStoreCoordinator:nil];
+	[NSManagedObjectContext rebuildAllContexts];
 	
 	return YES;
 }

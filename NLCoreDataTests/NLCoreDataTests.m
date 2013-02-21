@@ -129,6 +129,15 @@
 	[[NLCoreData shared] resetDatabase];
 	
 	STAssertTrue([User countWithPredicate:nil] == 0, @"");
+	
+	[self seedUsers:3];
+	[[NSManagedObjectContext mainContext] saveNested];
+	[NSManagedObjectContext storeContext];
+	
+	STAssertTrue([User countWithPredicate:nil] == 3, @"");
+	
+	[User deleteWithPredicate:nil];
+	[[NSManagedObjectContext mainContext] saveNested];
 }
 
 #pragma mark - Helpers
