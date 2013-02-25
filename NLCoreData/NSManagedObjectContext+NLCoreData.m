@@ -128,7 +128,7 @@ undoEnabled;
 	if (!NLCoreDataStoreContext)
 		@synchronized(NLCoreDataStoreContext)
 		{
-			NLCoreDataStoreContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
+			NLCoreDataStoreContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
 			[NLCoreDataStoreContext setPersistentStoreCoordinator:[[NLCoreData shared] storeCoordinator]];
 		}
 	
@@ -140,7 +140,7 @@ undoEnabled;
 	if (!NLCoreDataBackgroundContext)
 		@synchronized(NLCoreDataBackgroundContext)
 		{
-			NLCoreDataBackgroundContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
+			NLCoreDataBackgroundContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
 			[NLCoreDataBackgroundContext setParentContext:[self mainContext]];
 		}
 	
