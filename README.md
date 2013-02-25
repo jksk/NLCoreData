@@ -55,7 +55,16 @@ This doesn't persist values outside of their own context. To ensure an object is
 or:
 
 	[context saveNestedAsynchronous];
+	
+The backgroundContext and the storeContext are run on private dispatch queues, so any operations on them should be wrapped in a performBlock:
 
+	NSManagedObjectContext* context = [NSManagedObjectContext backgroundContext];
+	[context performBlock:^{
+		
+		// insert or fetch new data here.
+	}];
+	
+As always, never pass NSManagedObjects between contexts, use the objectID's instead.
 
 ## Methods
 If you want to fetch all Person objects in the main context:
