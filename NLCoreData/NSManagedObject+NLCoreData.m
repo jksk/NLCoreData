@@ -62,8 +62,9 @@
 	[request setIncludesPropertyValues:NO];
 	[request setIncludesSubentities:NO];
 	
-	NSArray* objects = [self fetchWithRequest:nil context:context];
-	
+	NSError* error;
+	NSArray* objects = [context executeFetchRequest:request error:&error];
+
 	for (NSManagedObject* object in objects)
 		[context deleteObject:object];
 }
