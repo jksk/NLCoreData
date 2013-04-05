@@ -25,9 +25,12 @@
 #import "NSManagedObjectContext+NLCoreData.h"
 #import "NLCoreData.h"
 
-NSManagedObjectContext* NLCoreDataStoreContext;
-NSManagedObjectContext* NLCoreDataMainContext;
-NSManagedObjectContext* NLCoreDataBackgroundContext;
+static dispatch_once_t*			_storeContextTokenRef;
+static dispatch_once_t*			_mainContextTokenRef;
+static dispatch_once_t*			_backgroundContextTokenRef;
+static NSManagedObjectContext*	_storeContext;
+static NSManagedObjectContext*	_mainContext;
+static NSManagedObjectContext*	_backgroundContext;
 
 @implementation NSManagedObjectContext (NLCoreData)
 
@@ -106,45 +109,54 @@ undoEnabled;
 
 + (void)rebuildAllContexts
 {
-	NLCoreDataStoreContext		= nil;
-	NLCoreDataMainContext		= nil;
-	NLCoreDataBackgroundContext	= nil;
+	*_mainContextTokenRef		= 0;
+	*_storeContextTokenRef		= 0;
+	*_backgroundContextTokenRef	= 0;
+	_mainContext				= nil;
+	_storeContext				= nil;
+	_backgroundContext			= nil;
 }
 
 + (NSManagedObjectContext *)mainContext
 {
-	if (!NLCoreDataMainContext)
-		@synchronized(NLCoreDataMainContext)
-		{
-			NLCoreDataMainContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
-			[NLCoreDataMainContext setParentContext:[self storeContext]];
-		}
+	static dispatch_once_t token	= 0;
+	_mainContextTokenRef			= &token;
 	
-	return NLCoreDataMainContext;
+	dispatch_once(&token, ^{
+		
+		_mainContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
+		[_mainContext setParentContext:[self storeContext]];
+	});
+	
+	return _mainContext;
 }
 
 + (NSManagedObjectContext *)storeContext
 {
-	if (!NLCoreDataStoreContext)
-		@synchronized(NLCoreDataStoreContext)
-		{
-			NLCoreDataStoreContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
-			[NLCoreDataStoreContext setPersistentStoreCoordinator:[[NLCoreData shared] storeCoordinator]];
-		}
+	static dispatch_once_t token	= 0;
+	_storeContextTokenRef			= &token;
 	
-	return NLCoreDataStoreContext;
+	dispatch_once(&token, ^{
+		
+		_storeContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
+		[_storeContext setPersistentStoreCoordinator:[[NLCoreData shared] storeCoordinator]];
+	});
+	
+	return _storeContext;
 }
 
 + (NSManagedObjectContext *)backgroundContext
 {
-	if (!NLCoreDataBackgroundContext)
-		@synchronized(NLCoreDataBackgroundContext)
-		{
-			NLCoreDataBackgroundContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
-			[NLCoreDataBackgroundContext setParentContext:[self mainContext]];
-		}
+	static dispatch_once_t token	= 0;
+	_backgroundContextTokenRef		= &token;
 	
-	return NLCoreDataBackgroundContext;
+	dispatch_once(&token, ^{
+		
+		_backgroundContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
+		[_backgroundContext setParentContext:[self mainContext]];
+	});
+	
+	return _backgroundContext;
 }
 
 #pragma mark - Properties
