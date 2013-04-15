@@ -28,6 +28,13 @@
 #pragma mark -
 @implementation NSManagedObject (NLCoreData)
 
+#pragma mark - Lifecycle
+
++ (NSString *)entityName
+{
+	return NSStringFromClass([self class]);
+}
+
 #pragma mark - Inserting
 
 + (instancetype)insert
@@ -37,7 +44,7 @@
 
 + (instancetype)insertInContext:(NSManagedObjectContext *)context
 {
-	return [NSEntityDescription insertNewObjectForEntityForName:NSStringFromClass([self class]) inManagedObjectContext:context];
+	return [NSEntityDescription insertNewObjectForEntityForName:[self entityName] inManagedObjectContext:context];
 }
 
 #pragma mark - Deleting

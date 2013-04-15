@@ -26,6 +26,15 @@
 
 @interface NSManagedObject (NLCoreData)
 
+#pragma mark - Lifecycle
+
+/**
+ @name Lifecycle
+ The default implementation returns the class name as a string.
+ Override in your NSManagedObject subclass if your class name does not match your entity name.
+ */
++ (NSString *)entityName;
+
 #pragma mark - Inserting
 
 /**
