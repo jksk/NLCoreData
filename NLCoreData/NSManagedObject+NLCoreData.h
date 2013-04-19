@@ -159,4 +159,9 @@
  */
 - (BOOL)obtainPermanentID;
 
+/**
+ @name Miscellaneous
+ */
+- (NSString *)usefulDescription;
+
 @end
