@@ -9,8 +9,8 @@ Requires ARC. Requres iOS 5+.
 You access convenience methods for insertion, deletion, counting and fetching through class
 and instance methods on your NSManagedObject subclasses.
 
-You no longer access objects by typing an NSString with an entity name, instead you use the entity class.
-Instead of @"Person", use [Person class]. This provides a compile-time typo check.
+You no longer access objects by typing an NSString with an entity name, instead you use the entity class or the class method +entityName.
+Instead of @"Person", use [Person class] or [Person entityName]. This provides a compile-time typo check.
 
 
 ## NLCoreData is not for you if
@@ -55,15 +55,15 @@ This doesn't persist values outside of their own context. To ensure an object is
 or:
 
 	[context saveNestedAsynchronous];
-	
+
 The backgroundContext and the storeContext are run on private dispatch queues, so any operations on them should be wrapped in a performBlock:
 
 	NSManagedObjectContext* context = [NSManagedObjectContext backgroundContext];
 	[context performBlock:^{
-		
+
 		// insert or fetch new data here.
 	}];
-	
+
 As always, never pass NSManagedObjects between contexts, use the objectID's instead.
 
 ## Methods
@@ -74,6 +74,7 @@ If you want to fetch all Person objects in the main context:
 If you want to delete all Person objects and persist the change:
 
 	[Person deleteWithRequest:nil context:[NSManagedObjectContext storeContext]];
+	[[NSManagedObjectContext storeContext] saveNested];
 
 If you want to count all Person objects that match the predicate myPredicate (in the main context):
 
@@ -113,8 +114,7 @@ You can also set a predicate inline:
 	[request setPredicateOrString:@"myAttribute == YES"];
 
 ## Notes
-* Make sure you subclass all your Core Data entities, and that the subclasses are named for their entity
-	(i.e., if you have an entity named Person, you need a subclass named Person).
+* Make sure you subclass all your Core Data entities. If your entity has a different name than your subclass, override the +entityName class method in your subclass and return the entity name.
 * I strongly recommend using mogenerator. It's quite excellent. Get it via homebrew or at http://rentzsch.github.com/mogenerator
 
 ## Setup
