@@ -102,8 +102,7 @@ undoEnabled;
 		else if (block)
 			block(YES);
 	}
-	
-	if (block)
+	else if (block)
 		block(NO);
 }
 
