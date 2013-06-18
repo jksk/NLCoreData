@@ -108,9 +108,18 @@ undoEnabled;
 
 + (void)rebuildAllContexts
 {
-	*_mainContextTokenRef		= 0;
-	*_storeContextTokenRef		= 0;
-	*_backgroundContextTokenRef	= 0;
+    if (_mainContextTokenRef) {
+        *_mainContextTokenRef = 0;
+    }
+
+    if (_storeContextTokenRef) {
+        *_storeContextTokenRef = 0;
+    }
+
+    if (_backgroundContextTokenRef) {
+        *_backgroundContextTokenRef	= 0;
+    }
+
 	_mainContext				= nil;
 	_storeContext				= nil;
 	_backgroundContext			= nil;
