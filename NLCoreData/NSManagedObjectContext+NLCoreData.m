@@ -108,21 +108,18 @@ undoEnabled;
 
 + (void)rebuildAllContexts
 {
-    if (_mainContextTokenRef) {
+    if (_mainContextTokenRef)
         *_mainContextTokenRef = 0;
-    }
 
-    if (_storeContextTokenRef) {
+    if (_storeContextTokenRef)
         *_storeContextTokenRef = 0;
-    }
 
-    if (_backgroundContextTokenRef) {
+    if (_backgroundContextTokenRef)
         *_backgroundContextTokenRef	= 0;
-    }
 
-	_mainContext				= nil;
-	_storeContext				= nil;
-	_backgroundContext			= nil;
+	_mainContext		= nil;
+	_storeContext		= nil;
+	_backgroundContext	= nil;
 }
 
 + (NSManagedObjectContext *)mainContext
