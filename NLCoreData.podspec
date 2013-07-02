@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "NLCoreData"
-  s.version      = "0.4.11"
+  s.version      = "0.4.12"
   s.summary      = "Library that wraps Core Data for iOS for easier and more readable operations."
   s.homepage     = "https://github.com/jksk/NLCoreData"
   s.license      = 'MIT'

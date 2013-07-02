@@ -161,7 +161,14 @@
 
 /**
  @name Miscellaneous
+ Prints a description of the object.
  */
 - (NSString *)usefulDescription;
+
+/**
+ @name Miscellaneous
+ Returns the Object ID in NSString format.
+ */
+- (NSString *)objectIDString
 
 @end

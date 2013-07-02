@@ -37,4 +37,9 @@
 	return [[self alloc] initWithFetchRequest:request managedObjectContext:[NSManagedObjectContext mainContext] sectionNameKeyPath:keyPath cacheName:cacheName];
 }
 
+- (NSInteger)numberOfObjectsInSection:(NSInteger)section
+{
+	return [(id<NSFetchedResultsSectionInfo>)[self sections][section] numberOfObjects];
+}
+
 @end

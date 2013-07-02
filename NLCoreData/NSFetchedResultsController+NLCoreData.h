@@ -33,4 +33,6 @@
 + (instancetype)controllerWithRequest:(NSFetchRequest *)request;
 + (instancetype)controllerWithRequest:(NSFetchRequest *)request sectionNameKeyPath:(NSString *)keyPath cacheName:(NSString *)cacheName;
 
+- (NSInteger)numberOfObjectsInSection:(NSInteger)section;
+
 @end

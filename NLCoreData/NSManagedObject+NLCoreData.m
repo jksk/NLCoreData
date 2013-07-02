@@ -443,6 +443,11 @@
 	return [NSString stringWithString:string];
 }
 
+- (NSString *)objectIDString
+{
+	return [[[self objectID] URIRepresentation] absoluteString];
+}
+
 #pragma mark - Helpers
 
 - (NSString *)descriptionOfAttributesWithIndent:(NSInteger)indent
