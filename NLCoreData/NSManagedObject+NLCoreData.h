@@ -169,6 +169,6 @@
  @name Miscellaneous
  Returns the Object ID in NSString format.
  */
-- (NSString *)objectIDString
+- (NSString *)objectIDString;
 
 @end
