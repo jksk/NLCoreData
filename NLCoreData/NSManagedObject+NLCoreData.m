@@ -67,7 +67,7 @@
 
 + (void)deleteWithRequest:(void (^)(NSFetchRequest* request))block context:(NSManagedObjectContext *)context
 {
-	NSFetchRequest* request = [NSFetchRequest fetchRequestWithEntity:[self class]];
+	NSFetchRequest* request = [NSFetchRequest fetchRequestWithEntity:[self class] context:context];
 	
 	if (block)
 		block(request);
@@ -127,7 +127,7 @@
 
 + (NSUInteger)countWithRequest:(void (^)(NSFetchRequest* request))block context:(NSManagedObjectContext *)context
 {
-	NSFetchRequest* request = [NSFetchRequest fetchRequestWithEntity:[self class]];
+	NSFetchRequest* request = [NSFetchRequest fetchRequestWithEntity:[self class] context:context];
 	
 	if (block)
 		block(request);
@@ -175,7 +175,7 @@
 
 + (NSArray *)fetchWithRequest:(void (^)(NSFetchRequest* request))block context:(NSManagedObjectContext *)context
 {
-	NSFetchRequest* request = [NSFetchRequest fetchRequestWithEntity:[self class]];
+	NSFetchRequest* request = [NSFetchRequest fetchRequestWithEntity:[self class] context:context];
 	
 	if (block)
 		block(request);
