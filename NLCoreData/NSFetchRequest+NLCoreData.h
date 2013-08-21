@@ -58,4 +58,13 @@
  */
 - (void)setPredicateOrString:(id)predicateOrString, ...;
 
+/**
+ @name Configuration
+ A default value for the includesSubentities setting of NSFetchRequests. Default is NO.
+ @param includeSubentities
+ @note Default is NO for historical reasons. Expect this to change in the next major version.
+ */
++ (void)setIncludesSubentitiesByDefault:(BOOL)includesSubentities;
++ (BOOL)includesSubentitiesByDefault;
+
 @end

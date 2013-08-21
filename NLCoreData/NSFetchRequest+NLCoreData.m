@@ -25,6 +25,8 @@
 #import "NSFetchRequest+NLCoreData.h"
 #import "NLCoreData.h"
 
+static BOOL _NLCoreDataNSFetchRequestIncludesSubentities = NO;
+
 @implementation NSFetchRequest (NLCoreData)
 
 + (instancetype)fetchRequestWithEntity:(Class)entity
@@ -37,7 +39,7 @@
 	NSFetchRequest* request = [[NSFetchRequest alloc] init];
 	
 	[request setEntity:[NSEntityDescription entityForName:[entity entityName] inManagedObjectContext:context]];
-	[request setIncludesSubentities:NO];
+	[request setIncludesSubentities:_NLCoreDataNSFetchRequestIncludesSubentities];
 	
 	return request;
 }
@@ -55,6 +57,16 @@
 {
 	SET_PREDICATE_WITH_VARIADIC_ARGS
 	[self setPredicate:predicate];
+}
+
++ (void)setIncludesSubentitiesByDefault:(BOOL)includesSubentities
+{
+	_NLCoreDataNSFetchRequestIncludesSubentities = includesSubentities;
+}
+
++ (BOOL)includesSubentitiesByDefault
+{
+	return _NLCoreDataNSFetchRequestIncludesSubentities;
 }
 
 @end

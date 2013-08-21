@@ -73,7 +73,6 @@
 		block(request);
 	
 	[request setIncludesPropertyValues:NO];
-	[request setIncludesSubentities:NO];
 	
 	NSError* error;
 	NSArray* objects = [context executeFetchRequest:request error:&error];
