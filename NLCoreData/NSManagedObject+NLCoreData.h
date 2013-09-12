@@ -41,7 +41,6 @@
  @name Inserting
  
  */
-+ (instancetype)insert;
 + (instancetype)insertInContext:(NSManagedObjectContext *)context;
 
 #pragma mark - Deleting
@@ -56,14 +55,12 @@
  @name Deleting
  
  */
-+ (void)deleteWithRequest:(void (^)(NSFetchRequest* request))block;
 + (void)deleteWithRequest:(void (^)(NSFetchRequest* request))block context:(NSManagedObjectContext *)context;
 
 /**
  @name Deleting
  
  */
-+ (void)deleteWithPredicate:(id)predicateOrString, ...;
 + (void)deleteInContext:(NSManagedObjectContext *)context predicate:(id)predicateOrString, ...;
 
 #pragma mark - Counting
@@ -72,14 +69,12 @@
  @name Counting
  
  */
-+ (NSUInteger)countWithPredicate:(id)predicateOrString, ...;
 + (NSUInteger)countInContext:(NSManagedObjectContext *)context predicate:(id)predicateOrString, ...;
 
 /**
  @name Counting
  
  */
-+ (NSUInteger)countWithRequest:(void (^)(NSFetchRequest* request))block;
 + (NSUInteger)countWithRequest:(void (^)(NSFetchRequest* request))block context:(NSManagedObjectContext *)context;
 
 #pragma mark - Fetching
@@ -88,41 +83,35 @@
  @name Fetching
  
  */
-+ (instancetype)fetchWithObjectID:(NSManagedObjectID *)objectID;
 + (instancetype)fetchWithObjectID:(NSManagedObjectID *)objectID context:(NSManagedObjectContext *)context;
 
 /**
  @name Fetching
  
  */
-+ (NSArray *)fetchWithRequest:(void (^)(NSFetchRequest* request))block;
 + (NSArray *)fetchWithRequest:(void (^)(NSFetchRequest* request))block context:(NSManagedObjectContext *)context;
 
 /**
  @name Fetching
  
  */
-+ (NSArray *)fetchWithPredicate:(id)predicateOrString, ...;
 + (NSArray *)fetchInContext:(NSManagedObjectContext *)context predicate:(id)predicateOrString, ...;
 
 /**
  @name Fetching
  
  */
-+ (instancetype)fetchSingleWithPredicate:(id)predicateOrString, ...;
 + (instancetype)fetchSingleInContext:(NSManagedObjectContext *)context predicate:(id)predicateOrString, ...;
 
 /**
  @name Fetching
  
  */
-+ (instancetype)fetchSingleSortByKey:(NSString *)key ascending:(BOOL)ascending predicate:(id)predicateOrString, ...;
 + (instancetype)fetchSingleInContext:(NSManagedObjectContext *)context sortByKey:(NSString *)key ascending:(BOOL)ascending predicate:(id)predicateOrString, ...;
 
 /**
  @name Fetching
  */
-+ (instancetype)fetchOrInsertSingleWithPredicate:(id)predicateOrString, ...;
 + (instancetype)fetchOrInsertSingleInContext:(NSManagedObjectContext *)context predicate:(id)predicateOrString, ...;
 
 /**
@@ -131,7 +120,7 @@
  @param block
  @param completion
  */
-+ (void)fetchAsynchronouslyWithRequest:(void (^)(NSFetchRequest* request))block completion:(void (^)(NSArray* objects))completion;
++ (void)fetchAsynchronouslyToMainContextWithRequest:(void (^)(NSFetchRequest* request))block completion:(void (^)(NSArray* objects))completion;
 
 /**
  @name Population

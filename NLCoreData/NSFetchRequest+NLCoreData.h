@@ -28,14 +28,6 @@
 
 /**
  @name Lifecycle
- A fetch request set to be executed in the shared context for the current thread.
- @param entity The NSManagedObject subclass of the entity.
- @return The NSFetchRequest.
- */
-+ (instancetype)fetchRequestWithEntity:(Class)entity;
-
-/**
- @name Lifecycle
  A fetch request.
  @param entity The NSManagedObject subclass of the entity.
  @param context The context in which to execute the fetch request.

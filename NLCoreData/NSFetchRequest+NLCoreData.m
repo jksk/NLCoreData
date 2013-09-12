@@ -29,11 +29,6 @@ static BOOL _NLCoreDataNSFetchRequestIncludesSubentities = NO;
 
 @implementation NSFetchRequest (NLCoreData)
 
-+ (instancetype)fetchRequestWithEntity:(Class)entity
-{
-	return [self fetchRequestWithEntity:entity context:[NSManagedObjectContext mainContext]];
-}
-
 + (instancetype)fetchRequestWithEntity:(Class)entity context:(NSManagedObjectContext *)context
 {
 	NSFetchRequest* request = [[NSFetchRequest alloc] init];
