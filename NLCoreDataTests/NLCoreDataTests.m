@@ -36,8 +36,8 @@
 
 - (void)tearDown
 {
-	[User deleteWithPredicate:nil];
-	[Group deleteWithPredicate:nil];
+	[User deleteInContext:[NSManagedObjectContext mainContext] predicate:nil];
+	[Group deleteInContext:[NSManagedObjectContext mainContext] predicate:nil];
 	
 	[super tearDown];
 }
@@ -47,36 +47,36 @@
 - (void)testInsert
 {
 	[self seedUsers:1];
-	STAssertNotNil([User fetchSingleWithPredicate:nil], @"");
+	STAssertNotNil([User fetchSingleInContext:[NSManagedObjectContext mainContext] predicate:nil], @"");
 	[self deleteUsers];
 }
 
 - (void)testFetch
 {
 	[self seedUsers:1];
-	STAssertNotNil([User fetchSingleWithPredicate:nil], @"");
-	STAssertTrue([[User fetchWithPredicate:nil] count] == 1, @"");
+	STAssertNotNil([User fetchSingleInContext:[NSManagedObjectContext mainContext] predicate:nil], @"");
+	STAssertTrue([[User fetchInContext:[NSManagedObjectContext mainContext] predicate:nil] count] == 1, @"");
 	[self deleteUsers];
 }
 
 - (void)testDelete
 {
 	[self seedUsers:1];
-	[User deleteWithPredicate:nil];
-	STAssertNil([User fetchSingleWithPredicate:nil], @"");
+	[User deleteInContext:[NSManagedObjectContext mainContext] predicate:nil];
+	STAssertNil([User fetchSingleInContext:[NSManagedObjectContext mainContext] predicate:nil], @"");
 }
 
 - (void)testCount
 {
 	[self seedUsers:1];
-	STAssertTrue([User countWithPredicate:nil] == 1, @"");
+	STAssertTrue([User countInContext:[NSManagedObjectContext mainContext] predicate:nil] == 1, @"");
 }
 
 - (void)testAsynchronousFetch
 {
 	[self seedUsers:1];
 	
-	[User fetchAsynchronouslyWithRequest:^(NSFetchRequest *request) {
+	[User fetchAsynchronouslyToMainContextWithRequest:^(NSFetchRequest *request) {
 		
 	} completion:^(NSArray *objects) {
 		
@@ -88,7 +88,7 @@
 {
 	[self seedUsers:1];
 	
-	User* user			= [User fetchSingleWithPredicate:nil];
+	User* user			= [User fetchSingleInContext:[NSManagedObjectContext mainContext] predicate:nil];
 	NSString* username	= @"Bob";
 	NSString* password	= @"myPassword";
 	
@@ -100,7 +100,7 @@
 
 - (void)testSortByKey
 {
-	NSFetchRequest* request = [NSFetchRequest fetchRequestWithEntity:[User class]];
+	NSFetchRequest* request = [NSFetchRequest fetchRequestWithEntity:[User class] context:[NSManagedObjectContext mainContext]];
 	
 	[request sortByKey:@"username" ascending:YES];
 	[request sortByKey:@"password" ascending:NO];
@@ -124,19 +124,19 @@
 	[self seedUsers:5];
 	[[NSManagedObjectContext mainContext] save];
 	
-	STAssertTrue([User countWithPredicate:nil] == 5, @"");
+	STAssertTrue([User countInContext:[NSManagedObjectContext mainContext] predicate:nil] == 5, @"");
 	
 	[[NLCoreData shared] resetDatabase];
 	
-	STAssertTrue([User countWithPredicate:nil] == 0, @"");
+	STAssertTrue([User countInContext:[NSManagedObjectContext mainContext] predicate:nil] == 0, @"");
 	
 	[self seedUsers:3];
 	[[NSManagedObjectContext mainContext] saveNested];
 	[NSManagedObjectContext storeContext];
 	
-	STAssertTrue([User countWithPredicate:nil] == 3, @"");
+	STAssertTrue([User countInContext:[NSManagedObjectContext mainContext] predicate:nil] == 3, @"");
 	
-	[User deleteWithPredicate:nil];
+	[User deleteInContext:[NSManagedObjectContext mainContext] predicate:nil];
 	[[NSManagedObjectContext mainContext] saveNested];
 }
 
@@ -146,14 +146,14 @@
 {
 	for (int i = 0; i < count; i++) {
 		
-		User* user = [User insert];
+		User* user = [User insertInContext:[NSManagedObjectContext mainContext]];
 		[user setUsername:@""];
 	}
 }
 
 - (void)deleteUsers
 {
-	[User deleteWithPredicate:nil];
+	[User deleteInContext:[NSManagedObjectContext mainContext] predicate:nil];
 }
 
 @end
