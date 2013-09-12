@@ -41,9 +41,14 @@ static BOOL _NLCoreDataNSFetchRequestIncludesSubentities = NO;
 
 - (void)sortByKey:(NSString *)key ascending:(BOOL)ascending
 {
-	NSSortDescriptor* sortDescriptor	= [NSSortDescriptor sortDescriptorWithKey:key ascending:ascending];
-	NSMutableArray* descriptors			= [NSMutableArray arrayWithArray:[self sortDescriptors]];
-	
+	[self sortByKey:key ascending:ascending selector:nil];
+}
+
+- (void)sortByKey:(NSString *)key ascending:(BOOL)ascending selector:(SEL)selector
+{
+	NSSortDescriptor* sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:key ascending:ascending selector:selector];
+	NSMutableArray* descriptors = [NSMutableArray arrayWithArray:[self sortDescriptors]];
+
 	[descriptors addObject:sortDescriptor];
 	[self setSortDescriptors:descriptors];
 }

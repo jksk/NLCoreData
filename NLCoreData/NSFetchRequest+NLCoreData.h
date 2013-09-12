@@ -37,11 +37,20 @@
 
 /**
  @name Sorting
- Adds add a sort descriptor the fetch request. First added is primary, second added is secondary, etc.
+ Adds a sort descriptor to the fetch request. First added is primary, second added is secondary, etc.
  @param key The keypath to use when performing a comparison.
  @param ascending YES if the receiver specifies sorting in ascending order, otherwise NO.
  */
 - (void)sortByKey:(NSString *)key ascending:(BOOL)ascending;
+
+/**
+ @name Sorting
+ Adds a sort descriptor to the fetch request. First added is primary, second added is secondary, etc.
+ @param key The keypath to use when performing a comparison.
+ @param ascending YES if the receiver specifies sorting in ascending order, otherwise NO.
+ @param selector The selector to use when performing a comparison.
+ */
+- (void)sortByKey:(NSString *)key ascending:(BOOL)ascending selector:(SEL)selector;
 
 /**
  @name Predicate
