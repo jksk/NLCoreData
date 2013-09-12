@@ -68,6 +68,11 @@ NSManagedObjectContext;
 @property (strong, nonatomic) NSDictionary* persistentStoreOptions;
 
 /**
+ Type for the persistent store. Set to NSSQLiteStoreType
+ */
+@property (copy, nonatomic) NSString*	persistentStoreType;
+
+/**
  The persistent store coordinator.
  */
 @property (strong, nonatomic) NSPersistentStoreCoordinator*	storeCoordinator;

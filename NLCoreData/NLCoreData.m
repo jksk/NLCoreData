@@ -110,7 +110,7 @@
 {
 	NSError* error = nil;
 	
-	if (![[self storeCoordinator] addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:[self storeURL] options:[self persistentStoreOptions] error:&error]) {
+	if (![[self storeCoordinator] addPersistentStoreWithType:[self persistentStoreType] configuration:nil URL:[self storeURL] options:[self persistentStoreOptions] error:&error]) {
 #ifdef DEBUG
 		NSLog(@"metaData: %@", [NSPersistentStoreCoordinator metadataForPersistentStoreOfType:nil URL:[self storeURL] error:nil]);
 		NSLog(@"source and dest equivalent? %i", [[[error userInfo] valueForKeyPath:@"sourceModel"] isEqual:[[error userInfo] valueForKeyPath:@"destinationModel"]]);
@@ -190,6 +190,16 @@
 	_persistentStoreOptions = @{NSMigratePersistentStoresAutomaticallyOption: @YES, NSInferMappingModelAutomaticallyOption: @YES};
 	
 	return _persistentStoreOptions;
+}
+
+- (NSString *)persistentStoreType
+{
+	if (_persistentStoreType)
+		return _persistentStoreType;
+	
+	_persistentStoreType = NSSQLiteStoreType;
+	
+	return _persistentStoreType;
 }
 
 - (NSPersistentStoreCoordinator *)storeCoordinator
